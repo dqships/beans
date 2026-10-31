@@ -1,8 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { SampleDataProvider } from "@/data/sample-provider";
-import { LoadingScreen, PlannerApp } from "@/planner/PlannerApp";
+import { PlannerSession } from "@/data/session";
+import { LoadingScreen, PlannerApp, SetupNeeded } from "@/planner/PlannerApp";
 
 const subscribe = () => () => {};
 
@@ -11,8 +11,8 @@ export function PlannerRoot() {
   const client = useSyncExternalStore(subscribe, () => true, () => false);
   if (!client) return <LoadingScreen />;
   return (
-    <SampleDataProvider>
+    <PlannerSession loading={<LoadingScreen />} unconfigured={<SetupNeeded />}>
       <PlannerApp />
-    </SampleDataProvider>
+    </PlannerSession>
   );
 }

@@ -2,7 +2,7 @@
 
 ## Now
 
-Phase 1, planning, is finished. Phase 2, the web UI with sample data, is done and verified. Next is Phase 3: accounts and data.
+Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done except checking Clerk sign-in with real keys, which waits on DQ. Next is Phase 4: planner behavior.
 
 - [x] Review `DESIGN.md` and the mascot
 - [x] Answer the open decisions below
@@ -26,11 +26,11 @@ Phase 1, planning, is finished. Phase 2, the web UI with sample data, is done an
 
 ### Phase 3: Accounts and data
 
-- [ ] Clerk sign-in with `@clerk/nextjs`
-- [ ] Convex schema and functions, connected to Clerk
-- [ ] Data hooks between the screens and Convex
-- [ ] Optimistic updates for dragging, checking off and reordering
-- [ ] Test: changes appear live in a second browser window
+- [ ] Clerk sign-in with `@clerk/nextjs`: built (provider, sign-in and sign-up pages, `proxy.ts`, Convex link), not yet verified because no Clerk keys exist. See Needs DQ.
+- [x] Convex schema and functions, connected to Clerk
+- [x] Data hooks between the screens and Convex
+- [x] Optimistic updates for dragging, checking off and reordering
+- [x] Test: changes appear live in a second browser window
 
 ### Phase 4: Planner behavior
 
@@ -53,6 +53,8 @@ Phase 1, planning, is finished. Phase 2, the web UI with sample data, is done an
 - [ ] Calendar accounts, attachments, import and export, notifications
 
 ## Done
+
+- 2026-10-31: Phase 3 data layer done. Convex schema, `load`, `apply`, `init` and `ensureInstances` functions with 8 `convex-test` unit tests. The app talks to a local Convex backend through the same data hooks, with optimistic updates. 6 browser tests against the real backend cover sign-in redirects, saving, reordering, timeboxing, repeats, Trash, sign-out and live sync between two windows.
 
 - 2026-10-31: Phase 2 done. 37 Playwright tests cover the board, dragging between lists, days and the Timebox, task details, calendar views, Quick Capture, search, filter, focus, timers, settings, Trash, analytics, rituals and the phone layout. Screens checked at 1440 and 390 px in light and dark.
 - 2026-10-31: Set up the pnpm workspace with `apps/web`, `packages/tokens` (generated from `DESIGN.md`) and `packages/core` (data model, dates, ordering, repeats, Quick Capture parsing, rollover)
@@ -88,6 +90,13 @@ Phase 1, planning, is finished. Phase 2, the web UI with sample data, is done an
 - 2026-10-31: A timebox with no estimate shows as 30 minutes. Clicking an empty slot makes a 15 minute task.
 - 2026-10-31: The All Day row is left out until calendar accounts arrive, since tasks have no all-day state.
 - 2026-10-31: The phone layout shows one day with tabs for Brain Dump, the day and its Timebox, plus a Quick Capture button.
+- 2026-10-31: Convex stores every record with `userId` (the token identifier) and the client-made `clientId`. One `apply` mutation takes the same patch ops the client used, validated per table, so the optimistic copy and the database can't drift.
+- 2026-10-31: The planner loads settings, lists, labels, templates, repeats, undated tasks, Trash and the last 120 days of dated tasks. Scrolling further back widens the window.
+- 2026-10-31: Local development and tests use a test-only sign-in: the Next dev server signs short-lived JWTs that the local Convex backend trusts. Production can't use it: its routes return 404 in production builds (checked), the client only offers it in development builds, and Convex only reads its issuer when `CLERK_JWT_ISSUER_DOMAIN` is `none` and only accepts a localhost issuer.
+- 2026-10-31: `/?sample` opens the planner on sample data in development builds, so the UI tests don't need a backend.
+- 2026-10-31: Pages check sign-in themselves, as Clerk now recommends, and `proxy.ts` only runs `clerkMiddleware()` when Clerk keys are set.
+- 2026-10-31: Card hover controls float over the card's corner instead of adding a row, so hovering never shifts the cards below. Found while testing: the shift made clicks land on the wrong element.
+- 2026-10-31: Dropping on the Timebox puts the board's scroll back where it was, since passing the board's edge can scroll the days.
 
 ### Saved for the desktop app
 
@@ -102,3 +111,7 @@ None right now. Both earlier questions were answered: the site opens on sign-in,
 ## Needs DQ
 
 Steps only DQ can do. Filled in as phases finish.
+
+1. **Clerk development keys.** Create a Clerk application (Email and Google sign-in), copy its publishable and secret keys into `apps/web/.env.local` as `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`.
+2. **Turn on Clerk's Convex integration** at https://dashboard.clerk.com/apps/setup/convex, copy the Frontend API URL, and run `npx convex env set CLERK_JWT_ISSUER_DOMAIN <that URL>` on your Convex dev deployment. Then sign in once at `/sign-in` so the Clerk path is verified, and tell me to check the box.
+3. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.

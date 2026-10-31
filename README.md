@@ -6,7 +6,7 @@
 
 A daily planner that keeps your tasks, your week and your hours in one place. Capture everything in a Brain Dump, plan it across your days, then drag tasks onto the Timebox to give them a time.
 
-**Status:** the web UI runs on sample data. Accounts and saved data come next, in Phase 3 of [TASKS.md](TASKS.md).
+**Status:** the planner saves to Convex and syncs live across windows. Clerk sign-in is wired up and waits on keys. See [TASKS.md](TASKS.md).
 
 ## What it will do
 
@@ -44,7 +44,7 @@ assets/logo/      Mascot and app icon
 apps/web/         Next.js app
 packages/tokens/  Design tokens, generated from DESIGN.md
 packages/core/    Data model and planner logic shared by every screen
-convex/           Schema and server functions (from Phase 3)
+convex/           Schema and server functions
 scripts/          Repo checks, such as the token check
 ```
 
@@ -56,11 +56,35 @@ You need Node 22 and pnpm 10 (`corepack enable` sets up pnpm).
 pnpm install
 ```
 
+### Run it with a local database (no accounts needed)
+
+This starts a local Convex backend and turns on a test sign-in that only exists in development builds.
+
+```bash
+pnpm backend:setup
+```
+
+```bash
+pnpm convex:dev
+```
+
+In a second terminal:
+
 ```bash
 pnpm dev
 ```
 
-Open http://localhost:3000. The planner starts with sample data that lives only in the browser tab.
+Open http://localhost:3000, sign in with any name, and your tasks are saved locally. Open a second window to see changes sync live.
+
+### Run it on sample data only
+
+Without a Convex URL in `apps/web/.env.local`, `pnpm dev` opens the planner on sample data that lives only in the browser tab. With a backend set up, http://localhost:3000/?sample does the same.
+
+### Use real Clerk sign-in
+
+1. Create a Clerk application and copy `apps/web/.env.example` to `apps/web/.env.local`.
+2. Fill in `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` and `NEXT_PUBLIC_CONVEX_URL`, and remove the test sign-in lines.
+3. Turn on Clerk's Convex integration and set its Frontend API URL on Convex: `npx convex env set CLERK_JWT_ISSUER_DOMAIN <url>`.
 
 ### Checks
 
@@ -70,7 +94,7 @@ pnpm check
 
 That regenerates tokens, then runs typecheck, lint (with the token check), unit tests and a production build.
 
-End-to-end tests drive the app in Chromium:
+End-to-end tests drive the app in Chromium. With the local backend running (see above):
 
 ```bash
 pnpm --filter @beans/web e2e

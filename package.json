@@ -9,9 +9,21 @@
     "dev": "pnpm --filter @beans/web dev",
     "build": "pnpm -r --if-present build",
     "tokens": "pnpm --filter @beans/tokens build",
-    "typecheck": "pnpm -r --if-present typecheck",
+    "typecheck": "tsc -p convex && pnpm -r --if-present typecheck",
     "lint": "pnpm -r --if-present lint",
-    "test": "pnpm -r --if-present test",
-    "check": "pnpm tokens && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+    "test": "vitest run --config convex/vitest.config.mts && pnpm -r --if-present test",
+    "check": "pnpm tokens && pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "convex:dev": "CONVEX_AGENT_MODE=anonymous convex dev --typecheck disable",
+    "convex:codegen": "convex codegen",
+    "backend:setup": "bash scripts/local-backend.sh"
+  },
+  "devDependencies": {
+    "@beans/core": "workspace:*",
+    "@edge-runtime/vm": "^5.0.0",
+    "@types/node": "^22.20.5",
+    "convex": "1.49.0",
+    "convex-test": "^0.0.66",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.5"
   }
 }

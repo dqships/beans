@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const port = Number(process.env.E2E_PORT ?? 3100);
+// Port 3000 matches BEANS_TEST_AUTH_ISSUER, which the local Convex backend trusts.
+const port = Number(process.env.E2E_PORT ?? 3000);
 
 export default defineConfig({
   testDir: "./e2e",

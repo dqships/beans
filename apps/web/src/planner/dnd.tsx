@@ -78,6 +78,8 @@ export function PlannerDnd({ children }: { children: ReactNode }) {
   const [preview, setPreview] = useState<DragState["preview"]>(null);
   const [insertion, setInsertion] = useState<DragState["insertion"]>(null);
   const pointer = useRef({ x: 0, y: 0 });
+  /** Board scroll at drag start, restored after a Timebox drop. */
+  const boardScroll = useRef<number | null>(null);
   const activeTask = useTask(active?.kind === "task" ? active.taskId : null);
   const activeTemplate = active?.kind === "template" ? templates.find((t) => t.id === active.templateId) : undefined;
 
@@ -127,6 +129,7 @@ export function PlannerDnd({ children }: { children: ReactNode }) {
     const ev = e.activatorEvent as PointerEvent | TouchEvent;
     const p = "touches" in ev ? ev.touches[0] : ev;
     if (p && "clientX" in p) pointer.current = { x: p.clientX, y: p.clientY };
+    boardScroll.current = document.querySelector<HTMLElement>('[role="region"][aria-label="Days"]')?.scrollLeft ?? null;
     setActive(data);
   };
 
@@ -192,6 +195,11 @@ export function PlannerDnd({ children }: { children: ReactNode }) {
     }
 
     const start = dest.kind === "timebox" ? timeAt(over.rect, dest) : undefined;
+    if (dest.kind === "timebox" && boardScroll.current !== null) {
+      // Passing the board's edge on the way to the Timebox can scroll the days; put them back.
+      const board = document.querySelector<HTMLElement>('[role="region"][aria-label="Days"]');
+      if (board) board.scrollLeft = boardScroll.current;
+    }
     const date = dest.kind === "list" ? null : dest.date;
     const listId = dest.kind === "list" ? dest.listId : null;
 
@@ -220,6 +228,8 @@ export function PlannerDnd({ children }: { children: ReactNode }) {
     <DndContext
       sensors={sensors}
       collisionDetection={collision}
+      // Only the outermost edge scrolls, so crossing from the board into the Timebox doesn't slide the days.
+      autoScroll={{ threshold: { x: 0.04, y: 0.12 }, acceleration: 6 }}
       onDragStart={onStart}
       onDragMove={onMove}
       onDragOver={onMove}

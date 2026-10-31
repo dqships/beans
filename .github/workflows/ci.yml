@@ -21,6 +21,12 @@ jobs:
         run: pnpm check
       - name: Install the Playwright browser
         run: pnpm --filter @beans/web exec playwright install --with-deps chromium
+      - name: Set up a local Convex backend with the test sign-in
+        run: pnpm backend:setup
+      - name: Start the local Convex backend
+        run: |
+          nohup pnpm convex:dev > convex.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:3210/version && break; sleep 2; done
       - name: End-to-end tests
         run: pnpm --filter @beans/web e2e
       - uses: actions/upload-artifact@v4

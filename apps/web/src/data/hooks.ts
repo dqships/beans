@@ -82,6 +82,12 @@ export function useBackend(): "sample" | "convex" {
   return useDataStore().backend;
 }
 
+/** The last save problem and a way to dismiss it. */
+export function useSyncError(): [string | null, () => void] {
+  const store = useDataStore();
+  return [store.error ?? null, store.clearError ?? (() => {})];
+}
+
 export function useSettings(): Settings | null {
   return useDataStore().state?.settings ?? null;
 }

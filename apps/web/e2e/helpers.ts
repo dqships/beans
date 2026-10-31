@@ -1,7 +1,8 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
+/** Opens the planner on sample data (development builds only). */
 export async function openPlanner(page: Page) {
-  await page.goto("/");
+  await page.goto("/?sample");
   await expect(page.getByRole("region", { name: "Days" }).or(page.getByRole("navigation", { name: "Sections" }))).toBeVisible();
 }
 
@@ -40,4 +41,18 @@ export function addDaysKey(key: string, n: number): string {
   const [y, m, d] = key.split("-").map(Number) as [number, number, number];
   const t = new Date(Date.UTC(y, m - 1, d + n));
   return t.toISOString().slice(0, 10);
+}
+
+/** Signs in with the local test sign-in as a fresh user, so tests don't share data. */
+export async function signIn(page: Page, name = `Tester ${Math.random().toString(36).slice(2, 8)}`) {
+  await page.goto("/sign-in");
+  const input = page.getByLabel("Your name");
+  await expect(input).toBeEditable();
+  await expect(async () => {
+    await input.fill(name);
+    await expect(page.getByRole("button", { name: "Sign in" })).toBeEnabled({ timeout: 500 });
+  }).toPass();
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("region", { name: "Days" })).toBeVisible({ timeout: 20_000 });
+  return name;
 }
