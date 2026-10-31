@@ -15,6 +15,14 @@ import {
   createList,
   createTask,
   createTemplate,
+  changeRule,
+  deleteInstance,
+  deleteSeries,
+  makeRepeating,
+  moveUnfinished,
+  rolloverOps,
+  stopRepeating,
+  updateAllIncomplete,
   deleteLabel,
   deleteList,
   deleteTask,
@@ -380,6 +388,19 @@ export function useActions() {
         const { id, ops } = taskFromTemplate(current(), templateId, target);
         return { id, undo: run(ops) };
       },
+
+      makeRepeating: (taskId: string, rule: string, start: string | null = null) => run(makeRepeating(current(), taskId, rule, today(), start)),
+      changeRule: (seriesId: string, rule: string, from: DateKey) => run(changeRule(current(), seriesId, rule, from)),
+      stopRepeating: (taskId: string) => run(stopRepeating(current(), taskId)),
+      deleteInstance: (taskId: string) => run(deleteInstance(current(), taskId)),
+      deleteSeries: (seriesId: string) => run(deleteSeries(current(), seriesId)),
+      updateAllIncomplete: (taskId: string) => run(updateAllIncomplete(current(), taskId)),
+
+      moveUnfinished: (ids: string[], to: DateKey) => {
+        const state = current();
+        return run(moveUnfinished(state, ids.map((id) => state.tasks[id]!).filter(Boolean), to));
+      },
+      rollover: () => run(rolloverOps(current(), today())),
 
       updateSettings: (fields: Partial<Omit<Settings, "id">>) => run([{ kind: "settings", fields }]),
 

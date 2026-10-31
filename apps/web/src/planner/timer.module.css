@@ -1,0 +1,107 @@
+.pill {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: var(--z-toast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: calc(var(--layout-column) * 1.2);
+  min-height: calc(var(--control-height) + var(--space-2));
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-text);
+  color: var(--color-bg);
+  box-shadow: var(--shadow-md);
+  animation: pop var(--duration-spring) var(--ease-spring);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.dot {
+  flex: none;
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-text-muted);
+}
+
+.dotLive {
+  background: var(--mascot-leaf);
+  animation: pulse calc(var(--duration-spring) * 3) linear infinite alternate;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.35;
+  }
+}
+
+.summary {
+  display: grid;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+
+.time {
+  font-size: var(--text-md-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-lg-weight);
+}
+
+.caption {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+  opacity: 0.75;
+  text-transform: none;
+}
+
+.controls {
+  display: none;
+  gap: var(--space-1);
+}
+
+.open .controls {
+  display: flex;
+}
+
+@media (hover: none) {
+  .controls {
+    display: flex;
+  }
+}
+
+.control {
+  display: grid;
+  place-items: center;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: inherit;
+}
+
+.control:hover {
+  background: var(--color-text-muted);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .pill {
+    bottom: calc(var(--layout-tabbar) + var(--space-3));
+    right: var(--space-3);
+  }
+}

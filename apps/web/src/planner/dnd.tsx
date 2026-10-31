@@ -60,6 +60,8 @@ const collision: CollisionDetection = (args) => {
   const hits = pointerWithin(args);
   const timebox = hits.find((h) => String(h.id).startsWith("timebox:"));
   if (timebox) return [timebox];
+  const month = hits.find((h) => String(h.id).startsWith("month:"));
+  if (month) return [month];
   const container = hits.find((h) => /^(day|list):/.test(String(h.id)));
   if (!container) return hits.filter((h) => String(h.id).startsWith("task:")).slice(0, 1);
   const inside = args.droppableContainers.filter((d) => d.data.current?.container === container.id);

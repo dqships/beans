@@ -8,3 +8,6 @@ export * from "./settings";
 export * from "./tasks";
 export * from "./collections";
 export * from "./sample";
+export * from "./repeat";
+export * from "./capture";
+export * from "./rollover";

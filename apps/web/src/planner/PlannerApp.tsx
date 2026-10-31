@@ -5,9 +5,20 @@ import { useDataReady, useSettings } from "@/data/hooks";
 import { THEME_STORAGE_KEY } from "@/app/theme-script";
 import { Mascot } from "@/ui/garden";
 import { Board } from "./Board";
+import { CalendarView, DayTasksPanel } from "./CalendarView";
 import { BulkBar } from "./BulkBar";
 import { PlannerDnd } from "./dnd";
 import { Sidebar } from "./Sidebar";
+import { TaskModal } from "./TaskModal";
+import { QuickCapture } from "./QuickCapture";
+import { SearchDialog } from "./SearchDialog";
+import { ShortcutSheet } from "./ShortcutSheet";
+import { TimerPill } from "./TimerPill";
+import { useShortcuts } from "./shortcuts";
+import { SettingsDialog } from "./SettingsDialog";
+import { TrashDrawer } from "./TrashDrawer";
+import { Analytics } from "./Analytics";
+import { Rituals } from "./Rituals";
 import { TimeboxPanel } from "./TimeboxPanel";
 import { Toasts } from "./Toasts";
 import { TopBar } from "./TopBar";
@@ -51,18 +62,26 @@ function ThemeSync() {
 
 function Shell() {
   const ui = useUi();
+  useShortcuts();
   const showSidebar = ui.sidebarOpen && !ui.focusMode;
   return (
     <div className={styles.app}>
       <TopBar />
       <div className={styles.body}>
         {showSidebar ? <Sidebar /> : null}
-        <main className={styles.main}>
-          <Board />
-        </main>
-        {ui.timeboxOpen ? <TimeboxPanel /> : null}
+        <main className={styles.main}>{ui.view === "calendar" ? <CalendarView /> : <Board />}</main>
+        {ui.timeboxOpen ? ui.view === "calendar" ? <DayTasksPanel /> : <TimeboxPanel /> : null}
       </div>
       <BulkBar />
+      <TaskModal />
+      <QuickCapture />
+      <SearchDialog />
+      <ShortcutSheet />
+      <SettingsDialog />
+      <TrashDrawer />
+      <Analytics />
+      <Rituals />
+      <TimerPill placement="floating" />
       <Toasts />
     </div>
   );

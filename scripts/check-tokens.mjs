@@ -14,7 +14,7 @@ const rules = [
   { name: "easing keyword", re: /\b(ease-in-out|ease-in|ease-out|cubic-bezier\()|(?<![\w-])ease(?![\w-])/g, files: /\.css$/ },
   { name: "font-size literal", re: /font-size:(?!\s*(var\(|calc\(var\(|inherit))/g, files: /\.css$/ },
   { name: "font-weight literal", re: /font-weight:(?!\s*(var\(|inherit))/g, files: /\.css$/ },
-  { name: "shadow literal", re: /box-shadow:(?!\s*(var\(|none|inherit|0 0 0 var\())/g, files: /\.css$/ },
+  { name: "shadow literal", re: /box-shadow:(?![^;]*var\()(?!\s*(none|inherit)\s*;)/g, files: /\.css$/ },
   { name: "radius literal", re: /border-radius:(?![^;]*var\()(?!\s*(0|50%|inherit)\s*;)/g, files: /\.css$/ },
   { name: "z-index literal", re: /z-index:(?!\s*(var\(|calc\(var\(|auto|0;|1;|-1;))/g, files: /\.css$/ },
 ];
