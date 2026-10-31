@@ -36,6 +36,7 @@ A desktop app is planned for later.
 | [DESIGN.md](DESIGN.md) | Design system. Read it before building or changing any screen. |
 | [RESEARCH.md](RESEARCH.md) | Architecture, feature scope and the saved desktop plan |
 | [TASKS.md](TASKS.md) | Phases, progress, decisions and open questions |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Vercel, Convex and Clerk setup for deploying |
 
 ## Repo layout
 
