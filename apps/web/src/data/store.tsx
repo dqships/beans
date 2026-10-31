@@ -17,6 +17,9 @@ export interface DataStore {
   requestRange(from: DateKey, to: DateKey): void;
   /** Which backend is running, for the account menu. */
   backend: "sample" | "convex";
+  /** Last save problem, shown once as a toast. */
+  error?: string | null;
+  clearError?: () => void;
 }
 
 export const DataStoreContext = createContext<DataStore | null>(null);

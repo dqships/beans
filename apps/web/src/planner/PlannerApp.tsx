@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useDataReady, useSettings } from "@/data/hooks";
+import { useDataReady, useSettings, useSyncError } from "@/data/hooks";
 import { THEME_STORAGE_KEY } from "@/app/theme-script";
 import { Mascot } from "@/ui/garden";
 import { Board } from "./Board";
@@ -33,6 +33,7 @@ export function PlannerApp() {
   return (
     <UiProvider>
       <ThemeSync />
+      <SyncErrors />
       <PlannerDnd>
         <Shell />
       </PlannerDnd>
@@ -47,6 +48,27 @@ export function LoadingScreen() {
       <p>Opening your garden…</p>
     </div>
   );
+}
+
+export function SetupNeeded() {
+  return (
+    <div className={styles.loading} role="alert">
+      <Mascot scene="search" className={styles.loadingMascot} />
+      <p>Beans isn&apos;t connected to its sign-in and database yet.</p>
+    </div>
+  );
+}
+
+/** Shows save problems from the data layer as a toast. */
+function SyncErrors() {
+  const ui = useUi();
+  const [error, clear] = useSyncError();
+  useEffect(() => {
+    if (!error) return;
+    ui.toast(error);
+    clear();
+  }, [error, clear, ui]);
+  return null;
 }
 
 function ThemeSync() {
