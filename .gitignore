@@ -1,28 +1,16 @@
-# Dependencies
 node_modules/
-.pnpm-store/
-
-# Next.js and builds
 .next/
 out/
+build/
 dist/
-*.tsbuildinfo
-
-# Environment and secrets
-.env
-.env.*
-!.env.example
-
-# Hosting and local tools
-.vercel/
-.turbo/
-.convex/
-
-# Tests
 coverage/
-playwright-report/
+*.tsbuildinfo
+next-env.d.ts
+.env
+.env*.local
+.vercel/
+.convex/
 test-results/
-
-# System
+playwright-report/
+screenshots-local/
 .DS_Store
-*.log

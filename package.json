@@ -1,0 +1,17 @@
+{
+  "name": "beans",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @beans/web dev",
+    "build": "pnpm -r --if-present build",
+    "tokens": "pnpm --filter @beans/tokens build",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "pnpm -r --if-present lint",
+    "test": "pnpm -r --if-present test",
+    "check": "pnpm tokens && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+  }
+}

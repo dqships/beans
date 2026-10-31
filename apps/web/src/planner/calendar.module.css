@@ -1,0 +1,164 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.toolbar svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.zoom {
+  display: flex;
+  margin-left: auto;
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.monthHead {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.monthHead span {
+  padding: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+  text-align: center;
+}
+
+.monthGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-1) / 2);
+  min-height: calc(var(--layout-hour) * 1.2);
+  min-width: 0;
+  padding: var(--space-1);
+  border-right: var(--border-width) solid var(--color-border);
+  border-bottom: var(--border-width) solid var(--color-border);
+  overflow: hidden;
+}
+
+.cell:nth-child(7n) {
+  border-right: 0;
+}
+
+.outside {
+  background: var(--color-surface-2);
+}
+
+.outside .cellDate {
+  color: var(--color-text-muted);
+}
+
+.cellOver {
+  outline: var(--focus-ring) solid var(--color-primary);
+  outline-offset: calc(var(--focus-ring) * -1);
+}
+
+.cellDate {
+  align-self: flex-start;
+  min-width: var(--icon-md);
+  padding: 0 var(--space-1);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+}
+
+.cellToday {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: 0 var(--space-1);
+  border: 0;
+  border-radius: calc(var(--radius-sm) / 2);
+  background: none;
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+  text-align: left;
+}
+
+.chip:hover {
+  background: var(--color-surface-2);
+}
+
+.chipDone {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.chipTime {
+  color: var(--color-text-muted);
+}
+
+.chipTitle {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.more {
+  align-self: flex-start;
+  padding: 0 var(--space-1);
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  font-weight: var(--text-md-weight);
+}
+
+.dayList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.dayListTasks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: var(--layout-hour);
+}
