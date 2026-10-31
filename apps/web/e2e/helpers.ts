@@ -2,7 +2,7 @@ import { expect, type Locator, type Page } from "@playwright/test";
 
 /** Opens the planner on sample data (development builds only). */
 export async function openPlanner(page: Page) {
-  await page.goto("/?sample");
+  await page.goto("/app?sample");
   await expect(page.getByRole("region", { name: "Days" }).or(page.getByRole("navigation", { name: "Sections" }))).toBeVisible();
 }
 

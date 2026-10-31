@@ -80,7 +80,7 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 - 2026-10-31: The site lives in its own subfolder, and Vercel builds only for changes that affect it.
 - 2026-10-31: `DESIGN.md`, `TASKS.md` and `RESEARCH.md` stay in `beans`. Other research material stays outside this repo.
 
-- 2026-10-31: The site opens on sign-in; a landing page comes later. All v1 extras stay in scope.
+- 2026-10-31: All v1 extras stay in scope. (The earlier call that the site opens on sign-in is replaced by the routes decision below.)
 - 2026-10-31: The desktop app, offline mode, AI and integrations stay out of scope for v1.
 - 2026-10-31: Every change is a list of small patch ops (`packages/core/src/ops.ts`). The same ops update the screen instantly, give Undo for free, and will feed the desktop outbox later.
 - 2026-10-31: Records use a client-made UUIDv7 `id` as their identity, so new items work before the server answers.
@@ -98,7 +98,7 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 - 2026-10-31: Convex stores every record with `userId` (the token identifier) and the client-made `clientId`. One `apply` mutation takes the same patch ops the client used, validated per table, so the optimistic copy and the database can't drift.
 - 2026-10-31: The planner loads settings, lists, labels, templates, repeats, undated tasks, Trash and the last 120 days of dated tasks. Scrolling further back widens the window.
 - 2026-10-31: Local development and tests use a test-only sign-in: the Next dev server signs short-lived JWTs that the local Convex backend trusts. Production can't use it: its routes return 404 in production builds (checked), the client only offers it in development builds, and Convex only reads its issuer when `CLERK_JWT_ISSUER_DOMAIN` is `none` and only accepts a localhost issuer.
-- 2026-10-31: `/?sample` opens the planner on sample data in development builds, so the UI tests don't need a backend.
+- 2026-10-31: `/app?sample` opens the planner on sample data in development builds, so the UI tests don't need a backend.
 - 2026-10-31: Pages check sign-in themselves, as Clerk now recommends, and `proxy.ts` only runs `clerkMiddleware()` when Clerk keys are set.
 - 2026-10-31: Card hover controls float over the card's corner instead of adding a row, so hovering never shifts the cards below. Found while testing: the shift made clicks land on the wrong element.
 - 2026-10-31: Dropping on the Timebox puts the board's scroll back where it was, since passing the board's edge can scroll the days.
@@ -109,6 +109,10 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 - 2026-10-31: The build-skip script lives in `apps/web/scripts/` so its watched paths read relative to the Root Directory. When it can't compare commits, it builds.
 - 2026-10-31: The Vercel build runs `npx convex deploy --cmd` from the repo root, so Convex functions and the web app ship together with a matching `NEXT_PUBLIC_CONVEX_URL`.
 
+- 2026-10-31: The landing page lives at `/` and the planner moves to `/app`. Sign-in and sign-up keep their paths. Clerk and Convex providers sit in the `(app)` route group's layout, so marketing pages ship neither.
+- 2026-10-31: Marketing pages get two sizes above the five planner sizes (`--text-title`, `--text-display`) and their own layout steps. The planner keeps the five.
+- 2026-10-31: `pnpm backend:setup` refuses to run against a hosted Convex deployment, because it sets `CLERK_JWT_ISSUER_DOMAIN` to `none`. Use a separate worktree for the local backend.
+
 ### Saved for the desktop app
 
 - 2026-10-31: Electron for Windows and Mac, released unsigned at first.
@@ -117,7 +121,7 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 
 ## Open decisions
 
-None right now. Both earlier questions were answered: the site opens on sign-in, and all v1 extras stay in scope.
+None right now.
 
 ## Needs DQ
 

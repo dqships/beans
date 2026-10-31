@@ -1,11 +1,11 @@
 // Fails when app code hardcodes a color, size, shadow or easing instead of a token.
 // Escape hatch for justified cases: put `token-ok` in a comment on the same line.
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const targets = [join(root, "apps/web/src")];
+const targets = [join(root, "apps/web/src"), join(root, "apps/video/src")].filter(existsSync);
 
 const rules = [
   { name: "hex color", re: /#[0-9a-fA-F]{3,8}\b(?![\w-])/g, files: /\.(css|tsx?)$/ },

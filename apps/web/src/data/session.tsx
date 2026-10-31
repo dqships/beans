@@ -25,7 +25,7 @@ export function PlannerSession({ children, loading, unconfigured }: { children: 
 }
 
 /** True once the sign-in source (not Convex) knows the visitor is signed out. */
-/** Development only: `/?sample` opens the planner on sample data, for UI work and tests. */
+/** Development only: `/app?sample` opens the planner on sample data, for UI work and tests. */
 function sampleRequested(): boolean {
   if (process.env.NODE_ENV === "production") return false;
   return new URLSearchParams(window.location.search).has("sample");

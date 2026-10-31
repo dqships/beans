@@ -61,7 +61,6 @@ It pushes the Convex functions, then builds the web app with the matching `NEXT_
 ### 4. Before a public launch
 
 - Legal review: privacy policy, terms, and what sign-in data Clerk and Convex store.
-- Decide on the landing page (for now the site opens on sign-in).
 
 ## Checking the build-skip script locally
 

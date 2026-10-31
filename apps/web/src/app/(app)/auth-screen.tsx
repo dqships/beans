@@ -20,14 +20,14 @@ export function AuthScreen({ kind }: { kind: "sign-in" | "sign-up" }) {
         <p className={styles.lede}>Plan the day, give your tasks a time, and watch them grow.</p>
         {authMode === "clerk" ? (
           <Suspense>
-            {kind === "sign-in" ? <SignIn signUpUrl="/sign-up" fallbackRedirectUrl="/" /> : <SignUp signInUrl="/sign-in" fallbackRedirectUrl="/" />}
+            {kind === "sign-in" ? <SignIn signUpUrl="/sign-up" fallbackRedirectUrl="/app" /> : <SignUp signInUrl="/sign-in" fallbackRedirectUrl="/app" />}
           </Suspense>
         ) : authMode === "test" ? (
           <TestSignIn />
         ) : authMode === "sample" ? (
           <div className={styles.card}>
             <p className={styles.lede}>No sign-in is set up on this machine, so Beans runs on sample data.</p>
-            <Link className={styles.link} href="/">
+            <Link className={styles.link} href="/app">
               Open the sample planner
             </Link>
           </div>
@@ -52,7 +52,7 @@ function TestSignIn() {
         e.preventDefault();
         if (!name.trim()) return;
         setTestUser(name.trim());
-        router.replace("/");
+        router.replace("/app");
       }}
     >
       <p className={styles.note}>Test sign-in for local development. It doesn&apos;t exist in production.</p>

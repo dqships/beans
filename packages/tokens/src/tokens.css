@@ -33,6 +33,12 @@
   --text-xl-size: 28px;
   --text-xl-line: 36px;
   --text-xl-weight: 700;
+  --text-title-size: 40px;
+  --text-title-line: 44px;
+  --text-title-weight: 700;
+  --text-display-size: 64px;
+  --text-display-line: 68px;
+  --text-display-weight: 700;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -45,6 +51,10 @@
   --layout-timebox: 280px;
   --layout-modal: 560px;
   --layout-hour: 80px;
+  --layout-page: 1200px;
+  --layout-prose: 640px;
+  --layout-section: 96px;
+  --layout-section-sm: 64px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
@@ -78,6 +88,8 @@
   --z-toast: 70;
   --z-drag: 80;
   --color-on-label: #2B2118;
+  --video-caption: 44px;
+  --video-title: 88px;
   --color-bg: #FBF7EF;
   --color-surface: #FFFDF8;
   --color-surface-2: #F3ECDF;

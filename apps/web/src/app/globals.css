@@ -21,7 +21,6 @@ body {
   font-weight: var(--text-sm-weight);
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;
 }
 
 button,

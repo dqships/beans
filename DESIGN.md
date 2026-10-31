@@ -66,6 +66,10 @@ One family: **Figtree**, self-hosted through `next/font`. Numbers use tabular fi
 | `--text-md` | 16 / 24 | 600 | Section titles, button labels in dialogs |
 | `--text-lg` | 20 / 28 | 700 | Day headers, panel titles |
 | `--text-xl` | 28 / 36 | 700 | Modal task title, ritual headings |
+| `--text-title` | 40 / 44 | 700 | Marketing pages only: section headings, the phone hero |
+| `--text-display` | 64 / 68 | 700 | Marketing pages only: the desktop hero |
+
+The planner uses the five sizes from `--text-xs` to `--text-xl`. The two larger sizes exist only on marketing pages.
 
 ## Spacing
 
@@ -81,6 +85,10 @@ Layout steps:
 | `--layout-timebox` | 280 | Timebox panel |
 | `--layout-modal` | 560 | Task modal |
 | `--layout-hour` | 80 | Calendar hour at 100% zoom |
+| `--layout-page` | 1200 | Marketing page content width |
+| `--layout-prose` | 640 | Marketing and legal reading width |
+| `--layout-section` | 96 | Gap between marketing sections on desktop |
+| `--layout-section-sm` | 64 | Gap between marketing sections on phones |
 
 ## Shape and depth
 
@@ -161,6 +169,8 @@ Added while building screens. Same rule: use these, never a raw value.
 | `--z-toast` | 70 | Toasts and the timer pill |
 | `--z-drag` | 80 | The task being dragged |
 | `--color-on-label` | `#2B2118` | Text on label-colored blocks, both themes |
+| `--video-caption` | 44px | Captions in the demo video, at 1920 wide |
+| `--video-title` | 88px | Intro and outro lines in the demo video |
 
 Media queries can't read custom properties, so the phone breakpoint is written as `720px` in `@media` rules only, with a comment pointing back here.
 

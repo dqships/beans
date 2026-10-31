@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, claude/beans-v1]
+    branches: [main, claude/beans-v1, claude/beans-launch]
 
 jobs:
   check:

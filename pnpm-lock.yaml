@@ -84,6 +84,9 @@ importers:
         specifier: ^0.0.1
         version: 0.0.1
     devDependencies:
+      '@clerk/backend':
+        specifier: ^3.26.5
+        version: 3.26.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@clerk/testing':
         specifier: ^2.2.53
         version: 2.2.53(@playwright/test@1.63.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)

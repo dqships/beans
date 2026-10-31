@@ -59,7 +59,7 @@ pnpm install
 
 ### Run it with a local database (no accounts needed)
 
-This starts a local Convex backend and turns on a test sign-in that only exists in development builds.
+This starts a local Convex backend and turns on a test sign-in that only exists in development builds. The script stops if the clone's `.env.local` points at a hosted Convex deployment, because it switches off Clerk on the deployment it runs against. Use a separate worktree in that case.
 
 ```bash
 pnpm backend:setup
@@ -75,11 +75,11 @@ In a second terminal:
 pnpm dev
 ```
 
-Open http://localhost:3000, sign in with any name, and your tasks are saved locally. Open a second window to see changes sync live.
+Open http://localhost:3000/sign-in, sign in with any name, and your tasks are saved locally. Open a second window to see changes sync live.
 
 ### Run it on sample data only
 
-Without a Convex URL in `apps/web/.env.local`, `pnpm dev` opens the planner on sample data that lives only in the browser tab. With a backend set up, http://localhost:3000/?sample does the same.
+Without a Convex URL in `apps/web/.env.local`, `pnpm dev` opens the planner on sample data that lives only in the browser tab. The planner is at http://localhost:3000/app. With a backend set up, http://localhost:3000/app?sample does the same.
 
 ### Use real Clerk sign-in
 

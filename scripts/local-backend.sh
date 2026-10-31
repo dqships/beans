@@ -5,6 +5,14 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 export CONVEX_AGENT_MODE=anonymous
 
+# This sets CLERK_JWT_ISSUER_DOMAIN to `none`, which must never reach a hosted
+# deployment. A clone linked to one needs its own worktree for the local backend.
+if [ -f .env.local ] && grep -q '^CONVEX_DEPLOYMENT=' .env.local \
+  && ! grep -qE '^CONVEX_DEPLOYMENT=(anonymous|local):' .env.local; then
+  echo "This clone's .env.local points at a hosted Convex deployment. Run this in a separate worktree." >&2
+  exit 1
+fi
+
 # The first run creates the local deployment and writes .env.local.
 npx convex dev --once --typecheck disable || true
 npx convex env set CLERK_JWT_ISSUER_DOMAIN none

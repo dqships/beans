@@ -1,0 +1,5 @@
+/* The planner scrolls inside its own panels, so the page itself never does. */
+.shell {
+  height: 100%;
+  overflow: hidden;
+}

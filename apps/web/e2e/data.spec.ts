@@ -3,8 +3,15 @@ import { addDaysKey, card, day, drag, signIn, todayKey } from "./helpers";
 
 // These run against the local Convex backend with the test sign-in.
 
-test("signed-out visitors land on sign-in", async ({ page }) => {
+test("the landing page is public at the site root", async ({ page }) => {
   await page.goto("/");
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+});
+
+
+test("signed-out visitors land on sign-in", async ({ page }) => {
+  await page.goto("/app");
   await expect(page).toHaveURL(/\/sign-in$/);
   await expect(page.getByRole("heading", { name: "Welcome back to Beans" })).toBeVisible();
 });
@@ -118,6 +125,6 @@ test("signing out returns to sign-in", async ({ page }) => {
   await page.getByRole("button", { name: "Account menu" }).click();
   await page.getByRole("menuitem", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/sign-in$/);
-  await page.goto("/");
+  await page.goto("/app");
   await expect(page).toHaveURL(/\/sign-in$/);
 });
