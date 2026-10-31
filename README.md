@@ -6,7 +6,7 @@
 
 A daily planner that keeps your tasks, your week and your hours in one place. Capture everything in a Brain Dump, plan it across your days, then drag tasks onto the Timebox to give them a time.
 
-**Status:** the planner saves to Convex and syncs live across windows. Clerk sign-in is wired up and waits on keys. See [TASKS.md](TASKS.md).
+**Status:** the planner saves to Convex and syncs live across windows. Clerk sign-in is set up on development instances. See [TASKS.md](TASKS.md).
 
 ## What it will do
 
@@ -100,5 +100,13 @@ End-to-end tests drive the app in Chromium. With the local backend running (see 
 ```bash
 pnpm --filter @beans/web e2e
 ```
+
+To test real Clerk sign-in, with development keys in `apps/web/.env.local` and the Convex functions pushed to that deployment:
+
+```bash
+pnpm --filter @beans/web e2e:clerk
+```
+
+It signs up a `+clerk_test` user and deletes it afterwards. It only accepts development keys, and skips when there are none.
 
 After editing `DESIGN.md`, run `pnpm tokens` to regenerate the token files.

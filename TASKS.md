@@ -2,7 +2,9 @@
 
 ## Now
 
-Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done except checking Clerk sign-in with real keys, which waits on DQ. Phase 4 (planner behavior) is done. Phase 5 launch prep is done on the repo side; creating services and deploying is for DQ, listed under Needs DQ. The PR from `claude/beans-v1` into `main` is ready for review.
+Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done except one real Clerk sign-up, which needs DQ's run (Needs DQ item 1). Phase 4 (planner behavior) is done. Phase 5 launch prep is done on the repo side; creating services and deploying is for DQ, listed under Needs DQ. The PR from `claude/beans-v1` into `main` is ready for review.
+
+The Launch phase is running on `claude/beans-launch`. See `docs/launch/PLAN.md`.
 
 - [x] Review `DESIGN.md` and the mascot
 - [x] Answer the open decisions below
@@ -26,7 +28,7 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 
 ### Phase 3: Accounts and data
 
-- [ ] Clerk sign-in with `@clerk/nextjs`: built (provider, sign-in and sign-up pages, `proxy.ts`, Convex link), not yet verified because no Clerk keys exist. See Needs DQ.
+- [ ] Clerk sign-in with `@clerk/nextjs`: built, keys and the `convex` JWT template are in place, and signed-out redirects plus the Clerk form are verified. One real sign-up is left. See Needs DQ item 1.
 - [x] Convex schema and functions, connected to Clerk
 - [x] Data hooks between the screens and Convex
 - [x] Optimistic updates for dragging, checking off and reordering
@@ -48,12 +50,27 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 - [ ] Set up the production Clerk instance (DQ)
 - [ ] Legal review before public release (DQ)
 
+### Launch
+
+Tracked in `docs/launch/PLAN.md`.
+
+- [x] Move the planner to `/app`, with providers out of the root layout
+- [x] Add the Clerk end-to-end test (`pnpm --filter @beans/web e2e:clerk`)
+- [ ] Brand asset files
+- [ ] Mascot poses and illustrations
+- [ ] Landing page
+- [ ] Demo video
+- [ ] Launch audit and PR into `main`
+
 ### Later
 
 - [ ] Desktop app: see "Desktop app, saved for later" in `RESEARCH.md`
 - [ ] Calendar accounts, attachments, import and export, notifications
 
 ## Done
+
+- 2026-10-31: Clerk setup checked. Convex functions pushed to the hosted dev deployment, `CLERK_JWT_ISSUER_DOMAIN` confirmed on it and matching the keys, the `convex` JWT template created in the Clerk development instance, and a test confirms signed-out visitors reach the Clerk form.
+- 2026-10-31: Planner moved to `/app`. 50 browser tests and `pnpm check` pass on the local backend.
 
 - 2026-10-31: Phase 5 prep done. `apps/web/vercel.json`, the build-skip script with 7 tests, security headers, and `docs/DEPLOY.md` with every remaining step.
 
@@ -113,6 +130,9 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 - 2026-10-31: Marketing pages get two sizes above the five planner sizes (`--text-title`, `--text-display`) and their own layout steps. The planner keeps the five.
 - 2026-10-31: `pnpm backend:setup` refuses to run against a hosted Convex deployment, because it sets `CLERK_JWT_ISSUER_DOMAIN` to `none`. Use a separate worktree for the local backend.
 
+- 2026-10-31: Marketing pages use the Pages Router with no runtime JavaScript, not `app/(marketing)`, because the App Router ships 179 KB gzipped on an empty page and the budget is 70 KB. This overrides the original brief's folder layout to keep its budget. DQ can reverse it.
+- 2026-10-31: Clerk test accounts can't be created by the agent, so the real sign-up test is DQ's to run.
+
 ### Saved for the desktop app
 
 - 2026-10-31: Electron for Windows and Mac, released unsigned at first.
@@ -127,8 +147,8 @@ None right now.
 
 Steps only DQ can do. Filled in as phases finish.
 
-1. **Clerk development keys.** Create a Clerk application (Email and Google sign-in), copy its publishable and secret keys into `apps/web/.env.local` as `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`.
-2. **Turn on Clerk's Convex integration** at https://dashboard.clerk.com/apps/setup/convex, copy the Frontend API URL, and run `npx convex env set CLERK_JWT_ISSUER_DOMAIN <that URL>` on your Convex dev deployment. Then sign in once at `/sign-in` so the Clerk path is verified, and tell me to check the box.
+1. **Run the real Clerk sign-up test** in this clone: `pnpm --filter @beans/web e2e:clerk`. It signs up a `+clerk_test` user, saves a task, syncs a second window, signs out and deletes the user. Tell the coordinator the result, then the Phase 3 box can be ticked.
+2. **Clerk sign-up asks for a password as well as an email code.** That differs from `docs/DEPLOY.md`, which says email codes and Google. Keep it, or turn off the password in the Clerk dashboard.
 3. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.
 4. **Create the Vercel project** from the GitHub repo with Root Directory `apps/web`, keep "Include files outside the root directory" on, and add the environment variables listed in `docs/DEPLOY.md`. Then deploy.
 5. **Set up the production Clerk instance**: domain, DNS records and Google OAuth credentials.
