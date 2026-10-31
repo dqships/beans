@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowCounterClockwise, X } from "@phosphor-icons/react";
+import { TRASH_DAYS, trashDaysLeft } from "@beans/core";
 import { useActions, useClock, useTrash } from "@/data/hooks";
 import { Button, IconButton } from "@/ui/Button";
 import { TextInput } from "@/ui/controls";
@@ -10,8 +11,6 @@ import { Drawer } from "@/ui/Modal";
 import { useUi } from "./ui-state";
 import styles from "./drawer.module.css";
 
-const DAY_MS = 86_400_000;
-export const TRASH_DAYS = 30;
 
 export function TrashDrawer() {
   const ui = useUi();
@@ -39,7 +38,7 @@ function TrashBody() {
       <TextInput placeholder="Search Trash" aria-label="Search Trash" value={query} onChange={(e) => setQuery(e.target.value)} />
       <ul className={styles.list}>
         {shown.map((item) => {
-          const left = Math.min(TRASH_DAYS, Math.max(0, Math.ceil((item.deletedAt + TRASH_DAYS * DAY_MS - now) / DAY_MS)));
+          const left = trashDaysLeft(item.deletedAt, now);
           return (
             <li key={`${item.kind}-${item.id}`} className={styles.item}>
               <div className={styles.itemText}>

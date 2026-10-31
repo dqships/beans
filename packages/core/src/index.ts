@@ -11,3 +11,4 @@ export * from "./sample";
 export * from "./repeat";
 export * from "./capture";
 export * from "./rollover";
+export * from "./trash";

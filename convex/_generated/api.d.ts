@@ -8,7 +8,9 @@
  * @module
  */
 
+import type * as crons from "../crons.js";
 import type * as lib from "../lib.js";
+import type * as maintenance from "../maintenance.js";
 import type * as planner from "../planner.js";
 import type * as validators from "../validators.js";
 
@@ -19,7 +21,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  crons: typeof crons;
   lib: typeof lib;
+  maintenance: typeof maintenance;
   planner: typeof planner;
   validators: typeof validators;
 }>;

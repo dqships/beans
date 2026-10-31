@@ -15,6 +15,7 @@ import {
   type Op,
   type Settings,
 } from "@beans/core";
+import { useClock } from "./hooks";
 import { DataStoreContext, type DataStore } from "./store";
 
 /** Dated tasks load from this many days back; older days load when shown. */
@@ -63,6 +64,7 @@ export function ConvexDataProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const init = useMutation(api.planner.init);
   const ensure = useMutation(api.planner.ensureInstances);
+  const rolloverNow = useMutation(api.maintenance.rolloverNow);
   const applyMutation = useMutation(api.planner.apply).withOptimisticUpdate((store, { ops }) => optimistic(store, ops as Op[]));
 
   // Keep showing the last result while a wider window loads.
@@ -74,6 +76,14 @@ export function ConvexDataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (needsInit) init({ timeZone: localTimeZone() }).catch((e) => setError(String(e)));
   }, [needsInit, init]);
+
+  // Run today's rollover when the planner opens and when the local day changes while it's open.
+  const now = useClock();
+  const zone = current?.settings?.timeZone ?? null;
+  const today = zone ? todayIn(zone, now) : null;
+  useEffect(() => {
+    if (today) rolloverNow({}).catch((e) => console.error(e));
+  }, [today, rolloverNow]);
 
   const state = useMemo(() => (current?.settings ? toState(current as Load & { settings: Settings }) : null), [current]);
 
