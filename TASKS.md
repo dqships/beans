@@ -2,7 +2,7 @@
 
 ## Now
 
-Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done except checking Clerk sign-in with real keys, which waits on DQ. Phase 4 (planner behavior) is done. Next is Phase 5: launch prep.
+Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done except checking Clerk sign-in with real keys, which waits on DQ. Phase 4 (planner behavior) is done. Phase 5 launch prep is done on the repo side; creating services and deploying is for DQ, listed under Needs DQ. The PR from `claude/beans-v1` into `main` is ready for review.
 
 - [x] Review `DESIGN.md` and the mascot
 - [x] Answer the open decisions below
@@ -41,11 +41,12 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 
 ### Phase 5: Launch
 
-- [ ] Deploy to Vercel with Root Directory `apps/web`
-- [ ] Add the build-skip script and confirm a non-web change skips the build
-- [ ] Deploy Convex production through the Vercel build
-- [ ] Set up the production Clerk instance
-- [ ] Legal review before public release
+- [x] Prepare the Vercel config for Root Directory `apps/web` (`apps/web/vercel.json`, steps in `docs/DEPLOY.md`)
+- [x] Add the build-skip script and confirm a non-web change skips the build (tested locally against a throwaway repo and this repo's history)
+- [ ] Deploy to Vercel with Root Directory `apps/web` (DQ, see Needs DQ)
+- [ ] Deploy Convex production through the Vercel build (DQ; the build command is ready but needs a deploy key)
+- [ ] Set up the production Clerk instance (DQ)
+- [ ] Legal review before public release (DQ)
 
 ### Later
 
@@ -53,6 +54,8 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 - [ ] Calendar accounts, attachments, import and export, notifications
 
 ## Done
+
+- 2026-10-31: Phase 5 prep done. `apps/web/vercel.json`, the build-skip script with 7 tests, security headers, and `docs/DEPLOY.md` with every remaining step.
 
 - 2026-10-31: Phase 4 done. A Convex cron runs every 15 minutes and rolls each user's unfinished tasks onto today after their local midnight, then clears Trash older than 30 days. The app also runs it when it opens. Covered by 58 core tests, 12 Convex tests (time zones, idempotence, paging, Trash expiry) and 6 more browser tests (rollover through the backend, actual-time fill, workload limit, undo, template drag, past-midnight warning).
 
@@ -103,6 +106,8 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 - 2026-10-31: Rolled tasks lose their timebox time and keep their order, and carry `rolledFrom` for the "Rolled over" tag.
 - 2026-10-31: Trash cleanup runs with each user's daily rollover and also removes trashed lists, templates and repeats after 30 days.
 - 2026-10-31: "Start the next task" moves a running timer to the next unfinished task of the same day when one is checked off.
+- 2026-10-31: The build-skip script lives in `apps/web/scripts/` so its watched paths read relative to the Root Directory. When it can't compare commits, it builds.
+- 2026-10-31: The Vercel build runs `npx convex deploy --cmd` from the repo root, so Convex functions and the web app ship together with a matching `NEXT_PUBLIC_CONVEX_URL`.
 
 ### Saved for the desktop app
 
@@ -120,4 +125,9 @@ Steps only DQ can do. Filled in as phases finish.
 
 1. **Clerk development keys.** Create a Clerk application (Email and Google sign-in), copy its publishable and secret keys into `apps/web/.env.local` as `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`.
 2. **Turn on Clerk's Convex integration** at https://dashboard.clerk.com/apps/setup/convex, copy the Frontend API URL, and run `npx convex env set CLERK_JWT_ISSUER_DOMAIN <that URL>` on your Convex dev deployment. Then sign in once at `/sign-in` so the Clerk path is verified, and tell me to check the box.
-3. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
+3. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.
+4. **Create the Vercel project** from the GitHub repo with Root Directory `apps/web`, keep "Include files outside the root directory" on, and add the environment variables listed in `docs/DEPLOY.md`. Then deploy.
+5. **Set up the production Clerk instance**: domain, DNS records and Google OAuth credentials.
+6. **Legal review** before public release: privacy policy, terms, and what Clerk and Convex store.
+7. **Review and merge the PR** from `claude/beans-v1` into `main`.
+8. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
