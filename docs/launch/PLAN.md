@@ -9,10 +9,10 @@ Integration branch: `claude/beans-launch`, cut from `claude/beans-v1`. Merge `ma
 | # | Workstream | Branch | Owner | Status | PR |
 |---|---|---|---|---|---|
 | 0 | Handoff and Clerk check | `claude/beans-launch` | Coordinator | Built. Waiting on DQ's sign-up run | none |
-| 1 | Brand asset files | `claude/launch-brand-assets` | Sub-agent | Not started | |
-| 2 | Mascot poses | `claude/launch-mascot` | Sub-agent | Not started | |
-| 3 | Landing page | `claude/launch-landing` | Sub-agent | Not started | |
-| 4 | Demo video | `claude/launch-video` | Sub-agent | Not started | |
+| 1 | Brand asset files | `claude/launch-brand-assets` | Sub-agent | Running | |
+| 2 | Mascot poses | `claude/launch-mascot` | Sub-agent | Running | |
+| 3 | Landing page | `claude/launch-landing` | Sub-agent | Running, on placeholder assets | |
+| 4 | Demo video | `claude/launch-video` | Sub-agent | Running | |
 | 5 | Launch audit | `claude/beans-launch` | Coordinator | Not started | |
 
 ## Rules for every workstream
@@ -22,7 +22,7 @@ Integration branch: `claude/beans-launch`, cut from `claude/beans-v1`. Merge `ma
 - Small commits, pushed often. Branch names start with `claude/`. Never commit keys, screenshots or contact sheets.
 - Run `pnpm install` before anything else in a new worktree. Use `pnpm exec convex ...`, never `npx convex`.
 - Don't run `pnpm convex:dev` or `pnpm backend:setup`. The coordinator runs the 12 backend e2e tests on the merged result.
-- Run the sample-data e2e tests on your own port, with the backend specs left out: `E2E_PORT=<your port> pnpm --filter @beans/web exec playwright test --grep-invert "@backend" e2e/board.spec.ts e2e/views.spec.ts e2e/details.spec.ts e2e/phone.spec.ts`.
+- Run the sample-data e2e tests on your own port, with the backend specs left out: `E2E_PORT=<your port> pnpm --filter @beans/web exec playwright test e2e/board.spec.ts e2e/views.spec.ts e2e/details.spec.ts e2e/phone.spec.ts`.
 - Screenshots go in your scratchpad. Look at every screenshot you take.
 - If the same blocker survives three different attempts, record what you tried and move on.
 - Your report says what you verified (commands, screenshots) and what you didn't.
