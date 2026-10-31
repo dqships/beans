@@ -258,6 +258,29 @@ export function setDone(state: BeansState, id: string, done: boolean, now: numbe
   return ops;
 }
 
+/** The next unfinished task after `id` on the same day, for starting it automatically. */
+export function nextTaskAfter(state: BeansState, id: string): Task | null {
+  const task = state.tasks[id];
+  if (!task?.date) return null;
+  const day = tasksForDay(state, task.date).filter((t) => t.id !== id && !t.done);
+  return day[0] ?? null;
+}
+
+/** Marks done, and when the timer was on this task, can start it on the next one. */
+export function completeWithTimer(state: BeansState, id: string, now: number = Date.now()): Op[] {
+  const ops = setDone(state, id, true, now);
+  if (state.settings.activeTimer?.taskId === id && state.settings.autoStartNext) {
+    const next = nextTaskAfter(state, id);
+    if (next) {
+      ops.push({
+        kind: "settings",
+        fields: { activeTimer: { taskId: next.id, mode: state.settings.activeTimer.mode, runningSince: now, bankedMs: 0, phase: "focus" } },
+      });
+    }
+  }
+  return ops;
+}
+
 export function toggleDone(state: BeansState, id: string, now: number = Date.now()): Op[] {
   const task = state.tasks[id];
   return task ? setDone(state, id, !task.done, now) : [];

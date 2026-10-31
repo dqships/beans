@@ -68,7 +68,7 @@ export const init = mutation({
   },
 });
 
-async function applyOne(ctx: MutationCtx, userId: string, op: OpInput, now: number) {
+export async function applyOne(ctx: MutationCtx, userId: string, op: OpInput, now: number) {
   if (op.kind === "settings") {
     const existing = await getSettings(ctx, userId);
     if (!existing) throw new Error("Settings aren't set up yet");

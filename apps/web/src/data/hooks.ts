@@ -16,6 +16,7 @@ import {
   createTask,
   createTemplate,
   changeRule,
+  completeWithTimer,
   deleteInstance,
   deleteSeries,
   makeRepeating,
@@ -314,12 +315,18 @@ export function useActions() {
       },
       updateTask: (id: string, fields: Partial<Omit<Task, "id" | "createdAt">>) => run([patch("tasks", id, fields)]),
       moveTask: (id: string, target: MoveTarget) => run(moveTask(current(), id, target)),
-      setDone: (id: string, done: boolean) => run(setDone(current(), id, done)),
+      setDone: (id: string, done: boolean) => run(done ? completeWithTimer(current(), id) : setDone(current(), id, false)),
       deleteTask: (id: string) => run(deleteTask(id)),
       deleteTasks: (ids: string[]) => run(ids.flatMap((id) => deleteTask(id))),
       completeTasks: (ids: string[]) => {
-        const state = current();
-        return run(ids.flatMap((id) => setDone(state, id, true)));
+        let state = current();
+        const ops: Op[] = [];
+        for (const id of ids) {
+          const next = setDone(state, id, true);
+          ops.push(...next);
+          state = applyOps(state, next);
+        }
+        return run(ops);
       },
       moveTasks: (ids: string[], target: MoveTarget) => {
         let ops: Op[] = [];

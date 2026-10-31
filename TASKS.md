@@ -2,7 +2,7 @@
 
 ## Now
 
-Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done except checking Clerk sign-in with real keys, which waits on DQ. Next is Phase 4: planner behavior.
+Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done except checking Clerk sign-in with real keys, which waits on DQ. Phase 4 (planner behavior) is done. Next is Phase 5: launch prep.
 
 - [x] Review `DESIGN.md` and the mascot
 - [x] Answer the open decisions below
@@ -34,10 +34,10 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 
 ### Phase 4: Planner behavior
 
-- [ ] Scheduled rollover at each user's local midnight
-- [ ] Repeats, templates, actual-time fill, workload limit
-- [ ] Trash with undo and 30-day expiry
-- [ ] Unit tests for dates, rollover and repeats
+- [x] Scheduled rollover at each user's local midnight
+- [x] Repeats, templates, actual-time fill, workload limit
+- [x] Trash with undo and 30-day expiry
+- [x] Unit tests for dates, rollover and repeats
 
 ### Phase 5: Launch
 
@@ -53,6 +53,8 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 - [ ] Calendar accounts, attachments, import and export, notifications
 
 ## Done
+
+- 2026-10-31: Phase 4 done. A Convex cron runs every 15 minutes and rolls each user's unfinished tasks onto today after their local midnight, then clears Trash older than 30 days. The app also runs it when it opens. Covered by 58 core tests, 12 Convex tests (time zones, idempotence, paging, Trash expiry) and 6 more browser tests (rollover through the backend, actual-time fill, workload limit, undo, template drag, past-midnight warning).
 
 - 2026-10-31: Phase 3 data layer done. Convex schema, `load`, `apply`, `init` and `ensureInstances` functions with 8 `convex-test` unit tests. The app talks to a local Convex backend through the same data hooks, with optimistic updates. 6 browser tests against the real backend cover sign-in redirects, saving, reordering, timeboxing, repeats, Trash, sign-out and live sync between two windows.
 
@@ -97,6 +99,10 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 - 2026-10-31: Pages check sign-in themselves, as Clerk now recommends, and `proxy.ts` only runs `clerkMiddleware()` when Clerk keys are set.
 - 2026-10-31: Card hover controls float over the card's corner instead of adding a row, so hovering never shifts the cards below. Found while testing: the shift made clicks land on the wrong element.
 - 2026-10-31: Dropping on the Timebox puts the board's scroll back where it was, since passing the board's edge can scroll the days.
+- 2026-10-31: Rollover runs from a 15-minute cron so zones with half-hour offsets roll soon after midnight. It records `lastRollover` per user, so repeats are harmless, and the app runs it on open in case the cron hasn't reached that user yet.
+- 2026-10-31: Rolled tasks lose their timebox time and keep their order, and carry `rolledFrom` for the "Rolled over" tag.
+- 2026-10-31: Trash cleanup runs with each user's daily rollover and also removes trashed lists, templates and repeats after 30 days.
+- 2026-10-31: "Start the next task" moves a running timer to the next unfinished task of the same day when one is checked off.
 
 ### Saved for the desktop app
 

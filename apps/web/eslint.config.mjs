@@ -19,7 +19,8 @@ export default defineConfig([
     },
   },
   {
-    files: ["src/data/**"],
+    // The data layer and end-to-end tests may talk to Convex; screens may not.
+    files: ["src/data/**", "e2e/**"],
     rules: { "no-restricted-imports": "off" },
   },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "test-results/**", "playwright-report/**"]),

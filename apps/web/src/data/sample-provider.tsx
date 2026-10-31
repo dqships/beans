@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useReducer, type ReactNode } from "react";
-import { applyOps, ensureInstances, localTimeZone, sampleState, todayIn, type BeansState, type DateKey, type Op } from "@beans/core";
+import { applyOps, ensureInstances, expireTrashOps, localTimeZone, rolloverOps, sampleState, todayIn, type BeansState, type DateKey, type Op } from "@beans/core";
 import { DataStoreContext, type DataStore } from "./store";
 
 interface SampleState {
@@ -37,7 +37,10 @@ function reducer(state: SampleState, action: Action): SampleState {
 
 function initialState(): SampleState {
   const zone = localTimeZone();
-  return { data: sampleState(todayIn(zone), zone), ranges: [] };
+  const today = todayIn(zone);
+  let data = sampleState(today, zone);
+  data = applyOps(data, [...rolloverOps(data, today), ...expireTrashOps(data)]);
+  return { data, ranges: [] };
 }
 
 /** In-memory data seeded with a sample planner. Nothing is saved. */
