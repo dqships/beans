@@ -94,6 +94,7 @@ let minuteNow = Date.now();
 
 function subscribeMinute(listener: () => void) {
   minuteListeners.add(listener);
+  minuteNow = Date.now();
   if (!minuteTimer) {
     minuteTimer = setInterval(() => {
       minuteNow = Date.now();

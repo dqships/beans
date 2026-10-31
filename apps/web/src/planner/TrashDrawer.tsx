@@ -39,7 +39,7 @@ function TrashBody() {
       <TextInput placeholder="Search Trash" aria-label="Search Trash" value={query} onChange={(e) => setQuery(e.target.value)} />
       <ul className={styles.list}>
         {shown.map((item) => {
-          const left = Math.max(0, TRASH_DAYS - Math.floor((now - item.deletedAt) / DAY_MS));
+          const left = Math.min(TRASH_DAYS, Math.max(0, Math.ceil((item.deletedAt + TRASH_DAYS * DAY_MS - now) / DAY_MS)));
           return (
             <li key={`${item.kind}-${item.id}`} className={styles.item}>
               <div className={styles.itemText}>

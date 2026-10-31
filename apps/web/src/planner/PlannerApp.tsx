@@ -5,6 +5,8 @@ import { useDataReady, useSettings } from "@/data/hooks";
 import { THEME_STORAGE_KEY } from "@/app/theme-script";
 import { Mascot } from "@/ui/garden";
 import { Board } from "./Board";
+import { PhoneLayout } from "./PhoneLayout";
+import { useIsPhone } from "@/ui/useMedia";
 import { CalendarView, DayTasksPanel } from "./CalendarView";
 import { BulkBar } from "./BulkBar";
 import { PlannerDnd } from "./dnd";
@@ -63,15 +65,20 @@ function ThemeSync() {
 function Shell() {
   const ui = useUi();
   useShortcuts();
+  const phone = useIsPhone();
   const showSidebar = ui.sidebarOpen && !ui.focusMode;
   return (
     <div className={styles.app}>
       <TopBar />
+      {phone ? (
+        <PhoneLayout />
+      ) : (
       <div className={styles.body}>
         {showSidebar ? <Sidebar /> : null}
         <main className={styles.main}>{ui.view === "calendar" ? <CalendarView /> : <Board />}</main>
         {ui.timeboxOpen ? ui.view === "calendar" ? <DayTasksPanel /> : <TimeboxPanel /> : null}
       </div>
+      )}
       <BulkBar />
       <TaskModal />
       <QuickCapture />

@@ -28,6 +28,7 @@ import { FilterMenu } from "./FilterMenu";
 import { TimerPill } from "./TimerPill";
 import { useUi } from "./ui-state";
 import { useAccount } from "./account";
+import { useIsPhone } from "@/ui/useMedia";
 import styles from "./shell.module.css";
 
 export function TopBar() {
@@ -38,7 +39,12 @@ export function TopBar() {
   const filterRef = useRef<HTMLButtonElement>(null);
   const filtering = ui.filter.labelIds.length > 0 || !ui.filter.showCompleted || !ui.filter.showTimeboxed;
 
+  const phone = useIsPhone();
   const step = (dir: 1 | -1) => {
+    if (phone) {
+      ui.setTimeboxDate(addDays(ui.timeboxDate ?? today, dir));
+      return;
+    }
     if (ui.view === "calendar") {
       const base = ui.calendarDate ?? today;
       const r = ui.calendarRange;
@@ -48,7 +54,8 @@ export function TopBar() {
     }
   };
   const goToday = () => {
-    if (ui.view === "calendar") ui.setCalendarDate(today);
+    if (phone) ui.setTimeboxDate(null);
+    else if (ui.view === "calendar") ui.setCalendarDate(today);
     else ui.board()?.scrollTo(today);
     ui.setTimeboxDate(null);
   };
@@ -69,7 +76,7 @@ export function TopBar() {
         </Button>
         <IconButton icon={CaretLeft} label="Back" onClick={() => step(-1)} />
         <IconButton icon={CaretRight} label="Forward" onClick={() => step(1)} />
-        {ui.view === "calendar" ? (
+        {ui.view === "calendar" && !phone ? (
           <h1 className={styles.monthTitle}>
             {monthName(calDate, true)} <span>{calDate.slice(0, 4)}</span>
           </h1>

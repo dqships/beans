@@ -107,6 +107,8 @@ Dark mode uses the same shadows with `rgb(0 0 0)` at double opacity.
 - **Toggle:** `--radius-full`, `--color-primary` when on.
 - **Task card:** `--color-surface`, `--radius-md`, `--shadow-sm`, `--space-3` padding. Rows on a soil line, not a heavy stack of boxes.
 - **Focus:** every control has a visible 2px `--color-primary` ring.
+- **Priority flag:** High uses `--color-danger`, Medium `--color-warning`, Low `--color-primary`, none `--color-text-muted`. Flags never reorder tasks.
+- **Toast and timer pill:** inverted, with `--color-text` fill and `--color-bg` text, `--shadow-md`.
 
 ## Icons
 

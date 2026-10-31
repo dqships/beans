@@ -193,6 +193,8 @@
 }
 
 .toast {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -207,9 +209,7 @@
 
 .toastText {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .toastUndo {
@@ -278,5 +278,10 @@
 @media (max-width: 720px) { /* --layout-phone */
   .desktopOnly {
     display: none;
+  }
+
+  .toasts {
+    bottom: calc(var(--layout-tabbar) + var(--space-3));
+    width: calc(100vw - var(--space-5));
   }
 }

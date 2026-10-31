@@ -18,15 +18,16 @@ export function useLayer(open: boolean, onClose: () => void) {
     const me = id.current;
     stack.push(me);
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && stack[stack.length - 1] === me) {
+      if (e.key === "Escape" && !e.defaultPrevented && stack[stack.length - 1] === me) {
         e.stopPropagation();
         e.preventDefault();
         closeRef.current();
       }
     };
-    window.addEventListener("keydown", onKey, true);
+    // Bubble phase, so a field that handles Escape itself can stop it first.
+    window.addEventListener("keydown", onKey);
     return () => {
-      window.removeEventListener("keydown", onKey, true);
+      window.removeEventListener("keydown", onKey);
       const i = stack.lastIndexOf(me);
       if (i >= 0) stack.splice(i, 1);
     };

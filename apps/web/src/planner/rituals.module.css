@@ -10,12 +10,9 @@
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-5);
-  background: var(--color-text);
-  color: var(--color-bg);
-}
-
-.rail button[aria-label="Close"] {
-  color: var(--color-bg);
+  border-right: var(--border-width) solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text);
 }
 
 .railTop {
@@ -28,7 +25,7 @@
   font-size: var(--text-xs-size);
   line-height: var(--text-xs-line);
   font-weight: var(--text-md-weight);
-  opacity: 0.75;
+  color: var(--color-text-muted);
 }
 
 .railTitle {
@@ -73,7 +70,7 @@
 
 .labelSummary span {
   margin-left: auto;
-  opacity: 0.75;
+  color: var(--color-text-muted);
 }
 
 .work {
@@ -121,6 +118,7 @@
 
 .mini {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
   min-height: calc(var(--control-height) + var(--space-2));
@@ -136,7 +134,7 @@
 }
 
 .miniTitle {
-  flex: 1;
+  flex: 1 1 calc(var(--layout-column) * 0.45);
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -148,6 +146,7 @@
 }
 
 .miniActions {
+  margin-left: auto;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);

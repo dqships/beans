@@ -6,7 +6,7 @@
 
 A daily planner that keeps your tasks, your week and your hours in one place. Capture everything in a Brain Dump, plan it across your days, then drag tasks onto the Timebox to give them a time.
 
-**Status:** planning is done, and no app code exists yet. Next is Phase 2 in [TASKS.md](TASKS.md).
+**Status:** the web UI runs on sample data. Accounts and saved data come next, in Phase 3 of [TASKS.md](TASKS.md).
 
 ## What it will do
 
@@ -41,11 +41,39 @@ A desktop app is planned for later.
 
 ```text
 assets/logo/      Mascot and app icon
-apps/web/         Next.js app (from Phase 2)
-packages/tokens/  Design tokens (from Phase 2)
+apps/web/         Next.js app
+packages/tokens/  Design tokens, generated from DESIGN.md
+packages/core/    Data model and planner logic shared by every screen
 convex/           Schema and server functions (from Phase 3)
+scripts/          Repo checks, such as the token check
 ```
 
 ## Getting started
 
-Setup steps will be added here in Phase 2, once the app exists.
+You need Node 22 and pnpm 10 (`corepack enable` sets up pnpm).
+
+```bash
+pnpm install
+```
+
+```bash
+pnpm dev
+```
+
+Open http://localhost:3000. The planner starts with sample data that lives only in the browser tab.
+
+### Checks
+
+```bash
+pnpm check
+```
+
+That regenerates tokens, then runs typecheck, lint (with the token check), unit tests and a production build.
+
+End-to-end tests drive the app in Chromium:
+
+```bash
+pnpm --filter @beans/web e2e
+```
+
+After editing `DESIGN.md`, run `pnpm tokens` to regenerate the token files.

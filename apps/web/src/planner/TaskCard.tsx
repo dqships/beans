@@ -207,7 +207,8 @@ export const TaskCard = memo(function TaskCard({ task, compact, overlay }: TaskC
       {timer ? (
         <div className={styles.timerFooter}>
           <span className={styles.liveDot} aria-hidden="true" />
-          {timer.runningSince ? "Timer running" : "Timer paused"} · {formatStopwatch(timerElapsed(timer, now))}
+          {timer.mode === "pomodoro" ? (timer.phase === "focus" ? "Focus session" : "On a break") : timer.runningSince ? "Timer running" : "Timer paused"}
+          {timer.mode === "pomodoro" && !timer.runningSince ? " (paused)" : ""} · {formatStopwatch(timerElapsed(timer, now))}
         </div>
       ) : null}
 
