@@ -8,20 +8,21 @@ Built from `assets/logo/beans-mascot.svg` and `assets/logo/beans-app-icon.svg` b
 
 | File | Size | Used by | Status |
 |---|---|---|---|
-| `apps/web/src/app/favicon.ico` | 16, 32, 48 | Browsers | |
-| `apps/web/src/app/icon.svg` | Vector | Browsers | |
-| `apps/web/src/app/icon.png` | 512×512 | Browsers | |
-| `apps/web/src/app/apple-icon.png` | 180×180, opaque paper background | iOS home screen | |
-| `apps/web/public/brand/pwa-192.png` | 192×192 | `manifest.ts` | |
-| `apps/web/public/brand/pwa-512.png` | 512×512 | `manifest.ts` | |
-| `apps/web/public/brand/pwa-maskable-512.png` | 512×512 with safe zone | `manifest.ts` | |
-| `apps/web/public/social/og-image.png` | 1200×630 | Open Graph | |
-| `apps/web/public/social/twitter-image.png` | 1200×630 | Twitter card | |
-| `apps/web/public/brand/mascot-1x.png`, `mascot-2x.png` | 256, 512 wide | Email, docs | |
-| `apps/web/public/brand/mascot.webp`, `mascot.avif` | 512 wide, transparent | Web | |
-| `assets/brand/clerk-logo.png` | 512×512 | Clerk application logo, upload by DQ | |
-| `assets/brand/google-oauth-logo.png` | 120×120 | Google consent screen, upload by DQ | |
-| `assets/brand/github-social-preview.png` | 1280×640 | GitHub social preview, upload by DQ | |
+| `apps/web/src/app/favicon.ico` | 16, 32, 48 | Browsers | Done. PNG frames of the mascot in a tight crop, no tile |
+| `apps/web/src/app/icon.svg` | Vector | Browsers | Done. Same crop, full color in both themes |
+| `apps/web/src/app/icon.png` | 512×512 | Browsers | Done. Same crop, transparent |
+| `apps/web/src/app/apple-icon.png` | 180×180, opaque paper background | iOS home screen | Done. Square corners, no alpha channel |
+| `apps/web/public/brand/pwa-192.png` | 192×192 | `manifest.ts` | Done. Rounded app icon |
+| `apps/web/public/brand/pwa-512.png` | 512×512 | `manifest.ts` | Done. Rounded app icon |
+| `apps/web/public/brand/pwa-maskable-512.png` | 512×512 with safe zone | `manifest.ts` | Done. `pnpm assets` fails if art leaves the 80% circle |
+| `apps/web/public/social/og-image.png` | 1200×630 | Open Graph | Done. Line: "Spill the beans." |
+| `apps/web/public/social/twitter-image.png` | 1200×630 | Twitter card | Done. Same image as Open Graph |
+| `apps/web/public/brand/mascot-1x.png`, `mascot-2x.png` | 256, 512 wide | Email, docs | Done. Square, transparent |
+| `apps/web/public/brand/mascot.webp`, `mascot.avif` | 512 wide, transparent | Web | Done. 11.2 KB and 7.6 KB |
+| `assets/brand/clerk-logo.png` | 512×512 | Clerk application logo, upload by DQ | Built, not uploaded. Transparent, so it works on light and dark cards |
+| `assets/brand/google-oauth-logo.png` | 120×120 | Google consent screen, upload by DQ | Built, not uploaded. Square on paper, art inside a circle crop |
+| `assets/brand/github-social-preview.png` | 1280×640 | GitHub social preview, upload by DQ | Built, not uploaded. Same layout as Open Graph |
+| `apps/web/src/app/manifest.ts` | Generated | Web app manifest, served at `/manifest.webmanifest` | Done. Colors come from `--color-bg`, so rerun `pnpm assets` after changing it |
 
 The OG and Twitter images use stable `public/` paths, because both App Router and Pages Router pages point at them.
 
