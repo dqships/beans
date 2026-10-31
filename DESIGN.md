@@ -53,7 +53,7 @@ Label colors, used for dots and timeboxed blocks:
 
 Text on a label-colored block uses `--color-text` from the light theme in both themes. All eight pass 4.5:1 with that text.
 
-Mascot colors are brand constants, not UI tokens: bean `#C4552F`, shade `#A14322`, highlight `#F0B08C`, leaf `#6CC48E` and `#4FA874`, stem `#2F7D4F`, cheek `#E8926A`, eyes `#2B2118`.
+Mascot colors are brand constants, not UI tokens: bean `#C4552F`, shade `#A14322`, highlight `#F0B08C`, leaf `#6CC48E` and `#4FA874`, stem `#2F7D4F`, cheek `#E8926A`, eyes `#2B2118`, glint `#FFFDF8`.
 
 ## Type
 
@@ -124,7 +124,45 @@ One spring everywhere: **stiffness 380, damping 32, mass 1**.
 | `--spring-damping` | 32 |
 | `--spring-mass` | 1 |
 
-CSS-only transitions use the matching `linear()` easing, generated once from this spring and stored as `--ease-spring` in the token file. Honor reduced-motion by switching to a plain opacity fade.
+CSS-only transitions use the matching `linear()` easing, generated once from this spring and stored as `--ease-spring` in the token file, with its settle time as `--duration-spring`. Honor reduced-motion by switching to a plain opacity fade that lasts `--duration-fade`.
+
+| Token | Value | Use |
+|---|---|---|
+| `--duration-fade` | 120ms | Reduced-motion fades, hover color changes |
+
+## Supporting tokens
+
+Added while building screens. Same rule: use these, never a raw value.
+
+| Token | Value | Use |
+|---|---|---|
+| `--font-sans` | Figtree, then the system UI stack | Every piece of text |
+| `--border-width` | 1 | Dividers, soil lines, input and card borders |
+| `--focus-ring` | 2 | Focus rings, today outline, over-limit outline |
+| `--control-height` | 36 | Buttons and inputs |
+| `--control-height-sm` | 28 | Chips, icon buttons, compact pickers |
+| `--icon-sm` | 16 | Icons inside chips and cards |
+| `--icon-md` | 20 | Top bar and toolbar icons |
+| `--bean-size` | 18 | Bean checkbox on cards |
+| `--opacity-done` | 0.6 | Completed tasks |
+| `--opacity-ghost` | 0.4 | Drag source placeholder |
+| `--layout-tabbar` | 56 | Phone tab bar height |
+| `--layout-drawer` | 400 | Trash and other right drawers |
+| `--layout-rail` | 320 | Daily planning and shutdown rail |
+| `--layout-capture` | 600 | Quick Capture bar |
+| `--layout-phone` | 720 | Below this width the phone layout takes over |
+| `--z-sticky` | 10 | Sticky day headers, all-day row |
+| `--z-panel` | 20 | Phone panels and drawers |
+| `--z-overlay` | 40 | Scrims |
+| `--z-modal` | 50 | Modals, Quick Capture |
+| `--z-popover` | 60 | Menus and pickers, also inside modals |
+| `--z-toast` | 70 | Toasts and the timer pill |
+| `--z-drag` | 80 | The task being dragged |
+| `--color-on-label` | `#2B2118` | Text on label-colored blocks, both themes |
+
+Media queries can't read custom properties, so the phone breakpoint is written as `720px` in `@media` rules only, with a comment pointing back here.
+
+Mascot colors are exported as `--mascot-bean`, `--mascot-shade`, `--mascot-highlight`, `--mascot-leaf`, `--mascot-leaf-2`, `--mascot-stem`, `--mascot-cheek`, `--mascot-eyes` and `--mascot-glint` for code-drawn mascot art. They stay the same in both themes.
 
 ## Assets
 

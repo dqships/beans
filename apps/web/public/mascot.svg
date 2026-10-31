@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Beans mascot: a tilted kidney bean with a two-leaf sprout</title>
+
+  <!-- Sprout -->
+  <path d="M278 132 C276 110 280 92 288 76" fill="none" stroke="#2F7D4F" stroke-width="16" stroke-linecap="round"/>
+  <path d="M286 82 C300 36 356 20 412 36 C408 92 344 118 286 82 Z" fill="#6CC48E"/>
+  <path d="M286 82 C326 70 366 54 400 40 C408 92 344 118 286 82 Z" fill="#4FA874"/>
+  <path d="M282 94 C256 56 210 46 164 64 C176 110 234 124 282 94 Z" fill="#6CC48E"/>
+  <path d="M282 94 C244 88 208 78 174 72 C188 112 238 122 282 94 Z" fill="#4FA874"/>
+
+  <!-- Bean -->
+  <path d="M278 126
+           C346 126 402 182 402 256
+           C402 350 306 462 196 462
+           C136 462 92 414 92 354
+           C92 306 128 270 176 266
+           C198 264 208 248 198 232
+           C184 214 176 196 180 178
+           C188 148 228 126 278 126 Z" fill="#C4552F"/>
+  <!-- Shade along the outer curve -->
+  <path d="M384 196
+           C392 214 402 234 402 256
+           C402 350 306 462 196 462
+           C150 462 112 434 98 394
+           C124 428 166 442 208 438
+           C304 428 388 322 384 196 Z" fill="#A14322"/>
+  <!-- Highlight -->
+  <path d="M212 192 C222 172 240 160 264 156" fill="none" stroke="#F0B08C" stroke-width="14" stroke-linecap="round"/>
+
+  <!-- Face -->
+  <g transform="rotate(-18 280 290)">
+    <circle cx="228" cy="280" r="22" fill="#2B2118"/>
+    <circle cx="336" cy="280" r="22" fill="#2B2118"/>
+    <circle cx="236" cy="271" r="7.5" fill="#FFFDF8"/>
+    <circle cx="344" cy="271" r="7.5" fill="#FFFDF8"/>
+    <path d="M260 310 C268 330 296 330 304 310" fill="none" stroke="#2B2118" stroke-width="11" stroke-linecap="round"/>
+    <ellipse cx="190" cy="318" rx="24" ry="14" fill="#E8926A"/>
+    <ellipse cx="364" cy="318" rx="18" ry="13" fill="#E8926A"/>
+  </g>
+</svg>
