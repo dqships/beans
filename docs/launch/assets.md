@@ -15,7 +15,7 @@ Built from `assets/logo/beans-mascot.svg` and `assets/logo/beans-app-icon.svg` b
 | `apps/web/public/brand/pwa-192.png` | 192×192 | `manifest.ts` | Done. Rounded app icon |
 | `apps/web/public/brand/pwa-512.png` | 512×512 | `manifest.ts` | Done. Rounded app icon |
 | `apps/web/public/brand/pwa-maskable-512.png` | 512×512 with safe zone | `manifest.ts` | Done. `pnpm assets` fails if art leaves the 80% circle |
-| `apps/web/public/social/og-image.png` | 1200×630 | Open Graph | Done. Line: "Spill the beans." |
+| `apps/web/public/social/og-image.png` | 1200×630 | Open Graph | Done. Lines: "Turn your to-do list into a plan for today." and "Beans is a daily planner." |
 | `apps/web/public/social/twitter-image.png` | 1200×630 | Twitter card | Done. Same image as Open Graph |
 | `apps/web/public/brand/mascot-1x.png`, `mascot-2x.png` | 256, 512 wide | Email, docs | Done. Square, transparent |
 | `apps/web/public/brand/mascot.webp`, `mascot.avif` | 512 wide, transparent | Web | Done. 11.2 KB and 7.6 KB |
@@ -82,16 +82,16 @@ The build retints each generated pose's soil to `#6F4327`, the same soil the cod
 
 ## 3. Product screenshots (workstream 3)
 
-Real app on sample data, remade by a committed capture script.
+Real app on sample data, remade by `apps/web/scripts/capture-product.mjs` (`pnpm --filter @beans/web capture`, with a dev server on port 3103). The clock is frozen at 10:40am on a Tuesday, and the Timebox shot is the planner's own layout under the phone breakpoint with its tab bar cropped off.
 
 | File | Size | Used by | Status |
 |---|---|---|---|
-| `apps/web/public/product/board-light@1x.avif` and `.webp`, `@2x` | 1200×750 | Landing | |
-| `apps/web/public/product/board-dark@1x.avif` and `.webp`, `@2x` | 1200×750 | Landing | |
-| `apps/web/public/product/timebox-light@1x.avif` and `.webp`, `@2x` | 560×700 | Landing | |
-| `apps/web/public/product/timebox-dark@1x.avif` and `.webp`, `@2x` | 560×700 | Landing | |
-| `apps/web/public/product/phone-light@1x.avif` and `.webp`, `@2x` | 390×844 | Landing | |
-| `apps/web/public/product/phone-dark@1x.avif` and `.webp`, `@2x` | 390×844 | Landing | |
+| `apps/web/public/product/board-light@1x.avif` and `.webp`, `@2x` | 1200×750 | Landing | Done |
+| `apps/web/public/product/board-dark@1x.avif` and `.webp`, `@2x` | 1200×750 | Landing | Done |
+| `apps/web/public/product/timebox-light@1x.avif` and `.webp`, `@2x` | 560×700 | Landing | Done |
+| `apps/web/public/product/timebox-dark@1x.avif` and `.webp`, `@2x` | 560×700 | Landing | Done |
+| `apps/web/public/product/phone-light@1x.avif` and `.webp`, `@2x` | 390×844 | Landing | Done |
+| `apps/web/public/product/phone-dark@1x.avif` and `.webp`, `@2x` | 390×844 | Landing | Done |
 
 ## 4. Video (workstream 4)
 
