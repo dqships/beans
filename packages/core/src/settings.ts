@@ -1,4 +1,5 @@
 import type { Settings } from "./model";
+import { onboardingStart } from "./onboarding";
 
 /** Defaults for a new account. */
 export function defaultSettings(timeZone: string, now: number = Date.now()): Settings {
@@ -41,5 +42,6 @@ export function defaultSettings(timeZone: string, now: number = Date.now()): Set
     activeTimer: null,
     plannedDays: [],
     shutdownDays: [],
+    onboarding: onboardingStart(),
   };
 }

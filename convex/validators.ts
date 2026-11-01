@@ -110,6 +110,11 @@ export const activeTimer = v.object({
   phase: v.union(v.literal("focus"), v.literal("break")),
 });
 
+export const onboarding = v.union(
+  v.object({ status: v.literal("active"), step: v.string(), day: nullable(v.string()) }),
+  v.object({ status: v.union(v.literal("finished"), v.literal("skipped")), at: v.number() }),
+);
+
 export const settingsFields = {
   updatedAt: v.number(),
   theme: v.union(v.literal("system"), v.literal("light"), v.literal("dark")),
@@ -148,6 +153,8 @@ export const settingsFields = {
   activeTimer: nullable(activeTimer),
   plannedDays: v.array(v.string()),
   shutdownDays: v.array(v.string()),
+  /** Optional because accounts made before onboarding don't have it. They read as finished. */
+  onboarding: v.optional(onboarding),
 };
 
 /** Client table name to its fields. `series` is stored in `recurringSeries`. */

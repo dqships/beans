@@ -133,6 +133,14 @@ export interface ActiveTimer {
   phase: "focus" | "break";
 }
 
+/**
+ * First-run setup. `step` is an id from `ONBOARDING_STEPS` and `day` is the day
+ * being planned, once one is chosen.
+ */
+export type Onboarding =
+  | { status: "active"; step: string; day: DateKey | null }
+  | { status: "finished" | "skipped"; at: number };
+
 export interface Settings {
   id: string;
   updatedAt: number;
@@ -167,6 +175,7 @@ export interface Settings {
   /** Days whose daily planning or shutdown was finished. */
   plannedDays: DateKey[];
   shutdownDays: DateKey[];
+  onboarding: Onboarding;
 }
 
 export interface BeansState {

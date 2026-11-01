@@ -7,6 +7,28 @@ import styles from "./garden.module.css";
 const BEAN_PATH =
   "M278 126 C346 126 402 182 402 256 C402 350 306 462 196 462 C136 462 92 414 92 354 C92 306 128 270 176 266 C198 264 208 248 198 232 C184 214 176 196 180 178 C188 148 228 126 278 126 Z";
 
+function BeanSvg() {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      <g className={styles.sprout}>
+        <path d="M10.6 3.4 C10.6 2.2 10.9 1.3 11.5 0.5" className={styles.stem} />
+        <path d="M11.7 1.4 C12.6 -0.6 14.9 -1.1 16.8 -0.4 C16.3 1.7 13.9 2.6 11.7 1.4 Z" className={styles.leaf} />
+        <path d="M11.3 2 C10.2 0.4 8.3 0 6.6 0.7 C7.4 2.5 9.5 3 11.3 2 Z" className={styles.leaf} />
+      </g>
+      <path d="M7 4.3 C9.7 2.7 14.1 3.2 16.1 6.2 C18 9.1 17.3 13.6 14.4 15.8 C11.6 18 6.9 17.9 4.5 15.4 C3 13.8 3.3 12 4.7 11.1 C5.8 10.4 6 9.7 5.3 8.7 C4.2 7.2 5.1 5.4 7 4.3 Z" className={styles.beanBody} />
+    </svg>
+  );
+}
+
+/** The same bean for places where the control around it holds the state. */
+export function BeanMark({ done, className }: { done: boolean; className?: string }) {
+  return (
+    <span className={`${styles.bean} ${done ? styles.beanDone : ""} ${className ?? ""}`}>
+      <BeanSvg />
+    </span>
+  );
+}
+
 /** Task checkbox: a bean outline that fills in and grows a sprout when done. */
 export function BeanCheckbox({
   checked,
@@ -32,14 +54,7 @@ export function BeanCheckbox({
       }}
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <svg viewBox="0 0 20 20" aria-hidden="true">
-        <g className={styles.sprout}>
-          <path d="M10.6 3.4 C10.6 2.2 10.9 1.3 11.5 0.5" className={styles.stem} />
-          <path d="M11.7 1.4 C12.6 -0.6 14.9 -1.1 16.8 -0.4 C16.3 1.7 13.9 2.6 11.7 1.4 Z" className={styles.leaf} />
-          <path d="M11.3 2 C10.2 0.4 8.3 0 6.6 0.7 C7.4 2.5 9.5 3 11.3 2 Z" className={styles.leaf} />
-        </g>
-        <path d="M7 4.3 C9.7 2.7 14.1 3.2 16.1 6.2 C18 9.1 17.3 13.6 14.4 15.8 C11.6 18 6.9 17.9 4.5 15.4 C3 13.8 3.3 12 4.7 11.1 C5.8 10.4 6 9.7 5.3 8.7 C4.2 7.2 5.1 5.4 7 4.3 Z" className={styles.beanBody} />
-      </svg>
+      <BeanSvg />
     </button>
   );
 }

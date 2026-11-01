@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useDataReady, useSettings, useSyncError } from "@/data/hooks";
+import { useDataReady, useOnboarding, useSettings, useSyncError } from "@/data/hooks";
 import { THEME_STORAGE_KEY } from "@/app/theme-script";
 import { Mascot } from "@/ui/garden";
 import { Board } from "./Board";
@@ -20,6 +20,7 @@ import { useShortcuts } from "./shortcuts";
 import { SettingsDialog } from "./SettingsDialog";
 import { TrashDrawer } from "./TrashDrawer";
 import { Analytics } from "./Analytics";
+import { Onboarding } from "./Onboarding";
 import { Rituals } from "./Rituals";
 import { TimeboxPanel } from "./TimeboxPanel";
 import { Toasts } from "./Toasts";
@@ -34,10 +35,19 @@ export function PlannerApp() {
     <UiProvider>
       <ThemeSync />
       <SyncErrors />
-      <PlannerDnd>
-        <Shell />
-      </PlannerDnd>
+      <FirstRun />
     </UiProvider>
+  );
+}
+
+/** A new account plans its first day before it reaches the planner. */
+function FirstRun() {
+  const onboarding = useOnboarding();
+  if (onboarding?.status === "active") return <Onboarding />;
+  return (
+    <PlannerDnd>
+      <Shell />
+    </PlannerDnd>
   );
 }
 

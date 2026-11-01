@@ -60,6 +60,7 @@ test("the whole sign-up form can be reached on a short screen", async ({ page })
 
 test("sign up, save a task, sync a second window, sign out", async ({ context, page }) => {
   await signUp(page);
+  await page.getByRole("button", { name: "Skip for now" }).click({ timeout: 30_000 });
   await expect(page.getByRole("region", { name: "Days" })).toBeVisible({ timeout: 30_000 });
 
   const title = `Saved through Clerk ${id}`;

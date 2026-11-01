@@ -1,4 +1,5 @@
 import { addDays } from "./dates";
+import { ONBOARDED } from "./onboarding";
 import { applyOps, emptyState, put, type Op } from "./ops";
 import type { BeansState, DateKey, Label, List } from "./model";
 import { defaultSettings } from "./settings";
@@ -9,7 +10,7 @@ import { baseTask, newSubtask } from "./tasks";
  * tests. Ids are stable so tests can refer to them.
  */
 export function sampleState(today: DateKey, timeZone = "UTC", now = Date.now()): BeansState {
-  const base = emptyState(defaultSettings(timeZone, now));
+  const base = emptyState({ ...defaultSettings(timeZone, now), onboarding: ONBOARDED });
   const ops: Op[] = [];
   const record = { createdAt: now, updatedAt: now, deletedAt: null };
 
