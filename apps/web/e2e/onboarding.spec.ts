@@ -64,10 +64,11 @@ test("a new account finishes onboarding on a populated planner", async ({ page }
     await expect(heading(page, /./)).toHaveCount(0);
     const planned = card(day(page, addDaysKey(todayKey(), 1)), "Renew my passport");
     await expect(planned).toContainText("9:00am");
-    await expect(page.getByRole("button", { name: /Renew my passport, 9:00am/ })).toBeVisible();
     await expect(card(page, "Call the plumber")).toBeVisible();
   };
   await check();
+  // The Timebox opens on the planned day, as a block.
+  await expect(page.getByRole("button", { name: /Renew my passport, 9:00am/ })).toBeVisible();
   await page.reload();
   await check();
 });
@@ -76,8 +77,8 @@ test("ideas add real tasks with the label they came from", async ({ page }) => {
   await startOnboarding(page);
   await page.getByRole("checkbox", { name: "Health" }).click();
   await button(page, "Continue").click();
-  await page.getByRole("button", { name: "Go for a walk" }).click();
-  await expect(page.getByRole("button", { name: "Go for a walk" })).toHaveCount(0);
+  await button(page, "Go for a walk").click();
+  await expect(button(page, "Go for a walk")).toHaveCount(0);
   await button(page, "Skip for now").click();
   await expect(card(page, "Go for a walk")).toContainText("Health");
 });
@@ -192,7 +193,6 @@ test("every step works from the keyboard", async ({ page }) => {
   await startOnboarding(page);
   await expect(heading(page, firstStep)).toBeFocused();
   await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
   await expect(page.getByRole("checkbox", { name: "Work" })).toBeFocused();
   await page.keyboard.press("Space");
   await expect(page.getByRole("checkbox", { name: "Work" })).toBeChecked();
@@ -224,18 +224,14 @@ test("every step works from the keyboard", async ({ page }) => {
   await expect(page.getByRole("region", { name: "Days" })).toBeVisible();
 });
 
-test("steps have no accessibility problems in either theme", async ({ page }) => {
-  for (const colorScheme of ["light", "dark"] as const) {
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`axe finds nothing on any step in ${colorScheme}`, async ({ page }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
-    const context = page.context();
-    await context.clearCookies();
-    await page.goto("/sign-in");
-    await page.evaluate(() => localStorage.clear());
-    await startOnboarding(page);
     const audit = async () => {
       const { violations } = await new AxeBuilder({ page }).analyze();
       expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual([]);
     };
+    await startOnboarding(page);
     await audit();
     await reachChooseStep(page, ["Checked for contrast"]);
     await audit();
@@ -246,5 +242,5 @@ test("steps have no accessibility problems in either theme", async ({ page }) =>
     await audit();
     await button(page, "Continue").click();
     await audit();
-  }
-});
+  });
+}

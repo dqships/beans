@@ -98,18 +98,20 @@ function Frame({
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <span className={styles.brand}>
-          <Mascot className={styles.brandMark} />
-          Beans
-        </span>
-        {following ? (
-          <Button variant="quiet" onClick={() => actions.endOnboarding("skipped")}>
-            Skip for now
-          </Button>
-        ) : null}
+      <header>
+        <div className={styles.header}>
+          <span className={styles.brand}>
+            <Mascot className={styles.brandMark} />
+            Beans
+          </span>
+          {following ? (
+            <Button variant="quiet" onClick={() => actions.endOnboarding("skipped")}>
+              Skip for now
+            </Button>
+          ) : null}
+        </div>
+        <Vine step={step} />
       </header>
-      <Vine step={step} />
       <main className={styles.main}>
         <div className={styles.question}>
           <div className={styles.words}>
@@ -387,21 +389,19 @@ function TimeboxStep() {
     >
       <div className={styles.twoRows}>
         <Row title={relativeDay(day, today)} count={tasks.length}>
-          <ul className={styles.tasks} role="radiogroup" aria-label="Task to give a time">
+          <div className={styles.tasks} role="group" aria-label="Task to give a time">
             {tasks.map((task) => (
-              <li key={task.id}>
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={task.id === selected?.id}
-                  className={styles.taskButton}
-                  onClick={() => setPicked(task.id)}
-                >
-                  <TaskText task={task} />
-                </button>
-              </li>
+              <button
+                key={task.id}
+                type="button"
+                aria-pressed={task.id === selected?.id}
+                className={styles.taskButton}
+                onClick={() => setPicked(task.id)}
+              >
+                <TaskText task={task} />
+              </button>
             ))}
-          </ul>
+          </div>
         </Row>
         <Row title="Timebox">
           {hours.length ? (
