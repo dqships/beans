@@ -12,7 +12,6 @@ const figtree = Figtree({
 export const metadata: Metadata = {
   title: "Beans",
   description: "A daily planner for your tasks, your week and your hours.",
-  icons: { icon: "/icon.svg" },
 };
 
 export const viewport: Viewport = {
