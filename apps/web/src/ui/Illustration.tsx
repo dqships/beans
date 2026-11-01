@@ -44,7 +44,6 @@ export function Illustration({
     <picture>
       <source type="image/avif" srcSet={files("avif")} />
       <source type="image/webp" srcSet={files("webp")} />
-      {/* eslint-disable-next-line @next/next/no-img-element -- Static art with its own 1x and 2x files. */}
       <img
         className={className}
         src={`${base}@1x.webp`}
