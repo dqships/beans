@@ -1,6 +1,8 @@
 // Lays the voiceover and music under the demo video, from the raw files in
 // assets/audio. Each voice line starts just after its caption appears, or after
 // the line before it ends. Run with `pnpm video:mix`. Needs ffmpeg.
+// To hear another track, run `pnpm video:mix --music=minimax-take-2`. That builds
+// trial cuts in apps/video/out and leaves the chosen files alone.
 import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -9,12 +11,14 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const voiceDir = join(root, "assets/audio/voice");
 const musicDir = join(root, "assets/audio/music");
-const outDir = join(root, "assets/video");
+const chosen = "minimax-take-1";
+const pick = process.argv.find((arg) => arg.startsWith("--music="))?.slice("--music=".length) ?? chosen;
+const trial = pick !== chosen;
+const outDir = trial ? join(root, "apps/video/out", pick) : join(root, "assets/video");
 
 const video = join(root, "apps/web/public/video/beans-demo-1920.mp4");
 const captions = join(root, "apps/web/public/video/beans-demo.vtt");
-// The chosen track. Other raw takes stay in assets/audio/music, so swapping is one line.
-const music = join(musicDir, "minimax-take-1.mp3");
+const music = join(musicDir, `${pick}.mp3`);
 
 const leadIn = 0.18; // Seconds between a caption appearing and its line starting.
 const gap = 0.22; // Seconds of air between two lines.
@@ -61,24 +65,27 @@ mkdirSync(outDir, { recursive: true });
 
 // The timed voiceover on its own.
 const voiceStem = join(voiceDir, "voiceover-full.mp3");
-const rawStem = join(voiceDir, "voiceover-full.wav");
+const rawStem = join(outDir, "voiceover-full.wav");
 const delays = placed.map(({ start }, i) => {
   const ms = Math.round(start * 1000);
   return `[${i}:a]aresample=44100,aformat=channel_layouts=stereo,adelay=${ms}|${ms}[l${i}]`;
 });
 const inputs = placed.map((_, i) => `[l${i}]`).join("");
-ffmpeg([
+if (!trial) ffmpeg([
   ...placed.flatMap(({ file }) => ["-i", file]),
   "-filter_complex",
   `${delays.join(";")};${inputs}amix=inputs=${placed.length}:normalize=0:duration=longest,apad,atrim=0:${length}`,
   rawStem,
 ]);
-const voiceGain = gainTo(rawStem, target);
-ffmpeg(["-i", rawStem, "-af", `volume=${voiceGain.toFixed(2)}dB,alimiter=limit=0.84:level=false`, "-c:a", "libmp3lame", "-b:a", "192k", voiceStem]);
+if (!trial) {
+  const voiceGain = gainTo(rawStem, target);
+  ffmpeg(["-i", rawStem, "-af", `volume=${voiceGain.toFixed(2)}dB,alimiter=limit=0.84:level=false`, "-c:a", "libmp3lame", "-b:a", "192k", voiceStem]);
+  execFileSync("rm", [rawStem]);
+}
 
 // The music, cut to the film's length and leveled.
-const musicStem = join(musicDir, "music-bed.mp3");
-const rawMusic = join(musicDir, "music-bed.wav");
+const musicStem = join(trial ? outDir : musicDir, "music-bed.mp3");
+const rawMusic = join(outDir, "music-bed.wav");
 ffmpeg(["-i", music, "-af", `atrim=0:${length},afade=in:d=${fadeIn},afade=out:st=${length - fadeOut}:d=${fadeOut}`, rawMusic]);
 const musicGain = gainTo(rawMusic, target);
 ffmpeg(["-i", rawMusic, "-af", `volume=${musicGain.toFixed(2)}dB,alimiter=limit=0.84:level=false`, "-c:a", "libmp3lame", "-b:a", "192k", musicStem]);
@@ -105,9 +112,11 @@ ffmpeg([
   join(outDir, "beans-demo-voice-music.mp4"),
 ]);
 
-execFileSync("rm", [rawStem, rawMusic]);
-writeFileSync(
-  join(voiceDir, "timing.json"),
-  `${JSON.stringify(placed.map(({ file, start }, i) => ({ line: i + 1, file: file.split("/").pop(), caption: cues[i], start: Number(start.toFixed(2)) })), null, 2)}\n`,
-);
+execFileSync("rm", [rawMusic]);
+if (!trial) {
+  writeFileSync(
+    join(voiceDir, "timing.json"),
+    `${JSON.stringify(placed.map(({ file, start }, i) => ({ line: i + 1, file: file.split("/").pop(), caption: cues[i], start: Number(start.toFixed(2)) })), null, 2)}\n`,
+  );
+}
 console.log(`Mixed ${placed.length} lines over ${length.toFixed(1)} s. Voice ends at ${(clock - gap).toFixed(2)} s.`);
