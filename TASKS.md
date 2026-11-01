@@ -65,7 +65,7 @@ Tracked in `docs/launch/PLAN.md`.
 Left to do on the launch:
 
 - [ ] Run `pnpm --filter @beans/web e2e:clerk:prod`: real sign-up, saving and sync under the production CSP (DQ, it creates a test account). The signed-out path already passes on a production build
-- [ ] Watch and listen to `assets/video/beans-demo-voice-music.mp4` at full speed (DQ)
+- [x] Watch and listen to `assets/video/beans-demo-voice-music.mp4` at full speed: DQ approved the track and the voice and music balance
 - [ ] Decide whether the landing page should play a version with sound (DQ). It plays the silent film today
 - [ ] Check the ElevenLabs, MiniMax and Stability terms before paid or public use of the audio (DQ)
 - [x] Walk `docs/launch/checklist.md` on the merged branch: 47 items met, pricing and HTTPS still open
@@ -165,7 +165,6 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 
 **Demo video**
 
-- Nobody has watched it at full speed yet, so pacing, cursor speed and drag smoothness are unproven.
 - The intro is the least lively part: only a small hop, and the mascot is smaller than the code-drawn version.
 - The timer and check-off zooms crop content at the left edge.
 - The dark soil line in the midnight scene has low contrast.
