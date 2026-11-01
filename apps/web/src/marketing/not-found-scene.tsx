@@ -14,7 +14,7 @@ export function NotFoundScene() {
           width={640}
           height={480}
           shown={480}
-          alt="The Beans mascot digging a hole and finding nothing"
+          alt="The Beans mascot beside an empty hole in the soil, with a trowel stuck in a mound of dirt."
           className={styles.art}
         />
         <div className={styles.text}>

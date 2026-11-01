@@ -4,11 +4,12 @@
   isolation: isolate;
 }
 
+/* The vine's root sits in the closing art's soil line. */
 .garden::before {
   content: "";
   position: absolute;
   top: 0;
-  bottom: 0;
+  bottom: calc(var(--layout-section-sm) + var(--space-2));
   left: calc(var(--vine-x) - var(--vine-width) / 2);
   z-index: -1;
   width: var(--vine-width);
@@ -456,6 +457,7 @@
 .closingArt {
   position: relative;
   min-width: 0;
+  margin-left: calc(var(--vine-gutter) * -1.5);
 }
 
 @media (max-width: 720px) { /* --layout-phone */
@@ -573,6 +575,14 @@
 
   .closingText {
     padding-bottom: 0;
+  }
+
+  .closingArt {
+    margin-left: 0;
+  }
+
+  .garden::before {
+    bottom: 0;
   }
 }
 

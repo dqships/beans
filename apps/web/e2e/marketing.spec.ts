@@ -126,7 +126,7 @@ test.describe("HTTP behavior", () => {
     const response = await page.goto("/no-such-page", { waitUntil: "networkidle" });
     expect(response?.status()).toBe(404);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nothing planted here.");
-    await expect(page.getByRole("img", { name: /digging/ })).toBeAttached();
+    await expect(page.getByRole("img", { name: /empty hole/ })).toBeAttached();
     expect(urls.filter((url) => /clerk|convex/i.test(url))).toEqual([]);
 
     const markdown = await request.get("/no-such-page", { headers: { Accept: "text/markdown" } });

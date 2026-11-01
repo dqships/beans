@@ -33,7 +33,7 @@ export function SiteFooter() {
   return (
     <footer className={styles.footer}>
       <p className={styles.footerLine}>
-        <MascotMark size={24} />
+        <MascotMark size={24} lazy />
         Beans, a daily planner.
       </p>
       <nav aria-label="Footer">

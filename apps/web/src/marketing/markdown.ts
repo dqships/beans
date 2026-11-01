@@ -35,7 +35,7 @@ Daily wrap-up looks back at what got done. It's optional too. Analytics shows yo
 
 ### 12:00am: The rest moves to today
 
-At your local midnight, unfinished tasks roll to the new day and show a "Rolled over" tag. No guilt, no copying things over.
+At your local midnight, unfinished tasks roll to the new day and show a "Rolled over" tag. Nothing to copy by hand, and nothing to feel bad about.
 
 ## On the back of the packet
 
@@ -112,11 +112,11 @@ Beans is a daily planner that runs in the browser. You need an account to use th
 
 ## Your tasks
 
-What you put in Beans is yours. It's stored with Convex so the planner can show it to you and sync it between windows. The [privacy page](${absoluteUrl("/privacy")}) says more.
+Your tasks are stored with Convex so the planner can show them to you and sync them between windows. The [privacy page](${absoluteUrl("/privacy")}) says more.
 
 ## What's still open
 
-The full terms, including anything about pricing, aren't decided. They'll appear on this page after review.
+The full terms aren't written yet. They'll appear on this page after review.
 `;
 
 const bodies: Record<string, string> = {

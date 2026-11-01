@@ -124,7 +124,7 @@ export function Day() {
                 width={640}
                 height={480}
                 shown={480}
-                alt="The Beans mascot spilling beans out of a seed packet"
+                alt="The Beans mascot watching a pile of beans spill out of a tipped seed packet."
                 className={styles.pose}
               />
               <QuickCapture />
@@ -187,7 +187,7 @@ export function Day() {
               width={640}
               height={480}
               shown={480}
-              alt="The Beans mascot sitting still under a leaf, with a timer ring nearby"
+              alt="The Beans mascot sitting still under a large leaf, next to a green timer ring."
               className={styles.pose}
             />
           }
@@ -222,7 +222,7 @@ export function Midnight() {
           width={640}
           height={480}
           shown={520}
-          alt="The Beans mascot asleep under a crescent moon while tasks roll to the next row"
+          alt="The Beans mascot asleep under a crescent moon."
           className={styles.pose}
         />
       </div>
@@ -232,7 +232,7 @@ export function Midnight() {
           The rest moves to today.
         </h3>
         <p className={styles.body}>
-          At your local midnight, unfinished tasks roll to the new day and show a Rolled over tag. No guilt, no copying things over.
+          At your local midnight, unfinished tasks roll to the new day and show a Rolled over tag. Nothing to copy by hand, and nothing to feel bad about.
         </p>
         <ul className={`${cards.cards} ${styles.nightCards}`}>
           <DemoTask title="Sketch the onboarding flow" estimate="1:30" minutes={90} label="plum" rolled />
@@ -303,7 +303,7 @@ export function Closing() {
           width={800}
           height={600}
           shown={560}
-          alt="The Beans mascot planting a bean in a neat row"
+          alt="The Beans mascot beside a row of soil, with one bean going into the ground and three seedlings growing."
           className={styles.pose}
         />
       </div>

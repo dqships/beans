@@ -43,11 +43,19 @@ export function SoilLine() {
 }
 
 /** The mascot itself, for the header and footer. */
-export function MascotMark({ size }: { size: number }) {
+export function MascotMark({ size, lazy }: { size: number; lazy?: boolean }) {
   return (
     <picture>
       <source srcSet="/brand/mascot.avif" type="image/avif" />
-      <img src="/brand/mascot.webp" alt="" width={size} height={size} className={styles.mascot} />
+      <img
+        src="/brand/mascot.webp"
+        alt=""
+        width={size}
+        height={size}
+        loading={lazy ? "lazy" : undefined}
+        decoding="async"
+        className={styles.mascot}
+      />
     </picture>
   );
 }
