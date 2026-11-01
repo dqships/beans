@@ -1,0 +1,78 @@
+.bean {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.body {
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  transition: fill var(--duration-fade) linear, stroke var(--duration-fade) linear;
+}
+
+.sprout {
+  transform-origin: 55% 20%;
+  transform: scale(0);
+  transition: transform var(--duration-spring) var(--ease-spring);
+}
+
+.stem {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.leaf {
+  fill: var(--color-primary);
+}
+
+.nowLeaf {
+  display: block;
+  width: calc(var(--space-5) + var(--space-1));
+  height: calc(var(--space-4) + var(--space-1));
+  fill: var(--color-accent);
+  overflow: visible;
+}
+
+.vein {
+  fill: none;
+  stroke: var(--color-surface);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.vineLeaf {
+  display: block;
+  width: var(--space-4);
+  height: var(--space-3);
+  fill: var(--mascot-leaf);
+  overflow: visible;
+}
+
+.soil {
+  display: block;
+  height: var(--focus-ring);
+  background: var(--color-border);
+  transform-origin: left center;
+}
+
+[data-reveal="wait"] .soil {
+  transform: scaleX(0);
+}
+
+[data-reveal="in"] .soil {
+  transition: transform calc(var(--duration-spring) * 2) var(--ease-spring);
+}
+
+.mascot {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal="wait"] .soil {
+    transform: none;
+  }
+}

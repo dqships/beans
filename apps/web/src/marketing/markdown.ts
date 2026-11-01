@@ -1,4 +1,4 @@
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl } from "../lib/site";
 
 /**
  * Markdown versions of the public pages, served by `proxy.ts` at the same URLs
