@@ -47,9 +47,9 @@ function Stop({
 }) {
   return (
     <li className={`${styles.stop} ${styles[layout]}`}>
+      <time className={styles.when}>{time}</time>
       <VineLeaf className={styles.node} />
       <div className={styles.stopText} data-reveal>
-        <time className={styles.when}>{time}</time>
         <h3 className={styles.h3}>{title}</h3>
         <SoilLine />
         <div className={styles.body}>{children}</div>
@@ -216,6 +216,7 @@ export function Day() {
 export function Midnight() {
   return (
     <section className={styles.night} aria-labelledby="night-title">
+      <time className={styles.when}>12:00am</time>
       <div className={styles.nightArt} data-reveal>
         <Illustration
           name="rollover"
@@ -227,7 +228,6 @@ export function Midnight() {
         />
       </div>
       <div className={styles.nightText} data-reveal>
-        <time className={styles.when}>12:00am</time>
         <h3 id="night-title" className={styles.h3}>
           The rest moves to today.
         </h3>

@@ -74,11 +74,15 @@
   color: var(--color-text);
 }
 
+/* Times sit left of the vine, where the Timebox keeps its hour labels. */
 .when {
-  display: block;
-  font-size: var(--text-lg-size);
-  line-height: var(--text-lg-line);
-  font-weight: var(--text-lg-weight);
+  position: absolute;
+  top: var(--space-1);
+  right: calc(100% - var(--vine-x) + var(--space-3));
+  white-space: nowrap;
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
   color: var(--color-accent);
 }
 
@@ -139,13 +143,6 @@
   rotate: -18deg;
 }
 
-.textRight .node,
-.timebox .node {
-  translate: -100% 0;
-  rotate: 18deg;
-  scale: -1 1;
-}
-
 /* Each hour leaf sways once, when its stop comes into view. */
 .stop:has(.stopText[data-reveal="in"]) .node {
   animation: sway calc(var(--duration-spring) * 3) var(--ease-spring) both;
@@ -196,6 +193,15 @@
 .timebox .stopText {
   align-self: start;
   padding-right: var(--space-5);
+}
+
+/* Room for the time above the screenshot, which covers the gutter. */
+.timebox .stopAside {
+  margin-top: var(--space-6);
+}
+
+.textLeft .stopText {
+  padding-right: var(--space-4);
 }
 
 .shot {
@@ -337,7 +343,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-6) calc(var(--vine-gutter) * 2);
-  align-items: center;
+  align-items: start;
   margin-top: var(--layout-section);
   padding: var(--layout-section) var(--page-pad);
   background: var(--night-bg);
@@ -374,6 +380,7 @@
 }
 
 .night .when {
+  top: calc(var(--layout-section) + var(--space-3));
   color: var(--night-accent);
 }
 
@@ -508,8 +515,29 @@
     padding-left: calc(var(--vine-x) + var(--space-3) - var(--page-pad));
   }
 
-  .timebox .stopText {
+  .timebox .stopText,
+  .textLeft .stopText {
     padding-right: 0;
+  }
+
+  .when {
+    right: calc(100% - var(--vine-x) + var(--space-2));
+    font-size: var(--text-xs-size);
+    line-height: var(--text-xs-line);
+  }
+
+  .timebox .stopAside {
+    margin-top: 0;
+  }
+
+  /* On phones the words come first, so the time sits beside the heading. */
+  .night .when {
+    top: calc(var(--layout-section-sm) + var(--space-1));
+    right: calc(100% - var(--vine-x) + var(--space-1));
+  }
+
+  .nightArt {
+    order: 1;
   }
 
   .dayHead {
@@ -529,12 +557,8 @@
     grid-row: auto;
   }
 
-  .node,
-  .textRight .node,
-  .timebox .node {
+  .node {
     translate: -50% 0;
-    rotate: -18deg;
-    scale: 1;
   }
 
   .timebox .stopAside {

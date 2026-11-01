@@ -96,7 +96,7 @@ Enforced. Workstream 3 records real numbers here.
 | Budget | Limit | Measured |
 |---|---|---|
 | Landing JavaScript, gzipped | Under 70 KB | 1.9 KB (`landing.js` only, no framework) |
-| LCP, mobile throttling | Under 2.0 s | 1.51 s |
+| LCP, mobile throttling | Under 2.0 s | 1.48 s |
 | CLS, mobile throttling | Under 0.05 | 0 |
 | Lighthouse performance | 95 or above | 100 |
 | Lighthouse accessibility | 95 or above | 100 |
