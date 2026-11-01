@@ -15,7 +15,8 @@
     "check": "pnpm tokens && pnpm typecheck && pnpm lint && pnpm test && pnpm build",
     "convex:dev": "CONVEX_AGENT_MODE=anonymous convex dev --typecheck disable",
     "convex:codegen": "convex codegen",
-    "backend:setup": "bash scripts/local-backend.sh"
+    "backend:setup": "bash scripts/local-backend.sh",
+    "video:render": "pnpm --filter @beans/video render"
   },
   "devDependencies": {
     "@beans/core": "workspace:*",

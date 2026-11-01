@@ -8,7 +8,8 @@ import { DURATION } from "./timeline";
 function useFigtree() {
   const [handle] = useState(() => delayRender("Loading Figtree"));
   useEffect(() => {
-    Promise.all(["500 14px", "600 14px", "700 14px"].map((font) => document.fonts.load(`${font} "Figtree Variable"`)))
+    // token-ok: the size below only names which font to fetch, nothing is drawn at it.
+    Promise.all(["500 14px", "600 14px", "700 14px"].map((font) => document.fonts.load(`${font} "Figtree Variable"`))) // token-ok
       .then(() => continueRender(handle))
       .catch((error) => cancelRender(error));
   }, [handle]);

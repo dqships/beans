@@ -24,9 +24,9 @@ const sub = {
 
 /** A wide or stacked arrangement of the mascot and its words. */
 function scene(format: Format) {
-  if (format.id === "wide") return { art: { left: 1120, top: 170, width: 660 }, text: { left: 150, top: 340, width: 900 } };
-  if (format.id === "square") return { art: { left: 300, top: 110, width: 480 }, text: { left: 72, top: 640, width: 936 } };
-  return { art: { left: 200, top: 300, width: 680 }, text: { left: 72, top: 1090, width: 936 } };
+  if (format.id === "wide") return { art: { left: 1100, top: 160, width: 680 }, text: { left: 150, top: 340, width: 760 } };
+  if (format.id === "square") return { art: { left: 300, top: 96, width: 480 }, text: { left: 72, top: 650, width: 760 } };
+  return { art: { left: 200, top: 300, width: 680 }, text: { left: 72, top: 1090, width: 760 } };
 }
 
 const BEANS = Array.from({ length: 16 }, (_, i) => ({
@@ -38,18 +38,25 @@ const BEANS = Array.from({ length: 16 }, (_, i) => ({
   tone: i % 3 === 0 ? "var(--mascot-shade)" : "var(--mascot-bean)",
 }));
 
+const soilY = (format: Format) => {
+  const { art } = scene(format);
+  return art.top + art.width * 0.9;
+};
+
+/** The soil line both ends of the film stand on, and the beans spilled along it. */
 function SpilledBeans({ frame, format }: { frame: number; format: Format }) {
   const { art } = scene(format);
-  const floor = art.top + art.width * 0.96;
+  const floor = soilY(format) - 18;
   const ox = art.left + art.width * 0.78;
   const oy = art.top + art.width * 0.62;
   const reach = format.id === "wide" ? 1000 : 700;
   return (
     <>
+      <div style={{ position: "absolute", left: 0, right: 0, top: soilY(format), height: "var(--focus-ring)", background: "var(--color-border)" }} />
       {BEANS.map((b, i) => {
         const p = Math.min(1, sp(frame, b.delay, 0.45));
         const x = mix(ox, ox - 40 - b.x * reach, p);
-        const y = mix(oy, floor + b.y * 16, p * p) - Math.sin(p * Math.PI) * 120;
+        const y = mix(oy, floor - b.y * 6, p * p) - Math.sin(p * Math.PI) * 120;
         return (
           <div
             key={i}
@@ -100,16 +107,17 @@ export function Outro() {
   const format = useFormat();
   if (frame < T.outro) return null;
   const { art, text } = scene(format);
-  const paper = sp(frame, T.outro, 0.7);
-  const words = sp(frame, T.outro + 6);
+  const paper = sp(frame, T.outro, 0.6);
   const cta = sp(frame, T.outroCta);
-  const hop = Math.abs(Math.sin(((frame - T.outro) / 30) * Math.PI * 1.2)) * sp(frame, T.outro) * Math.exp(-(frame - T.outro) / 60);
+  const age = frame - T.outro;
+  const hop = Math.abs(Math.sin((age / 30) * Math.PI * 1.2)) * Math.exp(-age / 45);
   return (
-    <div style={{ position: "absolute", inset: 0, background: "var(--color-bg)", opacity: paper }}>
+    <div style={{ position: "absolute", inset: 0, background: "var(--color-bg)", translate: `0 ${(1 - paper) * format.height}px` }}>
+      <SpilledBeans frame={frame} format={format} />
       <div style={{ position: "absolute", left: art.left, top: art.top, translate: `0 calc(var(--space-6) * ${-hop})` }}>
         <BrandArt pose="outro" width={art.width} />
       </div>
-      <div style={{ position: "absolute", left: text.left, top: text.top, width: text.width, display: "grid", gap: "var(--space-6)", justifyItems: "start", opacity: words, translate: `0 calc(var(--space-4) * ${1 - words})` }}>
+      <div style={{ position: "absolute", left: text.left, top: text.top, width: text.width, display: "grid", gap: "var(--space-6)", justifyItems: "start" }}>
         <h1 style={title}>Spill the beans.</h1>
         <div style={{ opacity: cta, translate: `0 calc(var(--space-3) * ${1 - cta})`, transformOrigin: "0 0", scale: 2.6 }}>
           <Button variant="primary">Start planning</Button>

@@ -72,7 +72,7 @@ function QuickCaptureKey() {
         whiteSpace: "nowrap",
       }}
     >
-      <span style={{ zoom: 2.4, color: "var(--color-text)" }}>
+      <span style={{ display: "flex", zoom: 2.2, color: "var(--color-text)" }}>
         <Kbd>Q</Kbd>
       </span>
       Quick Capture

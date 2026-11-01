@@ -76,9 +76,9 @@ function FrameStyles() {
       .${timer.dotLive} { opacity: ${pulse}; }
       [data-task-id="t-report"] .${garden.sprout} { transform: scale(${sprout}); }
       .${shell.main} { overflow: clip; }
-      .${board.board} { overflow: visible !important; translate: calc(-1px * ${boardX}) 0; }
+      .${board.board} { overflow: visible !important; translate: ${-boardX}px 0; }
       .${timegrid.scroll} { overflow: clip !important; }
-      .${timegrid.grid} { translate: 0 calc(-1px * ${timeboxScrollAt(frame, layout)}); }
+      .${timegrid.grid} { translate: 0 ${-timeboxScrollAt(frame, layout)}px; }
     `}</style>
   );
 }

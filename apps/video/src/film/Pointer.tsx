@@ -1,6 +1,5 @@
 import { useCurrentFrame } from "remotion";
 import { useFormat } from "../formats";
-import { mix, sp } from "../motion";
 import { cameraAt, pointerAt } from "../script";
 
 /** The viewer's mouse. It stays one size on screen while the camera moves. */
@@ -19,9 +18,4 @@ export function Pointer() {
       </svg>
     </div>
   );
-}
-
-export function pressRing(frame: number, at: number): { scale: number; opacity: number } {
-  const p = sp(frame, at);
-  return { scale: mix(0.5, 1.4, p), opacity: 1 - p };
 }

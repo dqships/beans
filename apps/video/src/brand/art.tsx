@@ -18,7 +18,7 @@ export function BrandArt({ pose, width }: { pose: keyof typeof ART; width: numbe
   if (USE_ILLUSTRATIONS) return <Img src={staticFile(art.file)} style={{ width }} alt="" />;
   return (
     <div style={{ width }}>
-      <Mascot scene={art.scene === "cheer" ? "idle" : art.scene} />
+      <Mascot scene={art.scene} />
     </div>
   );
 }

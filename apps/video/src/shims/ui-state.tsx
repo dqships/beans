@@ -64,7 +64,6 @@ export function VideoUiProvider({ children }: { children: ReactNode }) {
       sidebarOpen: layout.sidebar,
       timeboxOpen: layout.timebox,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dialog, toastId, layout.sidebar, layout.timebox],
   );
   return <UiContext.Provider value={value}>{children}</UiContext.Provider>;

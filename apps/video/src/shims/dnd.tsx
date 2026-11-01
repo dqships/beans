@@ -26,7 +26,6 @@ export function useDragState(): DragState {
   const container = insertion?.container ?? null;
   return useMemo(
     () => ({ active: null, preview, insertion }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [start, index, container],
   );
 }

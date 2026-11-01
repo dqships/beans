@@ -11,6 +11,8 @@ const w1 = w0 * Math.sqrt(1 - zeta * zeta);
 export function springAt(seconds: number): number {
   if (seconds <= 0) return 0;
   const env = Math.exp(-zeta * w0 * seconds);
+  // Settled. Ends on exactly 1, because a tiny leftover offset can hang Chrome's paint.
+  if (env < 1e-4) return 1;
   return 1 - env * (Math.cos(w1 * seconds) + ((zeta * w0) / w1) * Math.sin(w1 * seconds));
 }
 

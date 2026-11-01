@@ -19,7 +19,7 @@ export function Night() {
   const time = formatTime(minutesToTime(minutesOfDay(clockAt(frame))), "12h");
   return (
     <>
-      <div style={{ position: "absolute", left: view.x, top: view.y, width: view.w, height: view.h, background: "var(--color-scrim)", opacity: fall * (1 - rise) * 1.6 }} />
+      <div style={{ position: "absolute", left: view.x, top: view.y, width: view.w, height: view.h, background: "var(--color-text)", opacity: fall * (1 - rise) * 0.94 }} />
       <div
         style={{
           position: "absolute",
@@ -40,8 +40,8 @@ export function Night() {
           style={{
             padding: "var(--space-3) var(--space-5)",
             borderRadius: "var(--radius-md)",
-            background: "var(--color-text)",
-            color: "var(--color-bg)",
+            background: "var(--color-bg)",
+            color: "var(--color-text)",
             boxShadow: "var(--shadow-md)",
             fontSize: "var(--video-caption)",
             lineHeight: 1.2,

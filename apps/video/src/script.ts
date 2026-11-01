@@ -19,7 +19,7 @@ import {
   type TimeKey,
 } from "@beans/core";
 import { initialState, moment, START_TIME, TODAY, TOMORROW } from "./fixture";
-import { FORMATS, type Format, type FormatId, type Layout, type Phase } from "./formats";
+import type { Format, FormatId, Layout, Phase } from "./formats";
 import { clamp, lin, mix, sp } from "./motion";
 import { CAPTURE_LINES, DRAGS, T, type DragBeat } from "./timeline";
 
@@ -63,6 +63,8 @@ interface Move {
   settle: number;
   /** The drag ends on the Timebox, not on a list slot. */
   timebox: boolean;
+  /** Moved by the midnight rollover, with no pointer. */
+  flight: boolean;
   /** Before the task's data has moved, for measuring where it was. */
   task: Task;
   start: TimeKey | null;
@@ -102,14 +104,14 @@ function dragToDay(beat: DragBeat, date: DateKey) {
   const from = containerOf(task);
   const to = `day:${date}`;
   const index = listIn(state, to).length;
-  moves.push({ id: beat.id, from, fromIndex: listIn(state, from).findIndex((t) => t.id === beat.id), to, pickup: beat.pickup, drop: beat.drop, settle: beat.drop + 7, timebox: false, task, start: null });
+  moves.push({ id: beat.id, from, fromIndex: listIn(state, from).findIndex((t) => t.id === beat.id), to, pickup: beat.pickup, drop: beat.drop, settle: beat.drop + 7, timebox: false, flight: false, task, start: null });
   apply(beat.drop, moveTask(state, beat.id, { date, listId: null, index }));
 }
 
 function dragToTimebox(beat: DragBeat, start: TimeKey) {
   const task = state.tasks[beat.id]!;
   const from = containerOf(task);
-  moves.push({ id: beat.id, from, fromIndex: listIn(state, from).findIndex((t) => t.id === beat.id), to: from, pickup: beat.pickup, drop: beat.drop, settle: beat.drop, timebox: true, task, start });
+  moves.push({ id: beat.id, from, fromIndex: listIn(state, from).findIndex((t) => t.id === beat.id), to: from, pickup: beat.pickup, drop: beat.drop, settle: beat.drop, timebox: true, flight: false, task, start });
   apply(beat.drop, moveTask(state, beat.id, { date: task.date, listId: null, start }));
 }
 
@@ -133,7 +135,7 @@ export const FLIGHTS = unfinished.map((task, i) => {
   const land = T.roll[i] ?? T.roll[T.roll.length - 1]!;
   const fromIndex = listIn(state, `day:${TODAY}`).findIndex((t) => t.id === task.id);
   const pickup = land - 16;
-  moves.push({ id: task.id, from: `day:${TODAY}`, fromIndex, to: `day:${TOMORROW}`, pickup, drop: land, settle: land, timebox: false, task, start: null });
+  moves.push({ id: task.id, from: `day:${TODAY}`, fromIndex, to: `day:${TOMORROW}`, pickup, drop: land, settle: land, timebox: false, flight: true, task, start: null });
   apply(land, moveUnfinished(state, [state.tasks[task.id]!], TOMORROW));
   return { id: task.id, pickup, land };
 });
@@ -245,7 +247,7 @@ export function dragStateAt(frame: number): {
   preview: { date: DateKey; start: TimeKey; minutes: number } | null;
   insertion: { container: string; index: number } | null;
 } {
-  const move = moves.find((m) => frame >= m.drop - 11 && frame < m.drop && m.pickup !== m.drop - 16);
+  const move = moves.find((m) => !m.flight && frame >= m.drop - 11 && frame < m.drop);
   if (!move) return { preview: null, insertion: null };
   if (move.timebox) return { preview: { date: TODAY, start: move.start!, minutes: move.task.estimate ?? 30 }, insertion: null };
   return { preview: null, insertion: { container: move.to, index: -1 } };
@@ -306,22 +308,21 @@ function dayIndex(date: DateKey): number {
   return Math.round((moment(date, "00:00") - moment(TODAY, "00:00")) / 86_400_000);
 }
 
-function slotTop(s: BeansState, container: string, index: number): number {
-  return listTop + index * (G.card + G.listGap) + (listIn(s, container).length && index < 0 ? 0 : 0);
-}
+const slotTop = (index: number): number => listTop + index * (G.card + G.listGap);
 
 function cardRect(s: BeansState, l: Layout, id: string): { x: number; y: number; w: number } {
   const task = s.tasks[id]!;
   const container = containerOf(task);
   const index = listIn(s, container).findIndex((t) => t.id === id);
-  return { x: listLeft(l, container), y: slotTop(s, container, Math.max(index, 0)), w: listWidth(container) };
+  return { x: listLeft(l, container), y: slotTop(Math.max(index, 0)), w: listWidth(container) };
 }
 
 const timeboxX = (l: Layout): number => l.w - G.timebox + G.gutter + 1;
 
 export function timeboxScrollAt(frame: number, l: Layout): number {
   const view = l.h - G.timeboxTop;
-  const mins = Math.max(minutesOfDay(clockAt(Math.min(frame, T.midnight - 1))), 8 * 60 + 41);
+  // Opens an hour above the current time, as the real TimeGrid does.
+  const mins = minutesOfDay(clockAt(frame));
   return clamp((mins / 60 - 1) * G.hour, 0, 24 * G.hour - view);
 }
 
@@ -350,7 +351,7 @@ type Target =
   | { kind: "chip"; id: string }
   | { kind: "play"; id: string }
   | { kind: "bean"; id: string }
-  | { kind: "rest"; x: number; y: number };
+  | { kind: "aside"; id: string };
 
 interface Leg {
   at: number;
@@ -387,6 +388,8 @@ legs.push({ at: T.chipClick + 4, to: { kind: "play", id: "t-report" }, speed: 0.
 presses.push({ at: T.playClick - 4, up: T.playClick + 1 });
 legs.push({ at: T.lapseEnd, to: { kind: "bean", id: "t-report" }, speed: 0.6 });
 presses.push({ at: T.checkClick - 4, up: T.checkClick + 1 });
+// Out of the way, so the sprout is the thing to look at.
+legs.push({ at: T.checkClick + 3, to: { kind: "aside", id: "t-report" }, speed: 0.8 });
 legs.sort((a, b) => a.at - b.at);
 
 const POINTER_FROM = T.dragsIn - 14;
@@ -395,15 +398,13 @@ const POINTER_TO = T.checkDone - 10;
 function resolve(target: Target, frame: number, l: Layout): Point {
   const s = stateAt(frame);
   switch (target.kind) {
-    case "rest":
-      return { x: target.x, y: target.y };
     case "card": {
       const c = cardRect(s, l, target.id);
       return { x: c.x + c.w * 0.45, y: c.y + G.card / 2 };
     }
     case "slot": {
       const list = listIn(s, target.container);
-      return { x: listLeft(l, target.container) + G.column * 0.45, y: slotTop(s, target.container, list.length) + G.card / 2 };
+      return { x: listLeft(l, target.container) + G.column * 0.45, y: slotTop(list.length) + G.card / 2 };
     }
     case "timebox":
       return { x: timeboxX(l) + (G.timebox - G.gutter) * 0.5, y: timeboxY(l, target.time, frame) };
@@ -425,6 +426,10 @@ function resolve(target: Target, frame: number, l: Layout): Point {
     case "bean": {
       const c = cardRect(s, l, target.id);
       return { x: c.x + G.beanX, y: c.y + 24 };
+    }
+    case "aside": {
+      const c = cardRect(s, l, target.id);
+      return { x: c.x + 110, y: c.y + 58 };
     }
   }
 }
@@ -486,7 +491,7 @@ export function overlaysAt(format: Format, frame: number): Overlay[] {
     const flight = FLIGHTS.find((f) => f.id === m.id);
     if (flight) {
       const toX = columnX(l, 1);
-      const toY = slotTop(stateAt(flight.land), m.to, listIn(stateAt(flight.land), m.to).length - 1);
+      const toY = slotTop(listIn(stateAt(flight.land), m.to).length - 1);
       const p = sp(frame, flight.pickup, 0.7);
       out.push({ task, x: mix(from.x, toX, p), y: mix(from.y, toY, p), lift: 1 - sp(frame, flight.land - 4) });
       continue;
@@ -512,6 +517,8 @@ export interface Shot {
   at: number;
   region: (l: Layout) => Box;
   speed?: number;
+  /** How far this shot may zoom in. */
+  max?: number;
 }
 
 const full = (l: Layout): Box => ({ x0: 0, y0: 0, x1: l.w, y1: l.h });
@@ -536,16 +543,22 @@ function blockBox(l: Layout): Box {
 const SHOTS: Shot[] = [
   { at: T.windowIn, region: full },
   { at: T.captureOpen, region: capturedBox, speed: 0.6 },
-  { at: CAPTURE_LINES[1]!.typeFrom, region: (l) => ({ x0: 0, y0: 52, x1: Math.min(l.w, 1060), y1: 620 }), speed: 0.55 },
-  { at: T.dragsIn - 24, region: (l) => ({ x0: 0, y0: 52, x1: columnX(l, 2), y1: 560 }), speed: 0.55 },
+  { at: CAPTURE_LINES[1]!.typeFrom, region: (l) => ({ x0: 0, y0: 0, x1: Math.min(l.w, 1060), y1: l.h }), speed: 0.55 },
+  { at: T.dragsIn - 24, region: (l) => ({ x0: 0, y0: 52, x1: l.w < 1000 ? columnX(l, 1) : columnX(l, 2), y1: 560 }), speed: 0.55 },
+  // The last drag crosses to tomorrow, so narrow cuts pan along with it.
+  { at: DRAGS.dragLogo.pickup - 4, region: (l) => ({ x0: l.w < 1000 ? columnX(l, 0) - 16 : 0, y0: 52, x1: columnX(l, 2), y1: 560 }), speed: 0.45 },
   { at: T.weekScroll - 6, region: full, speed: 0.55 },
-  { at: T.timeboxIn - 2, region: (l) => ({ x0: l.sidebar ? 272 : 0, y0: 52, x1: l.w, y1: Math.min(l.h, 640) }), speed: 0.55 },
+  { at: T.timeboxIn - 2, region: (l) => ({ x0: l.sidebar ? columnX(l, 0) - 8 : 0, y0: 52, x1: l.w, y1: Math.min(l.h, 620) }), speed: 0.55 },
   { at: T.resizeIn - 2, region: blockBox, speed: 0.55 },
   { at: T.timerIn, region: (l) => ({ x0: columnX(l, 0) - 12, y0: 104, x1: columnX(l, 0) + 412, y1: 420 }), speed: 0.55 },
   { at: T.lapseStart, region: (l) => ({ x0: columnX(l, 0) - 16, y0: 52, x1: l.w, y1: l.h }), speed: 0.45 },
-  { at: T.checkIn, region: cardFocus("t-report", T.checkIn, 110, 62), speed: 0.55 },
+  // The leaf climbing past the block and the pill counting up, close enough to read.
+  { at: T.lapseStart + 60, region: (l) => ({ x0: l.w - G.timebox - 140, y0: 170, x1: l.w, y1: l.h }), speed: 0.5 },
+  { at: T.checkIn, region: cardFocus("t-report", T.checkIn, 150, 70), speed: 0.55, max: 4 },
   { at: T.nightIn, region: full, speed: 0.55 },
-  { at: T.moonEnd - 10, region: (l) => ({ x0: columnX(l, 0) - 16, y0: 52, x1: columnX(l, 2) - 8, y1: 620 }), speed: 0.55 },
+  { at: T.moonEnd - 10, region: (l) => ({ x0: columnX(l, 0) - 16, y0: 0, x1: columnX(l, 2) - 8, y1: l.h }), speed: 0.55 },
+  // Close on the tasks that just landed, so "Rolled over" can be read.
+  { at: T.roll[2]! + 14, region: (l) => ({ x0: columnX(l, 0) + 120, y0: slotTop(2) - 20, x1: columnX(l, 2) - 8, y1: slotTop(6) + 12 }), speed: 0.5, max: 2.8 },
 ];
 
 export interface Camera {
@@ -556,11 +569,13 @@ export interface Camera {
   y: number;
 }
 
-function frameBox(format: Format, l: Layout, box: Box): Camera {
+function frameBox(format: Format, l: Layout, shot: Shot): Camera {
+  const box = shot.region(l);
   const { view, margin } = format;
   const fit = Math.min((view.w - margin * 2) / l.w, (view.h - margin * 2) / l.h);
-  const fill = Math.min((view.w - margin * 2) / (box.x1 - box.x0), (view.h - margin * 2) / (box.y1 - box.y0));
-  const scale = Math.max(fit, Math.min(fill, format.id === "wide" ? 2.6 : 3));
+  const fill = Math.min(view.w / (box.x1 - box.x0), view.h / (box.y1 - box.y0));
+  const whole = box.x1 - box.x0 >= l.w && box.y1 - box.y0 >= l.h;
+  const scale = whole ? fit : Math.max(fit, Math.min(fill, shot.max ?? (format.id === "wide" ? 2.6 : 3)));
   const place = (size: number, stage: number, lo: number, hi: number, offset: number) => {
     const span = stage * scale;
     if (span <= size - margin * 2 + 1) return offset + (size - span) / 2;
@@ -577,8 +592,8 @@ export function cameraAt(format: Format, frame: number): Camera {
   while (i < SHOTS.length - 1 && SHOTS[i + 1]!.at <= frame) i++;
   const shot = SHOTS[i]!;
   const prev = SHOTS[Math.max(0, i - 1)]!;
-  const a = frameBox(format, l, prev.region(l));
-  const b = frameBox(format, l, shot.region(l));
+  const a = frameBox(format, l, prev);
+  const b = frameBox(format, l, shot);
   const p = sp(frame, shot.at, shot.speed ?? 0.6);
   // Zooms run on a log scale, so they feel even.
   const scale = Math.exp(mix(Math.log(a.scale), Math.log(b.scale), p));
@@ -594,4 +609,3 @@ export function dipAt(format: FormatId, frame: number): number {
   return clamp(1 - near / 6, 0, 1);
 }
 
-export const allFormats = Object.values(FORMATS);

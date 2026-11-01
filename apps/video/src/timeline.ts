@@ -44,7 +44,7 @@ for (const line of LINES) {
   const typeTo = at(Math.round((line.text.length / line.rate) * FPS));
   const submit = at(line.hold);
   lines.push({ ...line, typeFrom, typeTo, submit });
-  at(seconds(0.2));
+  at(seconds(0.1));
 }
 const captureClose = at(seconds(0.3));
 
