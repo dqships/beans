@@ -31,9 +31,9 @@ const LINES: Pick<CaptureLine, "id" | "text" | "rate" | "hold">[] = [
 ];
 
 /** The intro holds long enough to read, then the planner rises over it. */
-const introEnd = at(seconds(3.4));
+const introEnd = at(seconds(3.8));
 const windowIn = at(0);
-const spillCaption = at(seconds(0.5));
+const firstCaption = at(seconds(0.5));
 const keyQ = at(seconds(1.3));
 const captureOpen = at(seconds(0.5));
 
@@ -107,7 +107,7 @@ const end = at(seconds(3.6));
 export const T = {
   introEnd,
   windowIn,
-  spillCaption,
+  firstCaption,
   keyQ,
   captureOpen,
   captureClose,

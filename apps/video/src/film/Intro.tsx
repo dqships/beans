@@ -1,6 +1,7 @@
 import { random, useCurrentFrame } from "remotion";
 import { Button } from "@/ui/Button";
 import { BrandArt, USE_ILLUSTRATIONS } from "../brand/art";
+import { CTA, HOOK, NAMED } from "../captions";
 import { useFormat, type Format } from "../formats";
 import { mix, sp } from "../motion";
 import { T } from "../timeline";
@@ -24,9 +25,9 @@ const sub = {
 
 /** A wide or stacked arrangement of the mascot and its words. */
 function scene(format: Format) {
-  if (format.id === "wide") return { art: { left: 1100, top: 160, width: 680 }, text: { left: 150, top: 340, width: 760 } };
-  if (format.id === "square") return { art: { left: 300, top: 96, width: 480 }, text: { left: 72, top: 650, width: 760 } };
-  return { art: { left: 200, top: 300, width: 680 }, text: { left: 72, top: 1090, width: 760 } };
+  if (format.id === "wide") return { art: { left: 1100, top: 160, width: 680 }, text: { left: 110, top: 300, width: 960 } };
+  if (format.id === "square") return { art: { left: 300, top: 96, width: 480 }, text: { left: 72, top: 650, width: 936 } };
+  return { art: { left: 200, top: 300, width: 680 }, text: { left: 72, top: 1090, width: 936 } };
 }
 
 const BEANS = Array.from({ length: 16 }, (_, i) => ({
@@ -96,8 +97,8 @@ export function Intro() {
         <BrandArt pose="intro" width={art.width} />
       </div>
       <div style={{ position: "absolute", left: text.left, top: text.top, width: text.width, display: "grid", gap: "var(--space-5)" }}>
-        <h1 style={title}>Spill the beans.</h1>
-        <p style={sub}>Your tasks, your week and your hours in one place.</p>
+        <h1 style={title}>{HOOK}</h1>
+        <p style={sub}>{NAMED}</p>
       </div>
     </div>
   );
@@ -119,9 +120,9 @@ export function Outro() {
         <BrandArt pose="outro" width={art.width} />
       </div>
       <div style={{ position: "absolute", left: text.left, top: text.top, width: text.width, display: "grid", gap: "var(--space-6)", justifyItems: "start" }}>
-        <h1 style={title}>Spill the beans.</h1>
+        <h1 style={title}>{HOOK}</h1>
         <div style={{ opacity: cta, translate: `0 calc(var(--space-3) * ${1 - cta})`, transformOrigin: "0 0", scale: 2.6 }}>
-          <Button variant="primary">Start planning</Button>
+          <Button variant="primary">{CTA}</Button>
         </div>
       </div>
     </div>

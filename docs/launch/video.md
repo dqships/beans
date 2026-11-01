@@ -22,20 +22,22 @@ What it does differently, on purpose: it runs about a minute, cuts every waiting
 
 ## The film
 
-One workflow: spill, plan, timebox, focus, finish, roll over. 30 fps. Times are for all three shapes.
+One workflow: capture, plan, block out time, work, finish, roll over. 30 fps. Times are for all three shapes.
 
 | Time | Beat | On screen | Caption |
 |---|---|---|---|
-| 0:00 | Hook | Mascot, beans spilling along the soil line. The words are there on the first frame | **Spill the beans.** Your tasks, your week and your hours in one place. |
-| 0:03 | Quick Capture | The planner rises, empty. `Q` opens Quick Capture, and the real parser highlights `tomorrow`, `#home` and `=30m` as they're typed. Five more tasks follow fast | Spill it all out. Sort it later. / Quick Capture reads labels, dates and times as you type. |
-| 0:18 | Plan | Four drags from the Brain Dump onto today and tomorrow, then the board scrolls through the week | Drag tasks onto the days you'll do them. / Your whole week on one board. |
-| 0:30 | Timebox | Two drags onto the beanstalk, with the real drop preview. A block is pulled from 1h to 1h 30m | Drag a task onto the Timebox to give it a time. / Pull a block down to give it more time. |
+| 0:00 | Hook | Mascot on the soil line, beans along the ground. The words are there on the first frame | **Turn your to-do list into a plan for today.** Beans is a daily planner. |
+| 0:04 | Quick Capture | The planner rises. `Q` opens Quick Capture, and the real parser highlights `tomorrow`, `#home` and `=30m` as they're typed. Five more tasks follow fast | Spill the beans: put every task in the Brain Dump. / Type a task into Quick Capture. It reads the date, label and time. |
+| 0:19 | Plan | Four drags from the Brain Dump onto today and tomorrow, then the board scrolls through the week | Tasks with no date wait in the Brain Dump. Drag them onto a day. / Your whole week on one board. |
+| 0:31 | Timebox | Two drags onto the beanstalk, with the real drop preview. A block is pulled from 1h to 1h 30m | The Timebox is your schedule. Drag a task onto it to block out time. / Pull a block down to give it more time. |
 | 0:40 | Timer | The time chip opens, Play starts the timer, and the clock runs fast while the pill counts up and the leaf climbs the vine | Start the timer when you start the task. / The timer keeps count while you work. |
-| 0:48 | Check off | Zoom on the bean. One click and the sprout. The timer stops and the chip reads 1:13 / 1:30 | Check it off and watch it sprout. / Actual time fills in from the timer. |
-| 0:53 | Midnight | The clock runs to midnight, the mascot sleeps, and three unfinished tasks land on the new today with a "Rolled over" tag | Some tasks won't get done today. / Unfinished tasks move to today at midnight. / No guilt, no copying things over. |
-| 1:03 | Outro | Mascot, soil line, the primary button | **Spill the beans.** Start planning |
+| 0:48 | Check off | Zoom on the bean. One click and the sprout. The timer stops and the chip reads 1:13 / 1:30 | Check it off and watch it sprout. / The timer fills in how long it really took. |
+| 0:54 | Midnight | The clock runs to midnight, the mascot sleeps, and three unfinished tasks land on the new today with a "Rolled over" tag | Some tasks won't get done today. / Anything unfinished moves to the next day at midnight. / No guilt, no copying things over. |
+| 1:03 | Outro | Mascot, soil line, the primary button | **Turn your to-do list into a plan for today.** Start planning |
 
-Every caption was checked against `voice.md`: each claim is on its "Facts you can state" list, none uses a banned word, and there are no questions or exclamation marks.
+Captions are written for someone who has never seen the app: everyday words, and a product name only where the line says what it does. Garden wordplay appears only where the line or the scene makes it clear: "Spill the beans" is explained in the same line, over the Brain Dump, and "sprout" plays on a close-up of the bean sprouting. The hook and outro never use it. Every caption was checked against `voice.md`: each claim is on its "Facts you can state" list, none uses a banned word, and there are no questions or exclamation marks.
+
+The Brain Dump keeps one task for the whole film, because its empty state would show "Spill the beans" on its own.
 
 ## How it's made
 

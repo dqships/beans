@@ -26,7 +26,12 @@ export function moment(date: DateKey, time: TimeKey): number {
 
 export const START_TIME = moment(TODAY, "08:41");
 
-/** The planner as it stands on Tuesday morning: nothing spilled yet, a few things later in the week. */
+/**
+ * The planner as it stands on Tuesday morning: one idea in the Brain Dump and a
+ * few things later in the week. The Brain Dump is never empty on screen, because
+ * its empty state shows "Spill the beans" alone, and the film only uses that
+ * line where it's explained.
+ */
 export function initialState(): BeansState {
   const now = START_TIME;
   const settings = {
@@ -46,6 +51,7 @@ export function initialState(): BeansState {
   const task = (id: string, fields: Partial<ReturnType<typeof baseTask>>) => put("tasks", { ...baseTask(id, now), ...fields });
   const ops: Op[] = [
     ...labels.map((l) => put("labels", l)),
+    task("t-gift", { title: "Find a birthday gift", labelId: "label-home", estimate: 30, order: 0 }),
     task("t-gym", { title: "Renew the gym plan", date: TOMORROW, labelId: "label-health", estimate: 15, order: 0 }),
     task("t-trip", { title: "Plan the weekend trip", date: addDays(TODAY, 2), labelId: "label-home", estimate: 60, order: 0 }),
     task("t-tax", { title: "File the receipts", date: addDays(TODAY, 2), labelId: "label-work", estimate: 30, order: 1 }),
