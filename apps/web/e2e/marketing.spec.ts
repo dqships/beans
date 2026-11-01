@@ -6,6 +6,11 @@ const publicPaths = ["/", "/about", "/contact", "/privacy", "/terms"];
 /** `landing.js` and the zero-JS build only exist in production. Point E2E_URL at `next start` to run those. */
 const production = Boolean(process.env.E2E_URL);
 
+// `next dev` compiles the 404 on its first hit and reloads the page, which breaks whichever test got there first.
+test.beforeAll(async ({ request }) => {
+  await request.get("/no-such-page");
+});
+
 function watchRequests(page: Page) {
   const urls: string[] = [];
   page.on("request", (request) => urls.push(request.url()));
