@@ -23,9 +23,12 @@ export function Film() {
         height={720}
         poster="/video/beans-demo-poster.avif"
       >
+        {/* The wide cut's captions are too small on a phone, so phones get the square cut. */}
+        <source src="/video/beans-demo-square.mp4" type="video/mp4" media="(max-width: 720px)" /> {/* token-ok: --layout-phone */}
         <source src="/video/beans-demo-web.webm" type="video/webm" />
         <source src="/video/beans-demo-web.mp4" type="video/mp4" />
-        <track kind="captions" src="/video/beans-demo.vtt" srcLang="en" label="English" default />
+        {/* Captions are in the picture already, so this track stays off unless someone turns it on. */}
+        <track kind="captions" src="/video/beans-demo.vtt" srcLang="en" label="English" />
         <a href="/video/beans-demo-web.mp4">Download the Beans demo video</a>
       </video>
     </section>

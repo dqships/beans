@@ -64,8 +64,7 @@ test.describe("what public pages load", () => {
     test.skip(!production, "Next's development client logs its own errors under nosniff.");
     const problems: string[] = [];
     page.on("console", (message) => {
-      // The video's files come from workstream 4; only they may be missing before it lands.
-      if (message.type() === "error" && !message.location().url.includes("/video/")) problems.push(message.text());
+      if (message.type() === "error") problems.push(message.text());
     });
     page.on("pageerror", (error) => problems.push(error.message));
     for (const path of publicPaths) {

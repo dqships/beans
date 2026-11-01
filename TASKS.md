@@ -62,6 +62,15 @@ Tracked in `docs/launch/PLAN.md`.
 - [ ] Demo video
 - [ ] Launch audit and PR into `main`
 
+Left to do on the launch:
+
+- [ ] Run `pnpm --filter @beans/web e2e:clerk:prod`: real sign-in, saving and sync under the production CSP (DQ, it creates a test account)
+- [ ] Watch the demo video at full speed (DQ)
+- [ ] Rerun Lighthouse with the final copy and video. The 100s were measured before the copy rewrite, with a placeholder poster
+- [ ] Walk `docs/launch/checklist.md` again on the merged branch
+- [ ] Fresh screenshots of every landing and app screen at 1440 and 390, light and dark
+- [ ] Test on Vercel, Safari, Firefox and with a screen reader
+
 ### Later
 
 - [ ] Desktop app: see "Desktop app, saved for later" in `RESEARCH.md`
@@ -143,6 +152,42 @@ Tracked in `docs/launch/PLAN.md`.
 - 2026-10-31: Electron for Windows and Mac, released unsigned at first.
 - 2026-10-31: Desktop stores data locally and works offline. Convex doesn't sync while offline; all changes are sent once the computer is back online.
 - 2026-10-31: All data stays in sync between desktop and web through Convex.
+
+## Things DQ might want to fix
+
+Found during the launch reviews. None of these block the merge. Delete a line once it's fixed or you decide to leave it.
+
+**Demo video**
+
+- Nobody has watched it at full speed yet, so pacing, cursor speed and drag smoothness are unproven.
+- The intro is the least lively part: only a small hop, and the mascot is smaller than the code-drawn version.
+- The timer and check-off zooms crop content at the left edge.
+- The dark soil line in the midnight scene has low contrast.
+- The vertical cut's Quick Capture scene has a large dimmed empty area.
+- At 67.8 seconds it runs past Product Hunt's 60-second preview and the 30 to 45 seconds short feeds favor. There's no shorter cut.
+- It's silent. A licensed track or voiceover would have to come from DQ.
+
+**Landing page**
+
+- The hero demo shows estimates such as 0:15, while the real screenshot further down shows 0:00 for the same tasks.
+- The approved hero pose sits at the bottom of the page, not in the top hero, which is the live demo.
+- The workflow and "How a day goes" are one timeline, not two sections.
+- There's empty space under the hero's task columns, next to the taller Timebox.
+- The video starts on click only, with no autoplay when it comes into view.
+
+**Mascot art**
+
+- Hero pose: the bean going into the ground reads small, and the 2x copy is slightly soft.
+- `welcome`: the watering can floats, because the mascot has no arms.
+- `analytics`: the basket is more detailed than the other poses.
+- `phone`: on model, but plain.
+
+**App**
+
+- After Empty Trash, the earlier "Moved to Trash" toast with Undo stays next to "Trash emptied".
+- `app/(app)/error.tsx` can't catch a Clerk or Convex provider failure in the layout. That would need `global-error`.
+- App routes use `'unsafe-inline'` for scripts in the CSP. Nonces would force dynamic rendering. Public pages have no inline scripts.
+- `viewport.themeColor` isn't set, and the manifest's theme color is light only.
 
 ## Open decisions
 
