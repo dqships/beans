@@ -7,6 +7,8 @@ import { defineConfig, devices } from "@playwright/test";
 if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 const port = Number(process.env.E2E_CLERK_PORT ?? 3100);
+// `pnpm --filter @beans/web e2e:clerk:prod` runs against a production build, with the production security headers.
+const serve = process.env.E2E_CLERK_PROD ? "next start" : "next dev";
 
 export default defineConfig({
   testDir: "./e2e-clerk",
@@ -27,7 +29,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm exec next dev --port ${port}`,
+    command: `pnpm exec ${serve} --port ${port}`,
     url: `http://localhost:${port}/sign-in`,
     reuseExistingServer: true,
     timeout: 120_000,

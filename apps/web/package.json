@@ -11,7 +11,8 @@
     "test": "vitest run --passWithNoTests",
     "e2e": "playwright test",
     "e2e:clerk": "playwright test --config playwright.clerk.config.ts",
-    "capture": "node scripts/capture-product.mjs"
+    "capture": "node scripts/capture-product.mjs",
+    "e2e:clerk:prod": "next build && E2E_CLERK_PROD=1 playwright test --config playwright.clerk.config.ts"
   },
   "dependencies": {
     "@beans/core": "workspace:*",
