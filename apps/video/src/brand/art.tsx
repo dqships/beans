@@ -2,11 +2,11 @@ import { Img, staticFile } from "remotion";
 import { Mascot, type MascotScene } from "@/ui/garden";
 
 /**
- * Swapping in the generated poses is this one change: set this to true once
- * apps/web/public/illustrations holds the files named below. Those poses draw
- * their own ground, so the film's soil line and spilled beans step aside.
+ * True uses the generated poses in apps/web/public/illustrations. They draw their
+ * own ground, so the film's soil line and spilled beans step aside. False falls
+ * back to the code-drawn mascot, which needs no image files.
  */
-export const USE_ILLUSTRATIONS = false;
+export const USE_ILLUSTRATIONS = true;
 
 /** `fit` sizes each pose to fill its slot: the files carry wide margins around the mascot. */
 const ART = {

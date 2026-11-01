@@ -26,14 +26,14 @@ One workflow: capture, plan, block out time, work, finish, roll over. 30 fps. Ti
 
 | Time | Beat | On screen | Caption |
 |---|---|---|---|
-| 0:00 | Hook | Mascot on the soil line, beans along the ground. The words are there on the first frame | **Turn your to-do list into a plan for today.** Beans is a daily planner. |
+| 0:00 | Hook | The mascot in a row of seedlings at sunrise. The words are there on the first frame | **Turn your to-do list into a plan for today.** Beans is a daily planner. |
 | 0:04 | Quick Capture | The planner rises. `Q` opens Quick Capture, and the real parser highlights `tomorrow`, `#home` and `=30m` as they're typed. Five more tasks follow fast | Spill the beans: put every task in the Brain Dump. / Type a task into Quick Capture. It reads the date, label and time. |
 | 0:19 | Plan | Four drags from the Brain Dump onto today and tomorrow, then the board scrolls through the week | Tasks with no date wait in the Brain Dump. Drag them onto a day. / Your whole week on one board. |
 | 0:31 | Timebox | Two drags onto the beanstalk, with the real drop preview. A block is pulled from 1h to 1h 30m | The Timebox is your schedule. Drag a task onto it to block out time. / Pull a block down to give it more time. |
 | 0:40 | Timer | The time chip opens, Play starts the timer, and the clock runs fast while the pill counts up and the leaf climbs the vine | Start the timer when you start the task. / The timer keeps count while you work. |
 | 0:48 | Check off | Zoom on the bean. One click and the sprout. The timer stops and the chip reads 1:13 / 1:30 | Check it off and watch it sprout. / The timer fills in how long it really took. |
 | 0:54 | Midnight | The clock runs to midnight, the mascot sleeps, and three unfinished tasks land on the new today with a "Rolled over" tag | Some tasks won't get done today. / Anything unfinished moves to the next day at midnight. / No guilt, no copying things over. |
-| 1:03 | Outro | Mascot, soil line, the primary button | **Turn your to-do list into a plan for today.** Start planning |
+| 1:03 | Outro | The mascot beside a tipped seed packet, and the primary button | **Turn your to-do list into a plan for today.** Start planning |
 
 Captions are written for someone who has never seen the app: everyday words, and a product name only where the line says what it does. Garden wordplay appears only where the line or the scene makes it clear: "Spill the beans" is explained in the same line, over the Brain Dump, and "sprout" plays on a close-up of the bean sprouting. The hook and outro never use it. Every caption was checked against `voice.md`: each claim is on its "Facts you can state" list, none uses a banned word, and there are no questions or exclamation marks.
 
@@ -58,7 +58,7 @@ The square and vertical cuts are recomposed, not letterboxed: the planner's real
 
 ### Mascot art
 
-The intro, outro and midnight scenes use the code-drawn mascot from `apps/web/src/ui/garden.tsx`. To use the `video-intro`, `video-outro` and `rollover` poses, set `USE_ILLUSTRATIONS` to `true` in `apps/video/src/brand/art.tsx` and rerender. The poses draw their own ground, so the film's soil line and spilled beans turn off with the same switch.
+The intro, outro and midnight scenes use the `video-intro`, `video-outro` and `rollover` poses from `apps/web/public/illustrations`. `USE_ILLUSTRATIONS` in `apps/video/src/brand/art.tsx` switches them. Set to `false`, the film falls back to the code-drawn mascot from `apps/web/src/ui/garden.tsx`, with its own soil line and spilled beans, and needs no image files.
 
 ### Sound
 

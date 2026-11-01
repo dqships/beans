@@ -109,4 +109,4 @@ Rendered from code by `pnpm video:render`: 67.8 seconds, 30 fps, silent, caption
 | `apps/web/public/video/beans-demo-square.mp4` | H.264, 1080×1080, 4.75 MB | Social | Done, recomposed for the frame |
 | `apps/web/public/video/beans-demo-vertical.mp4` | H.264, 1080×1920, 5.35 MB | Social | Done, recomposed for the frame |
 
-The intro, outro and midnight scenes use the code-drawn mascot. The generated poses are a one-line swap once workstream 2 merges: see `docs/launch/video.md`.
+The intro, outro and midnight scenes use the `video-intro`, `video-outro` and `rollover` poses.
