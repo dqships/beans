@@ -8,14 +8,14 @@ import { authMode } from "@/data/auth-mode";
 import { setTestUser } from "@/data/test-auth-client";
 import { Button } from "@/ui/Button";
 import { TextInput } from "@/ui/controls";
-import { Mascot } from "@/ui/garden";
+import { Illustration } from "@/ui/Illustration";
 import styles from "./auth.module.css";
 
 export function AuthScreen({ kind }: { kind: "sign-in" | "sign-up" }) {
   return (
     <main className={styles.page}>
       <div className={styles.panel}>
-        <Mascot scene="water" className={styles.mascot} />
+        <Illustration name="welcome" alt="" compact eager className={styles.mascot} />
         <h1 className={styles.title}>{kind === "sign-in" ? "Welcome back to Beans" : "Start your bean garden"}</h1>
         <p className={styles.lede}>Plan the day, give your tasks a time, and watch them grow.</p>
         {authMode === "clerk" ? (

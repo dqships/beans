@@ -1,5 +1,6 @@
 "use client";
 
+import { Illustration, type IllustrationName } from "./Illustration";
 import styles from "./garden.module.css";
 
 /** The mascot's bean outline, reused at small sizes. viewBox units, not pixels. */
@@ -167,18 +168,25 @@ export function Mascot({ scene = "idle", className }: { scene?: MascotScene; cla
 /** Empty state: mascot, a short line of copy and an optional action. */
 export function EmptyState({
   scene,
+  illustration,
   title,
   children,
   compact,
 }: {
-  scene: MascotScene;
+  scene?: MascotScene;
+  /** A pose from `public/illustrations`, used instead of the code-drawn scene. */
+  illustration?: IllustrationName;
   title: string;
   children?: React.ReactNode;
   compact?: boolean;
 }) {
   return (
     <div className={`${styles.empty} ${compact ? styles.emptyCompact : ""}`}>
-      <Mascot scene={scene} className={styles.emptyMascot} />
+      {illustration ? (
+        <Illustration name={illustration} alt="" compact className={styles.emptyArt} />
+      ) : (
+        <Mascot scene={scene} className={styles.emptyMascot} />
+      )}
       <p className={styles.emptyTitle}>{title}</p>
       {children ? <div className={styles.emptyBody}>{children}</div> : null}
     </div>

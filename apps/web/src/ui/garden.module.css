@@ -248,6 +248,12 @@
   height: auto;
 }
 
+.emptyArt {
+  display: block;
+  width: calc(var(--space-6) * 5);
+  height: auto;
+}
+
 .emptyCompact .emptyMascot {
   width: calc(var(--space-6) * 2);
 }
