@@ -60,14 +60,14 @@ Tracked in `docs/launch/PLAN.md`.
 - [x] Mascot poses and illustrations
 - [x] Landing page
 - [x] Demo video
-- [ ] Launch audit (partly done, see below)
+- [x] Launch audit, apart from the items below that need DQ or a live deployment
 
 Left to do on the launch:
 
-- [ ] Run `pnpm --filter @beans/web e2e:clerk:prod`: real sign-in, saving and sync under the production CSP (DQ, it creates a test account)
+- [ ] Run `pnpm --filter @beans/web e2e:clerk:prod`: real sign-up, saving and sync under the production CSP (DQ, it creates a test account). The signed-out path already passes on a production build
 - [ ] Watch the demo video at full speed (DQ)
-- [ ] Walk `docs/launch/checklist.md` again on the merged branch, item by item
-- [ ] Fresh screenshots of every landing and app screen at 1440 and 390, light and dark
+- [x] Walk `docs/launch/checklist.md` on the merged branch: 47 items met, pricing and HTTPS still open
+- [x] Fresh screenshots of every landing and app screen at 1440 and 390, light and dark, with no overflow and no broken images
 - [ ] Test on Vercel, Safari, Firefox and with a screen reader
 
 ### Later
@@ -77,6 +77,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-10-31: Launch audit on `claude/beans-v1`. Checklist probed against a production build, all landing and app screens reviewed in both themes at both widths, and the signed-out Clerk path passes under the production CSP. Fixed "1 of 1 tasks" in daily planning. The full sign-up under that CSP still needs DQ's run.
 - 2026-10-31: Launch work merged into `claude/beans-v1`. Demo video merged, with the square cut on phones. On the merged result: `pnpm check` passes, 82 browser tests pass in development plus 38 of 38 public-page tests on a production build, and Lighthouse on `next start` (mobile, median of 3) is 100 in all four categories with LCP 1.51 s, CLS 0 and 1.9 KB of JavaScript at last measure. Clerk's test passed before the CSP landed, so it needs one more run.
 - 2026-10-31: Landing page merged. Zero framework JavaScript on public pages, plain copy, launch checklist, CSP and markdown negotiation. 15 mascot poses merged and wired into sign-in, Trash and the error page. Fixed the rollover test, which failed on the first of each month.
 - 2026-10-31: Clerk sign-in verified end to end against the development instances: sign-up, saving a task across a reload, live sync to a second window, and sign-out (`e2e:clerk`, 3 of 3 passed, run by DQ).
@@ -174,6 +175,8 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 - The approved hero pose sits at the bottom of the page, not in the top hero, which is the live demo.
 - The workflow and "How a day goes" are one timeline, not two sections.
 - There's empty space under the hero's task columns, next to the taller Timebox.
+- The video poster on phones is a busy mid-film frame, and the player controls cover its caption.
+- `/contact` has about 350 characters of content, under the checklist's 500, until it has a real address.
 - The video starts on click only, with no autoplay when it comes into view.
 
 **Mascot art**
@@ -185,6 +188,7 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 
 **App**
 
+- Sign-in stacks two mascots and two greetings: ours above Clerk's card, which has its own logo and heading. Clerk's header could be hidden.
 - After Empty Trash, the earlier "Moved to Trash" toast with Undo stays next to "Trash emptied".
 - `app/(app)/error.tsx` can't catch a Clerk or Convex provider failure in the layout. That would need `global-error`.
 - App routes use `'unsafe-inline'` for scripts in the CSP. Nonces would force dynamic rendering. Public pages have no inline scripts.

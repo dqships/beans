@@ -13,7 +13,7 @@ Integration branch: `claude/beans-launch`, cut from `claude/beans-v1`. DQ decide
 | 2 | Mascot poses | `claude/launch-mascot` | Sub-agent | Merged | [#7](https://github.com/dqships/beans/pull/7) |
 | 3 | Landing page | `claude/launch-landing` | Sub-agent | Merged | [#8](https://github.com/dqships/beans/pull/8) |
 | 4 | Demo video | `claude/launch-video` | Sub-agent | Merged | [#9](https://github.com/dqships/beans/pull/9) |
-| 5 | Launch audit | `claude/beans-v1` | Coordinator | Partly done. Remaining items are in `TASKS.md` | [#5](https://github.com/dqships/beans/pull/5) |
+| 5 | Launch audit | `claude/beans-v1` | Coordinator | Done, apart from items that need DQ or a live deployment. See `TASKS.md` | [#5](https://github.com/dqships/beans/pull/5) |
 
 ## Rules for every workstream
 

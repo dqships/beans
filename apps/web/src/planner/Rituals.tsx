@@ -144,7 +144,7 @@ function Planning({ onDone, onClose }: { onDone: () => void; onClose: () => void
         title="Look back at yesterday"
         summary={
           <p>
-            You finished {yesterdayTasks.filter((t) => t.done).length} of {yesterdayTasks.length} tasks yesterday.
+            You finished {yesterdayTasks.filter((t) => t.done).length} of {yesterdayTasks.length} {yesterdayTasks.length === 1 ? "task" : "tasks"} yesterday.
             {missed.length ? " Bring anything unfinished into today, or leave it be." : ""}
           </p>
         }
