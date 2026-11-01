@@ -1,22 +1,24 @@
+/* A fixed height, so a tall form scrolls here instead of being clipped by the app shell. */
 .page {
-  display: grid;
-  place-items: center;
-  min-height: 100dvh;
+  display: flex;
+  height: 100dvh;
   padding: var(--space-5) var(--space-4);
   overflow-y: auto;
 }
 
+/* Auto margins center the panel when it fits, and keep its top reachable when it doesn't. */
 .panel {
   display: grid;
   justify-items: center;
   gap: var(--space-4);
   width: 100%;
   max-width: calc(var(--layout-modal) * 0.8);
+  margin: auto;
 }
 
 .mascot {
   display: block;
-  width: calc(var(--space-6) * 5);
+  width: calc(var(--space-6) * 4);
   height: auto;
 }
 

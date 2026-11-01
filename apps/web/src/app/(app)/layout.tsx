@@ -23,6 +23,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               fontFamily: "var(--font-sans)",
               borderRadius: "var(--radius-sm)",
             },
+            // The page already shows the mascot above Clerk's card.
+            elements: { logoBox: { display: "none" } },
           }}
         >
           <BackendProviders>{children}</BackendProviders>

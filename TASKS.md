@@ -79,6 +79,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-01: Fixed the sign-in and sign-up pages on short screens. The page couldn't scroll, so Clerk's Continue button could end up cut off and out of reach. Removed the duplicate mascot from Clerk's card, and added a test.
 - 2026-11-01: Fixed the sign-in reload loop on the local dev server. Next's dev hot reload kept restarting `(app)` pages from a stale `.next/dev` cache. A clean checkout never looped, and neither did builds run alongside dev, so the exact trigger is unknown. Added `pnpm dev:clean`.
 - 2026-10-31: The landing page plays the film with voice and music, on click only, with each file under 6 MB. Sound checked in Chromium on the desktop layout and Chrome on the phone layout, and no video loads before pressing play.
 - 2026-10-31: Added an AI voiceover (ElevenLabs v3 on Replicate) and music (MiniMax Music 2.6, vocal removed with Demucs), with raw files in `assets/audio` and two cuts in `assets/video`. `pnpm video:mix` rebuilds them. The picture is byte-identical to the silent film. DQ chose take 2 with its vocal removed, and asked for the music to sit closer to the voice.
@@ -196,7 +197,8 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 
 **App**
 
-- Sign-in stacks two mascots and two greetings: ours above Clerk's card, which has its own logo and heading. Clerk's header could be hidden.
+- Sign-in shows two greetings: ours above Clerk's card, which has its own heading. Clerk's heading stays because it labels the email code step.
+- Clerk's input fields have almost no visible edge in dark mode.
 - After Empty Trash, the earlier "Moved to Trash" toast with Undo stays next to "Trash emptied".
 - `app/(app)/error.tsx` can't catch a Clerk or Convex provider failure in the layout. That would need `global-error`.
 - App routes use `'unsafe-inline'` for scripts in the CSP. Nonces would force dynamic rendering. Public pages have no inline scripts.

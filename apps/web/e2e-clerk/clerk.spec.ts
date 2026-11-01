@@ -43,6 +43,21 @@ test("signed-out visitors reach the Clerk sign-in form", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
+test("the whole sign-up form can be reached on a short screen", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 620 });
+  await setupClerkTestingToken({ page });
+  await page.goto("/sign-up");
+  const heading = page.getByRole("heading", { name: "Start your bean garden" });
+  await expect(heading).toBeInViewport({ timeout: 20_000 });
+  const signIn = page.getByRole("link", { name: "Sign in" });
+  await signIn.scrollIntoViewIfNeeded();
+  await expect(signIn).toBeInViewport();
+  const scrolled = await page.locator("main").evaluate((main) => main.scrollTop);
+  expect(scrolled).toBeGreaterThan(0);
+  await page.locator("main").evaluate((main) => main.scrollTo({ top: 0 }));
+  await expect(heading).toBeInViewport();
+});
+
 test("sign up, save a task, sync a second window, sign out", async ({ context, page }) => {
   await signUp(page);
   await expect(page.getByRole("region", { name: "Days" })).toBeVisible({ timeout: 30_000 });
