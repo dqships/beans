@@ -180,7 +180,7 @@
   transition: transform var(--duration-spring) var(--ease-spring);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .packet:hover {
     transform: translateY(calc(var(--space-1) * -1));
   }

@@ -106,7 +106,7 @@ function Frame({
           </span>
           {following ? (
             <Button variant="quiet" onClick={() => actions.endOnboarding("skipped")}>
-              Skip for now
+              Skip setup
             </Button>
           ) : null}
         </div>
@@ -314,7 +314,7 @@ function ChooseStep() {
       controls={
         <div className={styles.switchDay}>
           <Button variant="quiet" onClick={() => actions.setOnboardingDay(day, other)}>
-            Plan {dayWord(other, today)} instead
+            Switch to {dayWord(other, today)}
           </Button>
         </div>
       }

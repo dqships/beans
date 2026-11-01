@@ -44,7 +44,7 @@ test("a new account finishes onboarding on a populated planner", async ({ page }
   await page.getByRole("button", { name: "Move Renew my passport to today" }).click();
 
   // Tomorrow, so the hours on offer don't depend on when the test runs.
-  await page.getByRole("button", { name: "Plan tomorrow instead" }).click();
+  await page.getByRole("button", { name: "Switch to tomorrow" }).click();
   await expect(heading(page, /Choose what you'll get to tomorrow/)).toBeVisible();
   await expect(page.getByRole("region", { name: "Tomorrow" })).toContainText("Renew my passport");
   await button(page, "Continue").click();
@@ -56,7 +56,7 @@ test("a new account finishes onboarding on a populated planner", async ({ page }
 
   await expect(heading(page, "Tomorrow is planned.")).toBeVisible();
   await expect(page.getByRole("main")).toContainText("1 task for tomorrow, 1 with a time. 1 task is waiting in your Brain Dump.");
-  await button(page, "Skip for now").waitFor({ state: "detached" });
+  await button(page, "Skip setup").waitFor({ state: "detached" });
   await button(page, "Open my planner").click();
 
   const check = async () => {
@@ -79,7 +79,7 @@ test("ideas add real tasks with the label they came from", async ({ page }) => {
   await button(page, "Continue").click();
   await button(page, "Go for a walk").click();
   await expect(button(page, "Go for a walk")).toHaveCount(0);
-  await button(page, "Skip for now").click();
+  await button(page, "Skip setup").click();
   await expect(card(page, "Go for a walk")).toContainText("Health");
 });
 
@@ -117,7 +117,7 @@ test("skipping opens the planner, keeps what was added and doesn't come back", a
   await startOnboarding(page);
   await button(page, "Continue without labels").click();
   await addTask(page, "Kept after skipping");
-  await button(page, "Skip for now").click();
+  await button(page, "Skip setup").click();
   await expect(page.getByRole("region", { name: "Days" })).toBeVisible();
   await expect(card(page, "Kept after skipping")).toBeVisible();
   await page.reload();
@@ -139,7 +139,7 @@ test("a reload and a second device stay on the same step", async ({ browser, pag
   await expect(heading(other, /Choose what you'll get to today/)).toBeVisible({ timeout: 20_000 });
 
   // Finishing on one device ends it on the other.
-  await button(page, "Skip for now").click();
+  await button(page, "Skip setup").click();
   await expect(other.getByRole("region", { name: "Days" })).toBeVisible();
 });
 
@@ -186,7 +186,7 @@ test("accounts from before onboarding never see it", async ({ page }) => {
 test("sample mode opens straight to the planner", async ({ page }) => {
   await openPlanner(page);
   await expect(heading(page, firstStep)).toHaveCount(0);
-  await expect(button(page, "Skip for now")).toHaveCount(0);
+  await expect(button(page, "Skip setup")).toHaveCount(0);
 });
 
 test("every step works from the keyboard", async ({ page }) => {
@@ -208,7 +208,7 @@ test("every step works from the keyboard", async ({ page }) => {
   await page.keyboard.press("Enter");
 
   await expect(heading(page, /Choose what/)).toBeFocused();
-  await page.getByRole("button", { name: "Plan tomorrow instead" }).focus();
+  await page.getByRole("button", { name: "Switch to tomorrow" }).focus();
   await page.keyboard.press("Enter");
   await page.getByRole("button", { name: "Move Typed with no mouse to tomorrow" }).focus();
   await page.keyboard.press("Enter");
@@ -224,6 +224,14 @@ test("every step works from the keyboard", async ({ page }) => {
   await expect(page.getByRole("region", { name: "Days" })).toBeVisible();
 });
 
+test("reduced motion swaps movement for a short fade", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await startOnboarding(page);
+  const packet = page.getByRole("checkbox", { name: "Work" });
+  await expect(packet).toHaveCSS("transition-property", "opacity");
+  await expect(packet).toHaveCSS("transition-duration", "0.12s");
+});
+
 for (const colorScheme of ["light", "dark"] as const) {
   test(`axe finds nothing on any step in ${colorScheme}`, async ({ page }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
@@ -236,7 +244,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await reachChooseStep(page, ["Checked for contrast"]);
     await audit();
     await page.getByRole("button", { name: "Move Checked for contrast to today" }).click();
-    await page.getByRole("button", { name: "Plan tomorrow instead" }).click();
+    await page.getByRole("button", { name: "Switch to tomorrow" }).click();
     await button(page, "Continue").click();
     await page.getByRole("button", { name: "Put Checked for contrast at 8:00am" }).click();
     await audit();

@@ -64,7 +64,7 @@ export async function signInOnly(page: Page, name = testUser()) {
 export async function signIn(page: Page, name = testUser()) {
   await signInOnly(page, name);
   const planner = page.getByRole("region", { name: "Days" });
-  const skip = page.getByRole("button", { name: "Skip for now" });
+  const skip = page.getByRole("button", { name: "Skip setup" });
   await expect(planner.or(skip)).toBeVisible({ timeout: 20_000 });
   if (await skip.isVisible()) await skip.click();
   await expect(planner).toBeVisible();

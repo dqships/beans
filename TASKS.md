@@ -86,7 +86,7 @@ Left to do on the launch:
 
 ## Done
 
-- 2026-11-01: First-run onboarding on `claude/onboarding-d7e2c0`. New accounts pick labels, spill tasks into the Brain Dump, choose what goes on today or tomorrow, give tasks a time and land on a populated planner. 14 browser tests, 11 core tests and 4 Convex tests cover finishing, skipping, reloading, a second device, existing accounts, the keyboard, axe in both themes and the phone layout.
+- 2026-11-01: First-run onboarding on `claude/onboarding-d7e2c0`. New accounts pick labels, spill tasks into the Brain Dump, choose what goes on today or tomorrow, give tasks a time and land on a populated planner. 15 browser tests, 11 core tests and 4 Convex tests cover finishing, skipping, reloading, a second device, existing accounts, the keyboard, axe in both themes and the phone layout.
 - 2026-11-01: Fixed the sign-in and sign-up pages on short screens. The page couldn't scroll, so Clerk's Continue button could end up cut off and out of reach. Removed the duplicate mascot from Clerk's card, and added a test.
 - 2026-11-01: Fixed the sign-in reload loop on the local dev server. Next's dev hot reload kept restarting `(app)` pages from a stale `.next/dev` cache. A clean checkout never looped, and neither did builds run alongside dev, so the exact trigger is unknown. Added `pnpm dev:clean`.
 - 2026-10-31: The landing page plays the film with voice and music, on click only, with each file under 6 MB. Sound checked in Chromium on the desktop layout and Chrome on the phone layout, and no video loads before pressing play.
