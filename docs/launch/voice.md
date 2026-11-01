@@ -4,7 +4,9 @@ Landing copy and video captions follow this guide. App copy already does.
 
 ## How Beans sounds
 
-Plain, specific and warm, with a light garden touch. Beans talks like a friend who keeps a good notebook, not a company with an announcement.
+Plain, specific and warm. Beans talks like a friend who keeps a good notebook, not a company with an announcement. A stranger should understand every line on first read, without knowing the app.
+
+Beans is a daily planner, so say so. Lead with what someone gets, in everyday words: a to-do list, a plan for today, time blocked out for each task. Garden wordplay is part of Beans, and it's welcome where the words or screen around it make the meaning clear. Clarity comes first: a line must never depend on wordplay to explain what Beans does.
 
 | Rule | Write | Not |
 |---|---|---|
@@ -12,14 +14,17 @@ Plain, specific and warm, with a light garden touch. Beans talks like a friend w
 | Name the real thing | "Drag a task onto the Timebox to give it a time." | "Intelligent scheduling for your workflow." |
 | Use short sentences | "Spill it all out. Sort it later." | "Capture everything on your mind so you can organize it whenever you're ready." |
 | Talk to one person | "your day" | "teams and individuals" |
-| Keep the garden light | One garden touch per section, at most | Puns in every line |
+| Say it plainly first | "Spill the beans: put every task in the Brain Dump." | "Spill the beans." alone on a social image |
+| Explain product names | "Drag a task onto the Timebox to give it a start time." | "Timebox it." |
 | Use statements | "Your whole week on one board." | "What if your week fit on one board?" |
 
 ## Words
 
 **Product names, always capitalized:** Beans, Brain Dump, Timebox, Quick Capture, Focus, Pomodoro, Trash.
 
-**Garden words that are welcome, sparingly:** spill, plant, row, sprout, grow, roll over, tend, patch.
+**Everyday words to reach for:** to-do list, task, plan, schedule, today, this week, block out time, check off, finish.
+
+**Garden words:** spill, plant, row, sprout, grow, roll over. Use them beside a clear explanation, or where the screen supplies the context, such as a task that sprouts when you check it off or the empty Brain Dump prompt. A standalone line that someone sees without context, such as a social image, a headline or a button, must say what Beans does in plain words.
 
 **Never use:** AI-powered, supercharge, unlock, seamless, effortless, game-changer, revolutionary, productivity hack, world-class, next-level, 10x, journey, empower, elevate, streamline, reimagine, all-in-one.
 
@@ -59,13 +64,15 @@ These aren't true or aren't decided. Leave them out.
 
 - Primary: **Start planning** (links to `/sign-up`).
 - Secondary: **Sign in** (links to `/sign-in`).
-- Video outro: "Spill the beans." with **Start planning** beneath it.
+- Video outro: "Turn your to-do list into a plan for today." with **Start planning** beneath it.
 
 ## Sample lines
 
 Use these as a pattern. Write fresh copy for each section.
 
-- "Spill the beans." (the empty Brain Dump prompt, and the brand line)
-- "Your tasks, your week and your hours in one place."
-- "Plan the day. Give each task a time. Watch it grow."
-- "Whatever you don't finish moves to today. No guilt, no copying things over."
+- "Turn your to-do list into a plan for today." (the main line)
+- "Beans is a daily planner."
+- "Write down everything you need to do, choose what you'll get to today, and block out the time to do it."
+- "At midnight, anything you didn't finish moves to the new day on its own."
+
+"Spill the beans" works in the empty Brain Dump, and in a sentence that goes on to explain it. It doesn't work alone.
