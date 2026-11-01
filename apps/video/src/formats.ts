@@ -56,7 +56,8 @@ export const FORMATS: Record<FormatId, Format> = {
     layouts: {
       plan: { sidebar: true, timebox: false, w: 864, h: 680 },
       timebox: { sidebar: false, timebox: true, w: 688, h: 541 },
-      night: { sidebar: false, timebox: false, w: 688, h: 541 },
+      // Tall enough for tomorrow's list once the three unfinished tasks land on it.
+      night: { sidebar: false, timebox: false, w: 808, h: 640 },
     },
   },
   vertical: {
