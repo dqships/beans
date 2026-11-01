@@ -10,8 +10,8 @@ Integration branch: `claude/beans-launch`, cut from `claude/beans-v1`. Merge `ma
 |---|---|---|---|---|---|
 | 0 | Handoff and Clerk check | `claude/beans-launch` | Coordinator | Done. `e2e:clerk` 3 of 3 | none |
 | 1 | Brand asset files | `claude/launch-brand-assets` | Sub-agent | Merged | [#6](https://github.com/dqships/beans/pull/6) |
-| 2 | Mascot poses | `claude/launch-mascot` | Sub-agent | Running | |
-| 3 | Landing page | `claude/launch-landing` | Sub-agent | Running, on placeholder assets | |
+| 2 | Mascot poses | `claude/launch-mascot` | Sub-agent | Merged | [#7](https://github.com/dqships/beans/pull/7) |
+| 3 | Landing page | `claude/launch-landing` | Sub-agent | Merged | [#8](https://github.com/dqships/beans/pull/8) |
 | 4 | Demo video | `claude/launch-video` | Sub-agent | Running | |
 | 5 | Launch audit | `claude/beans-launch` | Coordinator | Not started | |
 
@@ -44,7 +44,7 @@ Integration branch: `claude/beans-launch`, cut from `claude/beans-v1`. Merge `ma
 | `/about`, `/contact`, `/privacy`, `/terms` | Plain marketing pages | Pages |
 | `/app` | Planner behind sign-in | App, `(app)` route group |
 | `/sign-in`, `/sign-up` | Clerk | App, `(app)` route group |
-| 404 | Mascot page, real 404 status | Pages `404.tsx`, plus App `not-found.tsx` |
+| 404 | Mascot page, real 404 status | App `not-found.tsx` (App Router overrides `pages/404`) |
 
 Clerk and Convex providers live in `apps/web/src/app/(app)/layout.tsx`. This move is done on the integration branch.
 

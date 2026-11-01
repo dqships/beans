@@ -54,9 +54,14 @@ It pushes the Convex functions, then builds the web app with the matching `NEXT_
    | `CLERK_SECRET_KEY` | `sk_live_…` | `sk_test_…` |
    | `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | `/sign-in` | `/sign-in` |
    | `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | `/sign-up` | `/sign-up` |
+   | `NEXT_PUBLIC_SITE_URL` | `https://<your domain>` | leave unset |
 
    Don't set any `BEANS_TEST_AUTH` variable on Vercel. Production builds ignore them, but they don't belong there.
 5. Deploy. Then sign in on the deployed site, add a task, open a second window, and check it syncs.
+
+### Headers
+
+`apps/web/src/lib/csp.ts` builds the Content-Security-Policy once, at build time. It reads the Clerk host from `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and the Convex host from `NEXT_PUBLIC_CONVEX_URL`, so a production Clerk domain needs no edit, but both must be set at build, and a Clerk key change needs a rebuild. The policy doesn't allow Vercel's preview toolbar. `Strict-Transport-Security` uses `includeSubDomains`, so every subdomain must serve HTTPS.
 
 ### 4. Before a public launch
 

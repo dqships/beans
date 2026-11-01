@@ -57,8 +57,8 @@ Tracked in `docs/launch/PLAN.md`.
 - [x] Move the planner to `/app`, with providers out of the root layout
 - [x] Add the Clerk end-to-end test (`pnpm --filter @beans/web e2e:clerk`)
 - [x] Brand asset files
-- [ ] Mascot poses and illustrations
-- [ ] Landing page
+- [x] Mascot poses and illustrations
+- [x] Landing page
 - [ ] Demo video
 - [ ] Launch audit and PR into `main`
 
@@ -69,6 +69,7 @@ Tracked in `docs/launch/PLAN.md`.
 
 ## Done
 
+- 2026-10-31: Landing page merged. Zero framework JavaScript on public pages, plain copy, launch checklist, CSP and markdown negotiation. 15 mascot poses merged and wired into sign-in, Trash and the error page. Fixed the rollover test, which failed on the first of each month.
 - 2026-10-31: Clerk sign-in verified end to end against the development instances: sign-up, saving a task across a reload, live sync to a second window, and sign-out (`e2e:clerk`, 3 of 3 passed, run by DQ).
 - 2026-10-31: Clerk setup checked. Convex functions pushed to the hosted dev deployment, `CLERK_JWT_ISSUER_DOMAIN` confirmed on it and matching the keys, the `convex` JWT template created in the Clerk development instance, and a test confirms signed-out visitors reach the Clerk form.
 - 2026-10-31: Planner moved to `/app`. 50 browser tests and `pnpm check` pass on the local backend.
@@ -155,7 +156,10 @@ Steps only DQ can do. Filled in as phases finish.
 2. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.
 3. **Create the Vercel project** from the GitHub repo with Root Directory `apps/web`, keep "Include files outside the root directory" on, and add the environment variables listed in `docs/DEPLOY.md`. Then deploy.
 4. **Set up the production Clerk instance**: domain, DNS records and Google OAuth credentials.
-5. **Upload the brand logos**: `assets/brand/clerk-logo.png` to the Clerk application, `assets/brand/google-oauth-logo.png` to the Google consent screen, and `assets/brand/github-social-preview.png` to GitHub (repo settings, Social preview).
-6. **Legal review** before public release: privacy policy, terms, and what Clerk and Convex store.
-7. **Review and merge the PR** from `claude/beans-v1` into `main`.
-8. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
+5. **Add a contact address** for `/contact` and `/privacy`, and optional real Organization details for JSON-LD.
+6. **Decide pricing.** The pricing page stays out until then.
+7. **Set `NEXT_PUBLIC_SITE_URL`** to the production domain on Vercel, then check HTTPS on the live domain.
+8. **Upload the brand logos**: `assets/brand/clerk-logo.png` to the Clerk application, `assets/brand/google-oauth-logo.png` to the Google consent screen, and `assets/brand/github-social-preview.png` to GitHub (repo settings, Social preview).
+9. **Legal review** before public release: privacy policy, terms, and what Clerk and Convex store.
+10. **Review and merge the PR** from `claude/beans-v1` into `main`.
+11. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
