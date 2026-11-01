@@ -141,7 +141,7 @@ pnpm --filter @beans/web e2e:clerk
 
 It signs up a `+clerk_test` user and deletes it afterwards. It only accepts development keys, and skips when there are none.
 
-To rebuild the demo video's voice and music cuts from the raw files in `assets/audio` (needs ffmpeg):
+To rebuild the demo video's voice and music cuts from the raw files in `assets/audio`, including the landing page's files (needs ffmpeg). Run this after `pnpm video:render`, which writes those files without sound:
 
 ```bash
 pnpm video:mix

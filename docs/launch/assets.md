@@ -114,7 +114,7 @@ The intro, outro and midnight scenes use the `video-intro`, `video-outro` and `r
 
 ## 5. Voiceover and music
 
-Generated on Replicate. `pnpm video:mix` rebuilds the stems and both videos from the raw files, so swapping a line or the music takes one command. `--music=<raw file name>` builds trial cuts in `apps/video/out` without touching these. The landing page still plays the silent film with captions.
+Generated on Replicate. `pnpm video:mix` rebuilds the stems and both videos from the raw files, so swapping a line or the music takes one command. `--music=<raw file name>` builds trial cuts in `apps/video/out` without touching these. The landing page plays the version with voice and music, on click only, in `beans-demo-web.mp4`, `beans-demo-web.webm` and `beans-demo-square.mp4`, each under 6 MB. The 1920 and vertical cuts stay silent for social posts. `pnpm video:render` rewrites the landing files without sound, so run `pnpm video:mix` after it.
 
 | File | What it is |
 |---|---|

@@ -4,7 +4,7 @@
 // To hear another track, run `pnpm video:mix --music=minimax-take-1`. That builds
 // trial cuts in apps/video/out and leaves the chosen files alone.
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -16,8 +16,10 @@ const pick = process.argv.find((arg) => arg.startsWith("--music="))?.slice("--mu
 const trial = pick !== chosen;
 const outDir = trial ? join(root, "apps/video/out", pick) : join(root, "assets/video");
 
-const video = join(root, "apps/web/public/video/beans-demo-1920.mp4");
-const captions = join(root, "apps/web/public/video/beans-demo.vtt");
+const publicVideo = join(root, "apps/web/public/video");
+// The silent film. Every cut with sound starts from these files.
+const video = join(publicVideo, "beans-demo-1920.mp4");
+const captions = join(publicVideo, "beans-demo.vtt");
 const music = join(musicDir, `${pick}.mp3`);
 
 const leadIn = 0.18; // Seconds between a caption appearing and its line starting.
@@ -25,6 +27,7 @@ const gap = 0.22; // Seconds of air between two lines.
 const fadeIn = 0.4;
 const fadeOut = 2.5;
 const target = -16; // LUFS, for the voice and for the music-only cut.
+const webLimit = 6_000_000; // Bytes, the landing page's budget for each video file.
 const musicUnderVoice = -5; // dB, the music's level under the voice before ducking.
 
 const ffmpeg = (args) => execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", ...args], { stdio: "inherit" });
@@ -95,24 +98,44 @@ const finish = ["-map", "0:v", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-
 // Video with music only.
 ffmpeg(["-i", video, "-i", musicStem, ...finish.slice(0, 2), "-map", "1:a", ...finish.slice(2), join(outDir, "beans-demo-music.mp4")]);
 
-// Video with voice and music. The music dips further while the voice speaks.
+// Voice and music together. The music dips further while the voice speaks.
+const mix = join(outDir, "voice-music-mix.wav");
 ffmpeg([
-  "-i",
-  video,
   "-i",
   voiceStem,
   "-i",
   musicStem,
   "-filter_complex",
-  `[1:a]asplit=2[voice][key];[2:a]volume=${musicUnderVoice}dB[bed];[bed][key]sidechaincompress=threshold=0.06:ratio=2:attack=30:release=500[ducked];[voice][ducked]amix=inputs=2:normalize=0,alimiter=limit=0.89:level=false[mix]`,
-  ...finish.slice(0, 2),
+  `[0:a]asplit=2[voice][key];[1:a]volume=${musicUnderVoice}dB[bed];[bed][key]sidechaincompress=threshold=0.06:ratio=2:attack=30:release=500[ducked];[voice][ducked]amix=inputs=2:normalize=0,alimiter=limit=0.89:level=false[mix]`,
   "-map",
   "[mix]",
-  ...finish.slice(2),
-  join(outDir, "beans-demo-voice-music.mp4"),
+  mix,
 ]);
+ffmpeg(["-i", video, "-i", mix, ...finish.slice(0, 2), "-map", "1:a", ...finish.slice(2), join(outDir, "beans-demo-voice-music.mp4")]);
 
-execFileSync("rm", [rawMusic]);
+/** Puts the mix on a landing page file, keeping its picture. */
+function addSound(name, audio) {
+  const file = join(publicVideo, name);
+  const next = join(outDir, `sound-${name}`);
+  ffmpeg(["-i", file, "-i", mix, "-map", "0:v", "-map", "1:a", "-c:v", "copy", ...audio, "-movflags", "+faststart", "-t", String(length), next]);
+  renameSync(next, file);
+  if (statSync(file).size >= webLimit) throw new Error(`${name} is over the web budget`);
+}
+
+// The landing page's files. The MP4 is encoded again with room for its audio.
+if (!trial) {
+  const mp4 = join(publicVideo, "beans-demo-web.mp4");
+  const fits = [23, 24, 25, 26, 27, 28].some((crf) => {
+    const h264 = ["-c:v", "libx264", "-preset", "veryslow", "-tune", "animation", "-crf", String(crf), "-pix_fmt", "yuv420p"];
+    ffmpeg(["-i", video, "-i", mix, "-map", "0:v", "-map", "1:a", ...h264, "-c:a", "aac", "-b:a", "80k", "-movflags", "+faststart", "-t", String(length), mp4]);
+    return statSync(mp4).size < webLimit;
+  });
+  if (!fits) throw new Error("beans-demo-web.mp4 is over the web budget");
+  addSound("beans-demo-web.webm", ["-c:a", "libopus", "-b:a", "72k"]);
+  addSound("beans-demo-square.mp4", ["-c:a", "aac", "-b:a", "96k"]);
+}
+
+execFileSync("rm", [rawMusic, mix]);
 if (!trial) {
   writeFileSync(
     join(voiceDir, "timing.json"),
