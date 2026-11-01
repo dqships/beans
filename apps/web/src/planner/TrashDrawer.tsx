@@ -63,7 +63,7 @@ function TrashBody() {
           );
         })}
       </ul>
-      {items.length === 0 ? <EmptyState scene="rest" title="Trash is empty">Nothing to dig up here.</EmptyState> : null}
+      {items.length === 0 ? <EmptyState illustration="empty-trash" title="Trash is empty">Nothing to dig up here.</EmptyState> : null}
       {items.length > 0 ? (
         <div className={styles.footer}>
           <Button

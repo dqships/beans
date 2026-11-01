@@ -15,7 +15,9 @@
 }
 
 .mascot {
-  width: calc(var(--space-6) * 3.5);
+  display: block;
+  width: calc(var(--space-6) * 5);
+  height: auto;
 }
 
 .title {
