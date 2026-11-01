@@ -8,8 +8,8 @@ Integration branch: `claude/beans-launch`, cut from `claude/beans-v1`. Merge `ma
 
 | # | Workstream | Branch | Owner | Status | PR |
 |---|---|---|---|---|---|
-| 0 | Handoff and Clerk check | `claude/beans-launch` | Coordinator | Built. Waiting on DQ's sign-up run | none |
-| 1 | Brand asset files | `claude/launch-brand-assets` | Sub-agent | Running | |
+| 0 | Handoff and Clerk check | `claude/beans-launch` | Coordinator | Done. `e2e:clerk` 3 of 3 | none |
+| 1 | Brand asset files | `claude/launch-brand-assets` | Sub-agent | Merged | [#6](https://github.com/dqships/beans/pull/6) |
 | 2 | Mascot poses | `claude/launch-mascot` | Sub-agent | Running | |
 | 3 | Landing page | `claude/launch-landing` | Sub-agent | Running, on placeholder assets | |
 | 4 | Demo video | `claude/launch-video` | Sub-agent | Running | |

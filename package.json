@@ -9,6 +9,7 @@
     "dev": "pnpm --filter @beans/web dev",
     "build": "pnpm -r --if-present build",
     "tokens": "pnpm --filter @beans/tokens build",
+    "assets": "node scripts/build-brand-assets.mjs",
     "typecheck": "tsc -p convex && pnpm -r --if-present typecheck",
     "lint": "pnpm -r --if-present lint",
     "test": "vitest run --config convex/vitest.config.mts && pnpm -r --if-present test",
@@ -21,10 +22,12 @@
   "devDependencies": {
     "@beans/core": "workspace:*",
     "@edge-runtime/vm": "^5.0.0",
+    "@fontsource/figtree": "^5.3.0",
     "@types/node": "^22.20.5",
     "convex": "1.49.0",
     "convex-test": "^0.0.66",
-    "sharp": "^0.35.5",
+    "opentype.js": "^2.0.0",
+    "sharp": "0.35.5",
     "typescript": "^5.9.3",
     "vitest": "^4.0.5"
   }
