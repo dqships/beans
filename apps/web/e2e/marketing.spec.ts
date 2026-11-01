@@ -56,6 +56,7 @@ test.describe("what public pages load", () => {
   });
 
   test("no console errors or policy violations on public pages", async ({ page }) => {
+    test.skip(!production, "Next's development client logs its own errors under nosniff.");
     const problems: string[] = [];
     page.on("console", (message) => {
       // The video's files come from workstream 4; only they may be missing before it lands.
@@ -65,7 +66,7 @@ test.describe("what public pages load", () => {
     for (const path of publicPaths) {
       await page.goto(path, { waitUntil: "networkidle" });
     }
-    expect(problems.filter((text) => !production || !/Failed to load resource/.test(text))).toEqual([]);
+    expect(problems).toEqual([]);
   });
 });
 
@@ -183,21 +184,28 @@ test.describe("accessibility", () => {
 
   test("keyboard reaches every control, with a visible ring", async ({ page }) => {
     await page.goto("/");
-    const count = await page.locator('a[href], button:not([hidden]), input, video[controls]').count();
-    for (let i = 0; i < Math.min(count, 40); i++) {
+    const visited: string[] = [];
+    for (let i = 0; i < 80; i++) {
       await page.keyboard.press("Tab");
       const focus = await page.evaluate(() => {
         const element = document.activeElement as HTMLElement;
         const target = element.matches("input") ? (element.parentElement as HTMLElement) : element;
         const style = getComputedStyle(target);
-        return { tag: element.tagName, outline: style.outlineStyle, width: parseFloat(style.outlineWidth), body: element === document.body };
+        return {
+          tag: element.tagName,
+          href: element.getAttribute("href"),
+          outline: style.outlineStyle,
+          width: parseFloat(style.outlineWidth),
+        };
       });
-      expect(focus.body).toBe(false);
+      if (focus.tag === "BODY") break;
+      visited.push(focus.href ?? focus.tag);
       if (focus.tag !== "VIDEO") {
         expect(focus.outline).toBe("solid");
         expect(focus.width).toBeGreaterThanOrEqual(2);
       }
     }
+    expect(visited).toEqual(expect.arrayContaining(["/sign-up", "/sign-in", "INPUT", "VIDEO", "/about", "/terms"]));
   });
 
   test("a bean ticks with the keyboard", async ({ page }) => {

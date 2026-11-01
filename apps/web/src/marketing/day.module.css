@@ -458,8 +458,7 @@
   min-width: 0;
 }
 
-/* --layout-phone */
-@media (max-width: 720px) {
+@media (max-width: 720px) { /* --layout-phone */
   .h2,
   .h3 {
     font-size: var(--text-xl-size);

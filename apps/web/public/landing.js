@@ -60,7 +60,10 @@
     if (slot < 0) return;
     for (var i = 0; i < size; i++) taken[slot + i] = 1;
 
-    var block = template.content.firstElementChild.cloneNode(true);
+    var block = template.cloneNode(true);
+    block.removeAttribute("data-block-template");
+    block.dataset.block = "";
+    block.hidden = false;
     block.style.setProperty("--label-color", "var(--label-" + card.dataset.label + ")");
     block.style.gridRow = slot + 1 + " / span " + size;
     block.children[0].textContent = card.dataset.task;

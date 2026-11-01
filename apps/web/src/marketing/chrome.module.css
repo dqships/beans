@@ -137,8 +137,7 @@
   text-underline-offset: var(--space-1);
 }
 
-/* --layout-phone */
-@media (max-width: 720px) {
+@media (max-width: 720px) { /* --layout-phone */
   .navLink {
     display: none;
   }

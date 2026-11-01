@@ -9,8 +9,7 @@
   --page-pad: max(var(--space-5), calc(50vw - var(--layout-page) / 2));
 }
 
-/* --layout-phone */
-@media (max-width: 720px) {
+@media (max-width: 720px) { /* --layout-phone */
   :root {
     --vine-x: var(--vine-gutter);
     --page-pad: var(--space-4);

@@ -96,12 +96,10 @@ function Timebox() {
           <Block title="Morning walk" range="8:00am – 8:30am" label="sprout" slot={styles.slotWalk} done />
           <Block title="Write the weekly update" range="9:00am – 9:30am" label="rain" slot={styles.slotUpdate} />
           <Block title="Review launch plan" range="10:00am – 10:45am" label="rain" slot={styles.slotReview} />
-          <template data-block-template>
-            <div className={`${styles.block} ${styles.blockNew}`} data-block>
-              <span className={styles.blockTitle} />
-              <span className={styles.blockTime} />
-            </div>
-          </template>
+          <div className={`${styles.block} ${styles.blockNew}`} data-block-template hidden>
+            <span className={styles.blockTitle} />
+            <span className={styles.blockTime} />
+          </div>
         </div>
         <div className={styles.nowLine} aria-hidden="true">
           <LeafMark className={styles.nowLeaf} />

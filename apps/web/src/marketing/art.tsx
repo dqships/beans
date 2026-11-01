@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element -- no client runtime here, so next/image can't add anything. */
 import { phoneBreakpoint } from "@beans/tokens";
 import styles from "./art.module.css";
 
