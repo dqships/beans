@@ -133,6 +133,8 @@ Tracked in `docs/launch/PLAN.md`.
 
 - 2026-10-31: Marketing pages use the Pages Router with no runtime JavaScript, not `app/(marketing)`, because the App Router ships 179 KB gzipped on an empty page and the budget is 70 KB. This overrides the original brief's folder layout to keep its budget. DQ can reverse it.
 - 2026-10-31: One full-color favicon in every browser theme, no monochrome variant. It read well on all tab colors checked, and a silhouette lost the character.
+- 2026-10-31: Marketing copy leads with plain words that say what Beans does. Garden wordplay stays where the words or screen around it make the meaning clear, such as the empty Brain Dump, and never stands alone. The social image says "Turn your to-do list into a plan for today." and "Beans is a daily planner." (DQ)
+- 2026-10-31: DQ approved the hero pose (`assets/illustrations/hero.png`) for the landing page.
 - 2026-10-31: Clerk test accounts can't be created by the agent, so the real sign-up test is DQ's to run.
 
 ### Saved for the desktop app
