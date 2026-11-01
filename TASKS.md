@@ -4,7 +4,7 @@
 
 Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done. Phase 4 (planner behavior) is done. Phase 5 launch prep is done on the repo side; creating services and deploying is for DQ, listed under Needs DQ. The PR from `claude/beans-v1` into `main` is ready for review.
 
-The Launch phase is running on `claude/beans-launch`. See `docs/launch/PLAN.md`.
+The Launch phase is merged into `claude/beans-v1`, so PR #5 now carries it too. What's left is listed under Launch. See `docs/launch/PLAN.md`.
 
 - [x] Review `DESIGN.md` and the mascot
 - [x] Answer the open decisions below
@@ -59,15 +59,14 @@ Tracked in `docs/launch/PLAN.md`.
 - [x] Brand asset files
 - [x] Mascot poses and illustrations
 - [x] Landing page
-- [ ] Demo video
-- [ ] Launch audit and PR into `main`
+- [x] Demo video
+- [ ] Launch audit (partly done, see below)
 
 Left to do on the launch:
 
 - [ ] Run `pnpm --filter @beans/web e2e:clerk:prod`: real sign-in, saving and sync under the production CSP (DQ, it creates a test account)
 - [ ] Watch the demo video at full speed (DQ)
-- [ ] Rerun Lighthouse with the final copy and video. The 100s were measured before the copy rewrite, with a placeholder poster
-- [ ] Walk `docs/launch/checklist.md` again on the merged branch
+- [ ] Walk `docs/launch/checklist.md` again on the merged branch, item by item
 - [ ] Fresh screenshots of every landing and app screen at 1440 and 390, light and dark
 - [ ] Test on Vercel, Safari, Firefox and with a screen reader
 
@@ -78,6 +77,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-10-31: Launch work merged into `claude/beans-v1`. Demo video merged, with the square cut on phones. On the merged result: `pnpm check` passes, 82 browser tests pass in development plus 38 of 38 public-page tests on a production build, and Lighthouse on `next start` (mobile, median of 3) is 100 in all four categories with LCP 1.51 s, CLS 0 and 1.9 KB of JavaScript at last measure. Clerk's test passed before the CSP landed, so it needs one more run.
 - 2026-10-31: Landing page merged. Zero framework JavaScript on public pages, plain copy, launch checklist, CSP and markdown negotiation. 15 mascot poses merged and wired into sign-in, Trash and the error page. Fixed the rollover test, which failed on the first of each month.
 - 2026-10-31: Clerk sign-in verified end to end against the development instances: sign-up, saving a task across a reload, live sync to a second window, and sign-out (`e2e:clerk`, 3 of 3 passed, run by DQ).
 - 2026-10-31: Clerk setup checked. Convex functions pushed to the hosted dev deployment, `CLERK_JWT_ISSUER_DOMAIN` confirmed on it and matching the keys, the `convex` JWT template created in the Clerk development instance, and a test confirms signed-out visitors reach the Clerk form.
@@ -143,6 +143,7 @@ Left to do on the launch:
 
 - 2026-10-31: Marketing pages use the Pages Router with no runtime JavaScript, not `app/(marketing)`, because the App Router ships 179 KB gzipped on an empty page and the budget is 70 KB. This overrides the original brief's folder layout to keep its budget. DQ can reverse it.
 - 2026-10-31: One full-color favicon in every browser theme, no monochrome variant. It read well on all tab colors checked, and a silhouette lost the character.
+- 2026-10-31: The launch work merges into `claude/beans-v1`, not a separate PR into `main`. PR #5 carries it all. (DQ)
 - 2026-10-31: Marketing copy leads with plain words that say what Beans does. Garden wordplay stays where the words or screen around it make the meaning clear, such as the empty Brain Dump, and never stands alone. The social image says "Turn your to-do list into a plan for today." and "Beans is a daily planner." (DQ)
 - 2026-10-31: DQ approved the hero pose (`assets/illustrations/hero.png`) for the landing page.
 - 2026-10-31: Clerk test accounts can't be created by the agent, so the real sign-up test is DQ's to run.

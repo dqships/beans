@@ -2,7 +2,7 @@
 
 The coordinator owns this file. Every sub-agent reads it first, then `DESIGN.md`, `docs/launch/voice.md` and `docs/launch/assets.md`.
 
-Integration branch: `claude/beans-launch`, cut from `claude/beans-v1`. Merge `main` into it once PR #5 lands. It reaches `main` through one PR, which DQ reviews and merges.
+Integration branch: `claude/beans-launch`, cut from `claude/beans-v1`. DQ decided on 2026-10-31 to merge it into `claude/beans-v1`, so all of this reaches `main` through PR #5, which DQ reviews and merges.
 
 ## Status
 
@@ -12,8 +12,8 @@ Integration branch: `claude/beans-launch`, cut from `claude/beans-v1`. Merge `ma
 | 1 | Brand asset files | `claude/launch-brand-assets` | Sub-agent | Merged | [#6](https://github.com/dqships/beans/pull/6) |
 | 2 | Mascot poses | `claude/launch-mascot` | Sub-agent | Merged | [#7](https://github.com/dqships/beans/pull/7) |
 | 3 | Landing page | `claude/launch-landing` | Sub-agent | Merged | [#8](https://github.com/dqships/beans/pull/8) |
-| 4 | Demo video | `claude/launch-video` | Sub-agent | Running | |
-| 5 | Launch audit | `claude/beans-launch` | Coordinator | Not started | |
+| 4 | Demo video | `claude/launch-video` | Sub-agent | Merged | [#9](https://github.com/dqships/beans/pull/9) |
+| 5 | Launch audit | `claude/beans-v1` | Coordinator | Partly done. Remaining items are in `TASKS.md` | [#5](https://github.com/dqships/beans/pull/5) |
 
 ## Rules for every workstream
 
@@ -96,7 +96,7 @@ Enforced. Workstream 3 records real numbers here.
 | Budget | Limit | Measured |
 |---|---|---|
 | Landing JavaScript, gzipped | Under 70 KB | 1.9 KB (`landing.js` only, no framework) |
-| LCP, mobile throttling | Under 2.0 s | 1.48 s |
+| LCP, mobile throttling | Under 2.0 s | 1.51 s |
 | CLS, mobile throttling | Under 0.05 | 0 |
 | Lighthouse performance | 95 or above | 100 |
 | Lighthouse accessibility | 95 or above | 100 |
