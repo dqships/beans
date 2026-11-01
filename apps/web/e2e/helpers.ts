@@ -43,8 +43,12 @@ export function addDaysKey(key: string, n: number): string {
   return t.toISOString().slice(0, 10);
 }
 
-/** Signs in with the local test sign-in as a fresh user, so tests don't share data. */
-export async function signIn(page: Page, name = `Tester ${Math.random().toString(36).slice(2, 8)}`) {
+export function testUser() {
+  return `Tester ${Math.random().toString(36).slice(2, 8)}`;
+}
+
+/** Signs in with the local test sign-in, and stops wherever the account lands. */
+export async function signInOnly(page: Page, name = testUser()) {
   await page.goto("/sign-in");
   const input = page.getByLabel("Your name");
   await expect(input).toBeEditable();
@@ -53,6 +57,16 @@ export async function signIn(page: Page, name = `Tester ${Math.random().toString
     await expect(page.getByRole("button", { name: "Sign in" })).toBeEnabled({ timeout: 500 });
   }).toPass();
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("region", { name: "Days" })).toBeVisible({ timeout: 20_000 });
+  return name;
+}
+
+/** Signs in as a fresh user by default, so tests don't share data, and skips onboarding. */
+export async function signIn(page: Page, name = testUser()) {
+  await signInOnly(page, name);
+  const planner = page.getByRole("region", { name: "Days" });
+  const skip = page.getByRole("button", { name: "Skip setup" });
+  await expect(planner.or(skip)).toBeVisible({ timeout: 20_000 });
+  if (await skip.isVisible()) await skip.click();
+  await expect(planner).toBeVisible();
   return name;
 }

@@ -2,7 +2,7 @@ import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
-import { applyOps, createTask, deleteTask, emptyState, makeRepeating, moveTask, setDone, type BeansState, type Op } from "../packages/core/src";
+import { ONBOARDED, applyOps, createTask, deleteTask, emptyState, makeRepeating, moveTask, setDone, type BeansState, type Op } from "../packages/core/src";
 
 // Vitest provides import.meta.glob.
 const modules = (import.meta as unknown as { glob: (p: string) => Record<string, () => Promise<unknown>> }).glob("./**/*.ts");
@@ -44,6 +44,39 @@ async function signedInWithSettings() {
   await ctx.alice.mutation(api.planner.init, { timeZone: "UTC" });
   return ctx;
 }
+
+describe("onboarding", () => {
+  it("starts new accounts on the first step", async () => {
+    const { alice } = await signedInWithSettings();
+    const { settings } = await alice.query(api.planner.load, { from: TODAY });
+    expect(settings!.onboarding).toEqual({ status: "active", step: "labels", day: null });
+  });
+
+  it("keeps its step and its end state between loads", async () => {
+    const { alice } = await signedInWithSettings();
+    await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { onboarding: { status: "active", step: "choose", day: "2026-11-01" } } }] });
+    expect((await alice.query(api.planner.load, { from: TODAY })).settings!.onboarding).toEqual({ status: "active", step: "choose", day: "2026-11-01" });
+    await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { onboarding: { status: "skipped", at: 5 } } }] });
+    expect((await alice.query(api.planner.load, { from: TODAY })).settings!.onboarding).toEqual({ status: "skipped", at: 5 });
+  });
+
+  it("treats accounts from before onboarding as finished", async () => {
+    const { t, alice } = await signedInWithSettings();
+    await t.run(async (ctx) => {
+      const doc = (await ctx.db.query("userSettings").first())!;
+      await ctx.db.patch(doc._id, { onboarding: undefined });
+      expect((await ctx.db.get(doc._id))!.onboarding).toBeUndefined();
+    });
+    expect((await alice.query(api.planner.load, { from: TODAY })).settings!.onboarding).toEqual(ONBOARDED);
+  });
+
+  it("doesn't restart for an account that already has settings", async () => {
+    const { alice } = await signedInWithSettings();
+    await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { onboarding: { status: "finished", at: 5 } } }] });
+    await alice.mutation(api.planner.init, { timeZone: "UTC" });
+    expect((await alice.query(api.planner.load, { from: TODAY })).settings!.onboarding).toEqual({ status: "finished", at: 5 });
+  });
+});
 
 describe("planner functions", () => {
   it("refuses signed-out callers", async () => {

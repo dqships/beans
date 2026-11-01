@@ -72,6 +72,13 @@ Left to do on the launch:
 - [x] Fresh screenshots of every landing and app screen at 1440 and 390, light and dark, with no overflow and no broken images
 - [ ] Test on Vercel, Safari, Firefox and with a screen reader
 
+### Onboarding
+
+- [x] First-run onboarding: labels, Brain Dump, choose a day, Timebox, done
+- [x] Saved per account, resumes after a reload and on a second device, and can be skipped
+- [ ] Run the real Clerk sign-up through onboarding (DQ, see Needs DQ)
+- [ ] Decide on a paywall step once pricing is settled. It goes in as one more step
+
 ### Later
 
 - [ ] Desktop app: see "Desktop app, saved for later" in `RESEARCH.md`
@@ -79,6 +86,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-01: First-run onboarding merged into `claude/beans-v1` (PR #10, DQ). New accounts pick labels, spill tasks into the Brain Dump, choose what goes on today or tomorrow, give tasks a time and land on a populated planner. 15 browser tests, 11 core tests and 4 Convex tests cover finishing, skipping, reloading, a second device, existing accounts, the keyboard, axe in both themes and the phone layout.
 - 2026-11-01: Fixed the sign-in and sign-up pages on short screens. The page couldn't scroll, so Clerk's Continue button could end up cut off and out of reach. Removed the duplicate mascot from Clerk's card, and added a test.
 - 2026-11-01: Fixed the sign-in reload loop on the local dev server. Next's dev hot reload kept restarting `(app)` pages from a stale `.next/dev` cache. A clean checkout never looped, and neither did builds run alongside dev, so the exact trigger is unknown. Added `pnpm dev:clean`.
 - 2026-10-31: The landing page plays the film with voice and music, on click only, with each file under 6 MB. Sound checked in Chromium on the desktop layout and Chrome on the phone layout, and no video loads before pressing play.
@@ -156,6 +164,11 @@ Left to do on the launch:
 - 2026-10-31: Marketing copy leads with plain words that say what Beans does. Garden wordplay stays where the words or screen around it make the meaning clear, such as the empty Brain Dump, and never stands alone. The social image says "Turn your to-do list into a plan for today." and "Beans is a daily planner." (DQ)
 - 2026-10-31: DQ approved the hero pose (`assets/illustrations/hero.png`) for the landing page.
 - 2026-10-31: Clerk test accounts can't be created by the agent, so the real sign-up test is DQ's to run.
+- 2026-11-01: Onboarding has five steps: labels, Brain Dump, choose a day, Timebox, done. Every question has to change the planner, so there's no role or feelings question, no spotlight tour, no settings questions and no paywall in this phase. (DQ)
+- 2026-11-01: Onboarding state lives in settings as `onboarding`. Only `init` writes it, so accounts made earlier have no value and read as finished, with no migration.
+- 2026-11-01: Onboarding saves each tap as it happens, like daily planning, so there's no draft to lose. Skipping keeps what was added and doesn't come back.
+- 2026-11-01: Adding an onboarding step means adding its id to `ONBOARDING_STEPS` and its screen in `Onboarding.tsx`.
+- 2026-11-01: Removing a task during onboarding deletes it for good instead of sending it to Trash, because it only undoes the add a moment earlier.
 
 ### Saved for the desktop app
 
@@ -222,4 +235,5 @@ Steps only DQ can do. Filled in as phases finish.
 8. **Upload the brand logos**: `assets/brand/clerk-logo.png` to the Clerk application, `assets/brand/google-oauth-logo.png` to the Google consent screen, and `assets/brand/github-social-preview.png` to GitHub (repo settings, Social preview).
 9. **Legal review** before public release: privacy policy, terms, and what Clerk and Convex store.
 10. **Review and merge the PR** from `claude/beans-v1` into `main`.
-11. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
+11. **Try onboarding with a real sign-up.** Agents can't create Clerk accounts, so `e2e:clerk` hasn't been run since onboarding landed. Its sign-up test now skips onboarding. Run `pnpm --filter @beans/web e2e:clerk`, then sign up once by hand and walk the five steps.
+12. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.

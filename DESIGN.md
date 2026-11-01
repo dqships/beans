@@ -16,6 +16,7 @@ Beans is a small garden you tend each day. Its materials come from one place: se
 | Timer ring | A leaf that grows as time passes |
 | Empty states | The bean mascot doing something in the garden |
 | Analytics bars | Rounded stalks |
+| First-run setup | Seed packets become labels, real tasks land on soil lines, and a vine grows a leaf per step |
 
 Names stay plain: Brain Dump, Timebox, Lists, Labels. The world shows in visuals and in small lines of copy, such as "Spill the beans" as the empty Brain Dump prompt.
 

@@ -1,4 +1,5 @@
 import type { BeansState, Settings } from "../packages/core/src/model";
+import { ONBOARDED } from "../packages/core/src/onboarding";
 import { defaultSettings } from "../packages/core/src/settings";
 import type { Doc, TableNames } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
@@ -28,7 +29,7 @@ export function toSettings(doc: Doc<"userSettings">): Settings {
   void _id;
   void _creationTime;
   void userId;
-  return { id: "settings", ...rest };
+  return { id: "settings", ...rest, onboarding: rest.onboarding ?? ONBOARDED };
 }
 
 export async function findByClientId(ctx: QueryCtx | MutationCtx, table: ClientTable, userId: string, clientId: string) {
