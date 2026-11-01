@@ -18,17 +18,20 @@ const srcDir = join(root, "assets/illustrations");
 const webDir = join(root, "apps/web/public/illustrations");
 const MAX_BYTES = 60 * 1024;
 
-/** `minIsland`: loose specks smaller than this (in raw pixels) are paper texture, not art. */
+/**
+ * `minIsland`: loose specks smaller than this (in raw pixels) are paper texture, not art.
+ * `soil`: this pose's soil color, retinted to C.soil. `band` limits that to a row range of the
+ * raw image, for poses where something else in the picture is close to the soil color.
+ * The hero has no `soil` on purpose: DQ reviews it as generated.
+ */
 const generated = {
   hero: { width: 800, height: 600, minIsland: 700 },
-  "brain-dump": { width: 640, height: 480 },
-  planning: { width: 640, height: 480 },
-  timebox: { width: 640, height: 480 },
-  focus: { width: 640, height: 480 },
-  rollover: { width: 640, height: 480 },
-  analytics: { width: 640, height: 480 },
-  phone: { width: 480, height: 480 },
-  404: { width: 640, height: 480 },
+  "brain-dump": { width: 640, height: 480, soil: { from: "#794925", band: [705, 727] } },
+  planning: { width: 640, height: 480, soil: { from: "#694020" } },
+  focus: { width: 640, height: 480, soil: { from: "#623918", band: [652, 676] } },
+  rollover: { width: 640, height: 480, soil: { from: "#6C4324", band: [670, 760] } },
+  analytics: { width: 640, height: 480, soil: { from: "#BE7535", band: [704, 722] } },
+  phone: { width: 480, height: 480, soil: { from: "#824722", band: [950, 968] } },
 };
 
 // Art colors. The mascot's are the brand constants in DESIGN.md. Soil and sage
@@ -41,6 +44,7 @@ const C = {
   leaf2: "#4FA874",
   stem: "#2F7D4F",
   soil: "#6F4327",
+  soilDeep: "#4A2A17",
   sage: "#93C48F",
   sageDark: "#6FA56E",
   sageDeep: "#3F6B45",
@@ -54,10 +58,9 @@ const masterBody = readFileSync(join(root, "assets/logo/beans-mascot.svg"), "utf
   .replace(/<title[\s\S]*?<\/title>/, "")
   .replace(/<!--[\s\S]*?-->/g, "");
 
-const mascot = (x, y, size, flip = false) => {
+const mascot = (x, y, size, turn = 0) => {
   const s = size / 512;
-  const mirror = flip ? ` translate(512 0) scale(-1 1)` : "";
-  return `<g transform="translate(${x} ${y}) scale(${s})${mirror}">${masterBody}</g>`;
+  return `<g transform="translate(${x} ${y}) rotate(${turn} ${size / 2} ${size / 2}) scale(${s})">${masterBody}</g>`;
 };
 
 const soilLine = (x1, x2, y, weight = 7) =>
@@ -84,6 +87,36 @@ const seedling = (x, y, size) => {
   </g>`;
 };
 
+/** One two-tone leaf growing from (x, y), pointing along `turn` degrees (0 is right). */
+const leaf = (x, y, size, turn, colors = [C.leaf, C.leaf2]) => {
+  const s = size / 100;
+  return `<g transform="translate(${x} ${y}) rotate(${turn}) scale(${s})">
+    <path d="M0 0 C22 -34 66 -38 100 0 C66 34 22 34 0 0 Z" fill="${colors[0]}"/>
+    <path d="M0 0 C34 -2 66 -2 100 0 C66 34 22 34 0 0 Z" fill="${colors[1]}"/>
+  </g>`;
+};
+
+/** Points at even steps along a cubic Bezier: [p0, p1, p2, p3], with the direction at each. */
+const evenSteps = ([p0, p1, p2, p3], count) => {
+  const at = (t) => {
+    const u = 1 - t;
+    return [0, 1].map((k) => u ** 3 * p0[k] + 3 * u * u * t * p1[k] + 3 * u * t * t * p2[k] + t ** 3 * p3[k]);
+  };
+  const samples = Array.from({ length: 801 }, (_, i) => at(i / 800));
+  const lengths = [0];
+  for (let i = 1; i < samples.length; i++) {
+    lengths.push(lengths[i - 1] + Math.hypot(samples[i][0] - samples[i - 1][0], samples[i][1] - samples[i - 1][1]));
+  }
+  const total = lengths.at(-1);
+  return Array.from({ length: count }, (_, step) => {
+    const goal = (total * (step + 1)) / (count + 1);
+    const i = lengths.findIndex((l) => l >= goal);
+    const [x, y] = samples[i];
+    const [px, py] = samples[i - 1];
+    return { x, y, heading: (Math.atan2(y - py, x - px) * 180) / Math.PI };
+  });
+};
+
 /** An open seed packet, tipped over. (x, y) is its center. No writing. */
 const packet = (x, y, size, turn) => {
   const s = size / 100;
@@ -97,7 +130,50 @@ const packet = (x, y, size, turn) => {
 const svg = (w, h, body) =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="${w * 2}" height="${h * 2}" viewBox="0 0 ${w} ${h}">${body}</svg>`;
 
+const vine = [[300, 450], [236, 330], [262, 180], [352, 52]];
+
 const coded = {
+  // Clinging to the beanstalk: the kidney notch hooks around the vine. Leaves mark even steps,
+  // with one bean-colored leaf above the mascot, like the now marker in the Timebox.
+  timebox: {
+    width: 640,
+    height: 480,
+    draw: (w, h) => {
+      // Steps 1, 2 and 5 sit behind the mascot and its sprout, so they aren't drawn.
+      const marks = evenSteps(vine, 8)
+        .map(({ x, y, heading }, i) => {
+          if ([1, 2, 5].includes(i)) return "";
+          const now = i === 6;
+          return leaf(x, y, now ? 52 : 44, heading - 62, now ? [C.bean, C.shade] : [C.leaf, C.leaf2]);
+        })
+        .join("");
+      return svg(w, h, `
+        ${soilLine(150, 490, 450)}
+        <path d="M${vine[0]} C${vine[1]} ${vine[2]} ${vine[3]}" stroke="${C.stem}" stroke-width="13" stroke-linecap="round" fill="none"/>
+        ${leaf(352, 52, 46, -62)}
+        ${marks}
+        ${mascot(166, 124, 262, -8)}
+      `);
+    },
+  },
+  // Digging and finding nothing: the soil line dips into an empty hole.
+  404: {
+    width: 640,
+    height: 480,
+    draw: (w, h) =>
+      svg(w, h, `
+        <path d="M322 408 C326 474 436 474 440 408 Z" fill="${C.soilDeep}"/>
+        <path d="M56 408 L322 408 C326 474 436 474 440 408 L592 408" stroke="${C.soil}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        ${mascot(2, 106, 326)}
+        <path d="M456 408 C472 356 544 354 570 408 Z" fill="${C.soil}"/>
+        <g transform="rotate(24 512 366)">
+          <path d="M505 300 L519 300 L519 346 L505 346 Z" fill="${C.sageDark}"/>
+          <rect x="499" y="268" width="26" height="40" rx="9" fill="${C.sageDark}"/>
+          <path d="M490 344 L534 344 L530 382 Q512 396 494 382 Z" fill="${C.sage}"/>
+        </g>
+        <path d="M456 408 C466 386 488 376 500 376 C522 376 556 382 570 408 Z" fill="${C.soil}"/>
+      `),
+  },
   // Watering a seedling: the same idea as the old sign-in art, on model.
   welcome: {
     width: 480,
@@ -196,6 +272,8 @@ const coded = {
   },
 };
 
+const rgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+
 /** Squared distance between two colors, in sRGB. */
 const dist2 = (r1, g1, b1, r2, g2, b2) => (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2;
 
@@ -207,8 +285,10 @@ const dist2 = (r1, g1, b1, r2, g2, b2) => (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 
  * 3. Loose specks go.
  * 4. Edge pixels get a soft alpha and take the color of the art beside them,
  *    so no cream fringe shows on the dark theme.
+ * 5. The soil, if given, is retinted to the shared soil color. It's a shift, not a
+ *    fill, so shading inside the soil survives.
  */
-async function cutOut(path, { minIsland = 40 }) {
+async function cutOut(path, { minIsland = 40, soil }) {
   const { data, info } = await sharp(path).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const { width: w, height: h } = info;
   const n = w * h;
@@ -350,6 +430,18 @@ async function cutOut(path, { minIsland = 40 }) {
     out[i * 4 + 1] = g;
     out[i * 4 + 2] = b;
     out[i * 4 + 3] = alpha;
+  }
+  if (soil) {
+    const from = rgb(soil.from);
+    const to = rgb(C.soil);
+    const [top, bottom] = soil.band ?? [0, h];
+    for (let y = top; y < bottom; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        if (!out[i + 3] || dist2(out[i], out[i + 1], out[i + 2], ...from) >= 30 ** 2) continue;
+        for (let c = 0; c < 3; c++) out[i + c] = Math.min(255, Math.max(0, out[i + c] + to[c] - from[c]));
+      }
+    }
   }
   return sharp(out, { raw: { width: w, height: h, channels: 4 } }).png();
 }
