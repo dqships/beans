@@ -4,15 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "rm -rf .next/dev/types && next build",
     "start": "next start",
     "lint": "eslint . && node ../../scripts/check-tokens.mjs",
-    "typecheck": "next typegen && tsc --noEmit",
+    "typecheck": "rm -rf .next/dev/types && next typegen && tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "e2e": "playwright test",
     "e2e:clerk": "playwright test --config playwright.clerk.config.ts",
     "capture": "node scripts/capture-product.mjs",
-    "e2e:clerk:prod": "next build && E2E_CLERK_PROD=1 playwright test --config playwright.clerk.config.ts"
+    "e2e:clerk:prod": "pnpm build && E2E_CLERK_PROD=1 playwright test --config playwright.clerk.config.ts"
   },
   "dependencies": {
     "@beans/core": "workspace:*",
