@@ -203,7 +203,7 @@ const dist2 = (r1, g1, b1, r2, g2, b2) => (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 
  * Removes the cream paper from flat art.
  * 1. The paper color is the median of the image's border.
  * 2. Paper reachable from the border goes. So do closed-in pockets of paper,
- *    except eye glints, which are ringed by dark eye color.
+ *    except eye glints, which are ringed by dark eye color, and bean highlights.
  * 3. Loose specks go.
  * 4. Edge pixels get a soft alpha and take the color of the art beside them,
  *    so no cream fringe shows on the dark theme.
@@ -252,18 +252,23 @@ async function cutOut(path, { minIsland = 40 }) {
     return found;
   };
 
-  /** True when the pixels a few steps outside this pocket are mostly eye-dark. */
-  const ringedByDark = (pixels) => {
+  /** What surrounds a pocket, a few steps out: the share that's eye-dark and the share that's bean. */
+  const ring = (pixels) => {
     const inside = new Set(pixels);
-    let ring = pixels;
+    let edge = pixels;
     for (let step = 0; step < 4; step++) {
       const next = new Set();
-      for (const i of ring) for (const j of neighbours(i)) if (!inside.has(j)) next.add(j);
+      for (const i of edge) for (const j of neighbours(i)) if (!inside.has(j)) next.add(j);
       for (const j of next) inside.add(j);
-      ring = [...next];
+      edge = [...next];
     }
-    const dark = ring.filter((i) => at(i).reduce((sum, c) => sum + c, 0) < 240).length;
-    return dark / Math.max(ring.length, 1) > 0.5;
+    const total = Math.max(edge.length, 1);
+    const dark = edge.filter((i) => at(i).reduce((sum, c) => sum + c, 0) < 240).length / total;
+    const bean = edge.filter((i) => {
+      const [r, , b] = at(i);
+      return r - b > 100;
+    }).length / total;
+    return { dark, bean };
   };
 
   const bg = new Uint8Array(n);
@@ -273,13 +278,23 @@ async function cutOut(path, { minIsland = 40 }) {
       for (const i of pixels) bg[i] = 1;
       continue;
     }
-    // A closed-in pocket. Keep eye glints and very small highlights.
-    if (pixels.length < 120 || ringedByDark(pixels)) continue;
+    // A closed-in pocket. Keep eye glints, and the small highlights on beans.
+    const around = ring(pixels);
+    if (around.dark > 0.5 || (pixels.length < 120 && around.bean > 0.8)) continue;
     for (const i of pixels) bg[i] = 1;
   }
 
   for (const pixels of regions(bg, 0)) {
     if (pixels.length < minIsland) for (const i of pixels) bg[i] = 1;
+  }
+
+  // Pale crumbs where a curve meets a line: too blended to match the paper above.
+  const pale = new Uint8Array(n);
+  for (let i = 0; i < n; i++) if (!bg[i] && dist2(...at(i), ...paper) < 90 ** 2) pale[i] = 1;
+  for (const pixels of regions(pale, 1)) {
+    if (pixels.length >= 30) continue;
+    const around = ring(pixels);
+    if (around.dark <= 0.5 && around.bean <= 0.8) for (const i of pixels) bg[i] = 1;
   }
 
   // Distance from the background, in pixels, up to 4.
