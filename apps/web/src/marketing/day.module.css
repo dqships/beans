@@ -84,7 +84,7 @@
 /* The film sits straight after the demo, across the vine. */
 .film {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: var(--space-6);
   align-items: end;
   padding: var(--layout-section) var(--page-pad) 0;
@@ -125,7 +125,7 @@
 .stop {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-6) calc(var(--vine-gutter) * 2);
   align-items: center;
   padding-inline: var(--page-pad);
@@ -175,10 +175,6 @@
 .textRight .stopAside {
   grid-column: 1;
   grid-row: 1;
-}
-
-.wide {
-  grid-template-columns: 1fr 1fr;
 }
 
 .wide .stopAside {
@@ -338,7 +334,7 @@
   --night-accent: var(--mascot-cheek);
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-6) calc(var(--vine-gutter) * 2);
   align-items: center;
   margin-top: var(--layout-section);
@@ -398,7 +394,7 @@
 /* Seed-packet fine print. */
 .packet {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-6) calc(var(--vine-gutter) * 2);
   padding: var(--layout-section) var(--page-pad) 0;
 }
@@ -445,7 +441,7 @@
 /* The vine's root. */
 .closing {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-6) calc(var(--vine-gutter) * 2);
   align-items: end;
   padding: var(--layout-section) var(--page-pad) 0;
@@ -488,7 +484,6 @@
 
   .film,
   .stop,
-  .wide,
   .night,
   .packet,
   .closing {

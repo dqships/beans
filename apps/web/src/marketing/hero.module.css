@@ -1,6 +1,6 @@
 .headline {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--layout-page) * 0.4)), 1fr));
   gap: var(--space-6) calc(var(--vine-gutter) * 2);
   align-items: end;
   padding: var(--space-6) var(--page-pad) var(--layout-section-sm);
@@ -29,7 +29,7 @@
 /* The demo splits on the same axis as the page's beanstalk. */
 .demo {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
 .rows {
@@ -176,8 +176,11 @@
   background: var(--color-surface-2);
 }
 
-.plant[hidden] {
-  display: none;
+/* Hidden until `landing.js` runs, but still holding its space, so nothing shifts when it does. */
+.plant[hidden],
+.hint[hidden] {
+  display: block;
+  visibility: hidden;
 }
 
 .hint {
@@ -406,7 +409,6 @@
 /* --layout-phone */
 @media (max-width: 720px) {
   .headline {
-    grid-template-columns: 1fr;
     padding-top: var(--space-4);
     padding-bottom: var(--space-6);
   }
@@ -423,7 +425,7 @@
   }
 
   .demo {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .rows {

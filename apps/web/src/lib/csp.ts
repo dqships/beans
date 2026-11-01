@@ -13,6 +13,10 @@ const CONVEX_CLOUD = ["https://*.convex.cloud", "wss://*.convex.cloud"];
 const TURNSTILE = "https://challenges.cloudflare.com";
 const CLERK_IMAGES = "https://img.clerk.com";
 const CLERK_TELEMETRY = "https://clerk-telemetry.com";
+/** clerk-js loads Clerk Protect, its bot check, on every sign-in page: a CDN plus randomized subdomains. */
+const CLERK_PROTECT = "https://*.protect.clerk.com";
+/** Protect also probes those subdomains on non-default ports, such as 8443 and 2082. */
+const CLERK_PROTECT_PROBES = `${CLERK_PROTECT}:*`;
 
 function serialize(directives: Directives): string {
   return Object.entries(directives)
@@ -78,7 +82,7 @@ export function appPolicy({
   return serialize({
     ...shared,
     // Next's streamed bootstrap, the theme script and Clerk's loader run inline.
-    "script-src": ["'self'", "'unsafe-inline'", ...clerk, TURNSTILE, ...(dev ? ["'unsafe-eval'"] : [])],
+    "script-src": ["'self'", "'unsafe-inline'", ...clerk, CLERK_PROTECT, TURNSTILE, ...(dev ? ["'unsafe-eval'"] : [])],
     "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:", CLERK_IMAGES],
     "font-src": ["'self'", "data:"],
@@ -86,6 +90,8 @@ export function appPolicy({
     "connect-src": [
       "'self'",
       ...clerk,
+      CLERK_PROTECT,
+      CLERK_PROTECT_PROBES,
       CLERK_TELEMETRY,
       ...CONVEX_CLOUD,
       ...convexOrigins(convexUrl),

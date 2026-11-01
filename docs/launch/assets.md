@@ -51,16 +51,16 @@ Poses built in code from `apps/web/src/ui/garden.tsx` count, as long as the file
 
 ## 3. Product screenshots (workstream 3)
 
-Real app on sample data, remade by a committed capture script.
+Real app on sample data, remade by `apps/web/scripts/capture-product.mjs` (`pnpm --filter @beans/web capture`, with a dev server on port 3103). The clock is frozen at 10:40am on a Tuesday, and the Timebox shot is the planner's own layout under the phone breakpoint with its tab bar cropped off.
 
 | File | Size | Used by | Status |
 |---|---|---|---|
-| `apps/web/public/product/board-light@1x.avif` and `.webp`, `@2x` | 1200×750 | Landing | |
-| `apps/web/public/product/board-dark@1x.avif` and `.webp`, `@2x` | 1200×750 | Landing | |
-| `apps/web/public/product/timebox-light@1x.avif` and `.webp`, `@2x` | 560×700 | Landing | |
-| `apps/web/public/product/timebox-dark@1x.avif` and `.webp`, `@2x` | 560×700 | Landing | |
-| `apps/web/public/product/phone-light@1x.avif` and `.webp`, `@2x` | 390×844 | Landing | |
-| `apps/web/public/product/phone-dark@1x.avif` and `.webp`, `@2x` | 390×844 | Landing | |
+| `apps/web/public/product/board-light@1x.avif` and `.webp`, `@2x` | 1200×750 | Landing | Done |
+| `apps/web/public/product/board-dark@1x.avif` and `.webp`, `@2x` | 1200×750 | Landing | Done |
+| `apps/web/public/product/timebox-light@1x.avif` and `.webp`, `@2x` | 560×700 | Landing | Done |
+| `apps/web/public/product/timebox-dark@1x.avif` and `.webp`, `@2x` | 560×700 | Landing | Done |
+| `apps/web/public/product/phone-light@1x.avif` and `.webp`, `@2x` | 390×844 | Landing | Done |
+| `apps/web/public/product/phone-dark@1x.avif` and `.webp`, `@2x` | 390×844 | Landing | Done |
 
 ## 4. Video (workstream 4)
 

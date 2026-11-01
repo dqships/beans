@@ -38,6 +38,19 @@ A desktop app is planned for later.
 | [TASKS.md](TASKS.md) | Phases, progress, decisions and open questions |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Vercel, Convex and Clerk setup for deploying |
 
+## Routes
+
+| Path | What | Router |
+|---|---|---|
+| `/` | Landing page | Pages (`apps/web/src/pages/`) |
+| `/about`, `/contact`, `/privacy`, `/terms` | Plain marketing pages | Pages |
+| `/app` | Planner behind sign-in | App, `(app)` route group |
+| `/sign-in`, `/sign-up` | Clerk | App, `(app)` route group |
+| `/robots.txt`, `/sitemap.xml`, `/llms.txt` | Crawler files | App |
+| Anything else | 404 | App, `not-found.tsx` |
+
+Marketing pages use the Pages Router with `unstable_runtimeJS: false`, so they ship no framework JavaScript. Their only script is `apps/web/public/landing.js`, which loads in production builds. Clerk runs only on `/app`, `/sign-in`, `/sign-up`, `/api` and `/__clerk`. `proxy.ts` also answers `Accept: text/markdown` on public pages.
+
 ## Repo layout
 
 ```text
@@ -94,6 +107,16 @@ pnpm check
 ```
 
 That regenerates tokens, then runs typecheck, lint (with the token check), unit tests and a production build.
+
+The marketing tests check production behavior, such as loading no framework JavaScript, so run them against a production build:
+
+```bash
+pnpm --filter @beans/web build
+pnpm --filter @beans/web exec next start --port 3103
+E2E_URL=http://localhost:3103 pnpm --filter @beans/web exec playwright test e2e/marketing.spec.ts
+```
+
+To remake the product screenshots in `apps/web/public/product/`, run a dev server on sample data on port 3103, then `pnpm --filter @beans/web capture`.
 
 End-to-end tests drive the app in Chromium. With the local backend running (see above):
 
