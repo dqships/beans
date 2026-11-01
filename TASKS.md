@@ -56,7 +56,7 @@ Tracked in `docs/launch/PLAN.md`.
 
 - [x] Move the planner to `/app`, with providers out of the root layout
 - [x] Add the Clerk end-to-end test (`pnpm --filter @beans/web e2e:clerk`)
-- [ ] Brand asset files
+- [x] Brand asset files
 - [ ] Mascot poses and illustrations
 - [ ] Landing page
 - [ ] Demo video
