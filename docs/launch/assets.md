@@ -99,14 +99,14 @@ Rendered from code by `pnpm video:render`: 67.8 seconds, 30 fps, silent, caption
 
 | File | Spec | Used by | Status |
 |---|---|---|---|
-| `apps/web/public/video/beans-demo-web.mp4` | H.264, 1920×1080, 5.62 MB | Landing | Done |
-| `apps/web/public/video/beans-demo-web.webm` | VP9, 1920×1080, 5.26 MB | Landing | Done |
+| `apps/web/public/video/beans-demo-web.mp4` | H.264, 1920×1080, 5.48 MB | Landing | Done |
+| `apps/web/public/video/beans-demo-web.webm` | VP9, 1920×1080, 5.16 MB | Landing | Done |
 | `apps/web/public/video/beans-demo-poster.avif` | 1280×720, 20 KB | Landing | Done |
 | `apps/web/public/video/beans-demo-poster.png` | 1920×1080, 220 KB | Social, fallback | Done |
 | `apps/web/public/video/beans-demo.vtt` | 15 cues, matches the captions in the picture | Landing | Done |
-| `apps/web/public/video/beans-demo-1920.mp4` | H.264, 1920×1080, 6.70 MB | Social, full cut | Done |
-| `apps/web/public/video/beans-demo-1920.webm` | VP9, 1920×1080, 5.96 MB | Social, full cut | Done |
-| `apps/web/public/video/beans-demo-square.mp4` | H.264, 1080×1080, 4.75 MB | Social | Done, recomposed for the frame |
-| `apps/web/public/video/beans-demo-vertical.mp4` | H.264, 1080×1920, 5.35 MB | Social | Done, recomposed for the frame |
+| `apps/web/public/video/beans-demo-1920.mp4` | H.264, 1920×1080, 6.54 MB | Social, full cut | Done |
+| `apps/web/public/video/beans-demo-1920.webm` | VP9, 1920×1080, 5.85 MB | Social, full cut | Done |
+| `apps/web/public/video/beans-demo-square.mp4` | H.264, 1080×1080, 4.64 MB | Social | Done, recomposed for the frame |
+| `apps/web/public/video/beans-demo-vertical.mp4` | H.264, 1080×1920, 5.22 MB | Social | Done, recomposed for the frame |
 
 The intro, outro and midnight scenes use the `video-intro`, `video-outro` and `rollover` poses.
