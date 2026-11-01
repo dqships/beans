@@ -1,0 +1,92 @@
+[
+  {
+    "line": 1,
+    "file": "line-01.mp3",
+    "caption": 0,
+    "start": 0.18
+  },
+  {
+    "line": 2,
+    "file": "line-02.mp3",
+    "caption": 4.3,
+    "start": 4.8
+  },
+  {
+    "line": 3,
+    "file": "line-03.mp3",
+    "caption": 7.1,
+    "start": 7.98
+  },
+  {
+    "line": 4,
+    "file": "line-04.mp3",
+    "caption": 18.733,
+    "start": 18.91
+  },
+  {
+    "line": 5,
+    "file": "line-05.mp3",
+    "caption": 26.933,
+    "start": 27.11
+  },
+  {
+    "line": 6,
+    "file": "line-06.mp3",
+    "caption": 30.833,
+    "start": 31.01
+  },
+  {
+    "line": 7,
+    "file": "line-07.mp3",
+    "caption": 36.933,
+    "start": 37.11
+  },
+  {
+    "line": 8,
+    "file": "line-08.mp3",
+    "caption": 40.267,
+    "start": 40.45
+  },
+  {
+    "line": 9,
+    "file": "line-09.mp3",
+    "caption": 44.167,
+    "start": 44.35
+  },
+  {
+    "line": 10,
+    "file": "line-10.mp3",
+    "caption": 48.367,
+    "start": 48.55
+  },
+  {
+    "line": 11,
+    "file": "line-11.mp3",
+    "caption": 51.167,
+    "start": 51.35
+  },
+  {
+    "line": 12,
+    "file": "line-12.mp3",
+    "caption": 53.567,
+    "start": 53.81
+  },
+  {
+    "line": 13,
+    "file": "line-13.mp3",
+    "caption": 57.567,
+    "start": 57.75
+  },
+  {
+    "line": 14,
+    "file": "line-14.mp3",
+    "caption": 60.567,
+    "start": 60.77
+  },
+  {
+    "line": 15,
+    "file": "line-15.mp3",
+    "caption": 63.467,
+    "start": 63.65
+  }
+]

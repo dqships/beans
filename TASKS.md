@@ -65,7 +65,9 @@ Tracked in `docs/launch/PLAN.md`.
 Left to do on the launch:
 
 - [ ] Run `pnpm --filter @beans/web e2e:clerk:prod`: real sign-up, saving and sync under the production CSP (DQ, it creates a test account). The signed-out path already passes on a production build
-- [ ] Watch the demo video at full speed (DQ)
+- [ ] Watch and listen to `assets/video/beans-demo-voice-music.mp4` at full speed (DQ)
+- [ ] Decide whether the landing page should play a version with sound (DQ). It plays the silent film today
+- [ ] Check the ElevenLabs, MiniMax and Stability terms before paid or public use of the audio (DQ)
 - [x] Walk `docs/launch/checklist.md` on the merged branch: 47 items met, pricing and HTTPS still open
 - [x] Fresh screenshots of every landing and app screen at 1440 and 390, light and dark, with no overflow and no broken images
 - [ ] Test on Vercel, Safari, Firefox and with a screen reader
@@ -77,6 +79,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-10-31: Added an AI voiceover (ElevenLabs v3 on Replicate) and music (MiniMax Music 2.6), with raw files in `assets/audio` and two cuts in `assets/video`. `pnpm video:mix` rebuilds them. The picture is byte-identical to the silent film.
 - 2026-10-31: Launch audit on `claude/beans-v1`. Checklist probed against a production build, all landing and app screens reviewed in both themes at both widths, and the signed-out Clerk path passes under the production CSP. Fixed "1 of 1 tasks" in daily planning. The full sign-up under that CSP still needs DQ's run.
 - 2026-10-31: Launch work merged into `claude/beans-v1`. Demo video merged, with the square cut on phones. On the merged result: `pnpm check` passes, 82 browser tests pass in development plus 38 of 38 public-page tests on a production build, and Lighthouse on `next start` (mobile, median of 3) is 100 in all four categories with LCP 1.51 s, CLS 0 and 1.9 KB of JavaScript at last measure. Clerk's test passed before the CSP landed, so it needs one more run.
 - 2026-10-31: Landing page merged. Zero framework JavaScript on public pages, plain copy, launch checklist, CSP and markdown negotiation. 15 mascot poses merged and wired into sign-in, Trash and the error page. Fixed the rollover test, which failed on the first of each month.
@@ -167,7 +170,9 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 - The dark soil line in the midnight scene has low contrast.
 - The vertical cut's Quick Capture scene has a large dimmed empty area.
 - At 67.8 seconds it runs past Product Hunt's 60-second preview and the 30 to 45 seconds short feeds favor. There's no shorter cut.
-- It's silent. A licensed track or voiceover would have to come from DQ.
+- The voice and music were chosen without being heard. Nobody has listened to them yet.
+- The square and vertical cuts have no audio versions yet.
+- Line 3 starts about 0.9 s after its caption, because the two lines before it run long.
 
 **Landing page**
 

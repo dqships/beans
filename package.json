@@ -18,7 +18,8 @@
     "convex:codegen": "convex codegen",
     "backend:setup": "bash scripts/local-backend.sh",
     "video:render": "pnpm --filter @beans/video render",
-    "illustrations": "node scripts/build-illustrations.mjs"
+    "illustrations": "node scripts/build-illustrations.mjs",
+    "video:mix": "node scripts/mix-video-audio.mjs"
   },
   "devDependencies": {
     "@beans/core": "workspace:*",

@@ -111,3 +111,21 @@ Rendered from code by `pnpm video:render`: 67.8 seconds, 30 fps, silent, caption
 | `apps/web/public/video/beans-demo-vertical.mp4` | H.264, 1080×1920, 5.22 MB | Social | Done, recomposed for the frame |
 
 The intro, outro and midnight scenes use the `video-intro`, `video-outro` and `rollover` poses.
+
+## 5. Voiceover and music
+
+Generated on Replicate. `pnpm video:mix` rebuilds the stems and both videos from the raw files, so swapping a line or the music takes one command. The landing page still plays the silent film with captions.
+
+| File | What it is |
+|---|---|
+| `assets/audio/voice/line-01.mp3` to `line-15.mp3` | Raw voice, one file per caption. ElevenLabs v3, voice Rachel, stability 0.5, similarity 0.75. Lines 1, 2 and 13 at speed 1.1, the rest at 1 |
+| `assets/audio/voice/voiceover-full.mp3` | All 15 lines placed on the film's timeline |
+| `assets/audio/voice/timing.json` | When each line starts, against its caption |
+| `assets/audio/music/minimax-take-1.mp3` | Raw music, the one in use. MiniMax Music 2.6, 128 s |
+| `assets/audio/music/minimax-take-2.mp3` | Raw alternate, busier, 140 s |
+| `assets/audio/music/stable-audio.mp3` | Raw alternate, Stable Audio 2.5, a repeating pattern, 72 s |
+| `assets/audio/music/music-bed.mp3` | Take 1 cut to the film's length, with fades |
+| `assets/video/beans-demo-music.mp4` | 1920×1080 film with music only |
+| `assets/video/beans-demo-voice-music.mp4` | 1920×1080 film with voice and music |
+
+Music prompt: "Warm, unhurried instrumental background music for a friendly product video about planning your day. Soft fingerpicked acoustic guitar, gentle marimba and light brushed percussion, about 100 BPM, major key. Hopeful, calm and lightly playful. Steady and uncluttered so it sits under a voiceover, no big drops, no vocals."
