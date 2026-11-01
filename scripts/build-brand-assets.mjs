@@ -122,15 +122,16 @@ function socialCard(width, height) {
     return `<path transform="translate(${x} ${seedY}) scale(${seedScale})" d="${beanPath}" fill="${token("--color-border")}"/>`;
   });
 
+  // Reads up from the soil line: what Beans is, then what it does for you.
   const textSize = px("--text-display-size");
-  const line = textPath(
-    "Spill the beans.",
-    margin,
-    soilY - px("--space-5"),
-    textSize,
-    token("--text-display-weight"),
-    token("--color-text"),
-  );
+  const leading = px("--text-display-line");
+  const smallY = soilY - px("--space-5");
+  const headlineY = smallY - px("--text-xl-line") - px("--space-3");
+  const headline = (text, y) => textPath(text, margin, y, textSize, token("--text-display-weight"), token("--color-text"));
+  const copy =
+    headline("Turn your to-do list", headlineY - leading) +
+    headline("into a plan for today.", headlineY) +
+    textPath("Beans is a daily planner.", margin, smallY, px("--text-xl-size"), token("--text-md-weight"), token("--color-text-muted"));
 
   return svg(
     width,
@@ -141,7 +142,7 @@ function socialCard(width, height) {
       `<rect y="${soilY}" width="${width}" height="${height - soilY}" fill="${token("--color-surface-2")}"/>` +
       `<rect y="${soilY}" width="${width}" height="${soilLine}" fill="${token("--label-soil")}"/>` +
       seeds.join("") +
-      line,
+      copy,
   );
 }
 

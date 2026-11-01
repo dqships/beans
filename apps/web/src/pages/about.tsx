@@ -8,14 +8,14 @@ export const config: PageConfig = { unstable_runtimeJS: false };
 export default function About() {
   return (
     <ProsePage page={publicPages.about} title="About Beans">
-      <p>Beans is a daily planner for one person and their day. It keeps your tasks, your week and your hours in one place.</p>
+      <p>Beans is a daily planner. It keeps your to-do list, your week and your schedule for the day in one place.</p>
       <p>
-        It follows one loop: get everything out of your head, decide which day it belongs to, then give it a time. The Brain Dump,
-        the board and the Timebox are those three steps.
+        It works in three steps: write down everything you need to do, decide which day each task belongs to, then give it a time.
+        The Brain Dump, the board and the Timebox are those three steps.
       </p>
       <p>
-        Beans is built around a small garden. Your days are rows, your hours are a beanstalk, and a task you finish grows a sprout.
-        The names stay plain, so you always know what a thing does.
+        Beans looks a bit like a small garden: your days are rows, your hours run up a beanstalk, and a finished task grows a
+        sprout. The feature names stay plain, so you always know what a thing does.
       </p>
       <p>
         Beans runs in the browser on a computer, with a phone layout too. Your account is handled by Clerk and your planner data is

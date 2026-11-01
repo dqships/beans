@@ -134,3 +134,8 @@ input {
     transition-duration: var(--duration-fade) !important;
   }
 }
+
+/* Keeps a hyphenated word from breaking across lines in a large heading. */
+.nowrap {
+  white-space: nowrap;
+}

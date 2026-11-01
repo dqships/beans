@@ -9,16 +9,16 @@ export type PublicPage = {
 export const publicPages = {
   home: {
     path: "/",
-    title: "Beans: plan your day, week and hours in one place",
+    title: "Beans: a daily planner for your tasks and your time",
     description:
-      "Beans is a daily planner. Spill tasks into a Brain Dump, plan them across your week, then drag them onto the Timebox to give each one a time.",
+      "Beans is a daily planner. Write down everything you need to do, choose what you'll get to today, and block out the time to do it on your schedule.",
     lastModified: "2026-10-31",
   },
   about: {
     path: "/about",
-    title: "About Beans, a daily planner that grows with your day",
+    title: "About Beans, a daily planner for your whole to-do list",
     description:
-      "Beans is a daily planner for one person and their day. It keeps your tasks, your week and your hours together, in the browser on a computer or a phone.",
+      "Beans is a daily planner. It keeps your to-do list, your week and your schedule for the day together, in the browser on a computer or a phone.",
     lastModified: "2026-10-31",
   },
   contact: {

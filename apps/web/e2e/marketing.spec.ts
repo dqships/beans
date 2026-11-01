@@ -53,9 +53,9 @@ test.describe("what public pages load", () => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Give every task a day and an hour.");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Turn your to-do list into a plan for today.");
     await expect(page.getByRole("heading", { name: "How a day goes" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Spill the beans." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Try it on today's to-do list." })).toBeVisible();
     await expect(page.locator('[data-reveal="wait"]')).toHaveCount(0);
     await context.close();
   });
@@ -130,7 +130,7 @@ test.describe("HTTP behavior", () => {
     const urls = watchRequests(page);
     const response = await page.goto("/no-such-page", { waitUntil: "networkidle" });
     expect(response?.status()).toBe(404);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nothing planted here.");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("We can't find that page.");
     await expect(page.getByRole("img", { name: /empty hole/ })).toBeAttached();
     expect(urls.filter((url) => /clerk|convex/i.test(url))).toEqual([]);
 
@@ -225,11 +225,11 @@ test.describe("accessibility", () => {
 test.describe("the hero demo", () => {
   test.skip(!production, "landing.js only ships in production builds.");
 
-  test("Plant puts a task on the Timebox", async ({ page }) => {
+  test("Schedule puts a task on the Timebox", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Plant Find a birthday gift for Sam on the Timebox" }).click();
+    await page.getByRole("button", { name: "Schedule Find a birthday gift for Sam on the Timebox" }).click();
     await expect(page.locator("[data-block]").filter({ hasText: "Find a birthday gift for Sam" })).toContainText("11:00am – 11:30am");
-    await expect(page.getByRole("status")).toHaveText("Find a birthday gift for Sam planted at 11:00am.");
+    await expect(page.getByRole("status")).toHaveText("Find a birthday gift for Sam scheduled at 11:00am.");
   });
 
   test("a task drags onto the Timebox", async ({ page }) => {

@@ -15,7 +15,7 @@ Built from `assets/logo/beans-mascot.svg` and `assets/logo/beans-app-icon.svg` b
 | `apps/web/public/brand/pwa-192.png` | 192×192 | `manifest.ts` | Done. Rounded app icon |
 | `apps/web/public/brand/pwa-512.png` | 512×512 | `manifest.ts` | Done. Rounded app icon |
 | `apps/web/public/brand/pwa-maskable-512.png` | 512×512 with safe zone | `manifest.ts` | Done. `pnpm assets` fails if art leaves the 80% circle |
-| `apps/web/public/social/og-image.png` | 1200×630 | Open Graph | Done. Line: "Spill the beans." |
+| `apps/web/public/social/og-image.png` | 1200×630 | Open Graph | Done. Lines: "Turn your to-do list into a plan for today." and "Beans is a daily planner." |
 | `apps/web/public/social/twitter-image.png` | 1200×630 | Twitter card | Done. Same image as Open Graph |
 | `apps/web/public/brand/mascot-1x.png`, `mascot-2x.png` | 256, 512 wide | Email, docs | Done. Square, transparent |
 | `apps/web/public/brand/mascot.webp`, `mascot.avif` | 512 wide, transparent | Web | Done. 11.2 KB and 7.6 KB |

@@ -10,9 +10,9 @@ export function Film() {
     <section className={styles.film} aria-labelledby="film-title">
       <div className={styles.filmText}>
         <h2 id="film-title" className={styles.h2}>
-          Watch a day go by.
+          See it in action.
         </h2>
-        <p className={styles.body}>The whole loop on sample data: capture, plan, timebox, tick off, roll over.</p>
+        <p className={styles.body}>A short walkthrough of one day in Beans, from writing tasks down to checking them off.</p>
       </div>
       <video
         className={styles.video}
@@ -110,12 +110,12 @@ export function Day() {
           How a day goes
         </h2>
         <SoilLine />
-        <p className={styles.body}>One ordinary Tuesday, from the first thought to midnight.</p>
+        <p className={styles.body}>Here&apos;s an ordinary Tuesday with Beans.</p>
       </header>
       <ol className={styles.stops}>
         <Stop
           time="7:40am"
-          title="Empty your head first."
+          title="Write it all down."
           layout="textLeft"
           aside={
             <>
@@ -132,14 +132,14 @@ export function Day() {
           }
         >
           <p>
-            Anything without a date lives in the Brain Dump or a list. Open Quick Capture and type. Beans reads labels, dates and
-            times as you go, such as <code className={styles.code}>#home</code>, <code className={styles.code}>tomorrow</code> and{" "}
+            Spill the beans: put every task in the Brain Dump the moment you think of it, with no date and no order. Press Q to add one from anywhere, and
+            Beans picks out the date, label and estimate as you type, such as <code className={styles.code}>#home</code>, <code className={styles.code}>tomorrow</code> and{" "}
             <code className={styles.code}>=30m</code>.
           </p>
         </Stop>
         <Stop
           time="8:15am"
-          title="Lay out the week."
+          title="Plan your week."
           layout="wide"
           aside={
             <ProductShot
@@ -153,13 +153,13 @@ export function Day() {
           }
         >
           <p>
-            The board has one column per day and keeps scrolling. Drag tasks into the days you&apos;ll do them. Daily planning walks
-            you through it if you want the company. It&apos;s optional.
+            Every day gets its own column. Drag tasks onto the days you&apos;ll do them, and you can see at a glance how full each
+            day is. Daily planning can walk you through it each morning, if you&apos;d like.
           </p>
         </Stop>
         <Stop
           time="9:00am"
-          title="Give each task a time."
+          title="Block out time for each task."
           layout="timebox"
           aside={
             <ProductShot
@@ -173,13 +173,13 @@ export function Day() {
           }
         >
           <p>
-            The Timebox shows your hours as a beanstalk. Drag a task on and it has a time. Pull a block&apos;s edge to resize it. A
-            leaf marks the current time.
+            A to-do list won&apos;t tell you when anything gets done. Drag a task onto the Timebox to give it a start time, and drag
+            its edge to change how long it takes. A leaf marks the current time, so you can see what&apos;s next.
           </p>
         </Stop>
         <Stop
           time="1:30pm"
-          title="Stay with one thing."
+          title="Focus on one task at a time."
           layout="textRight"
           aside={
             <Illustration
@@ -193,18 +193,18 @@ export function Day() {
           }
         >
           <p>
-            Run the timer or a Pomodoro on the task in front of you. Actual time can fill in from the timer, so you see what those 45
-            minutes really took.
+            Start a timer or a Pomodoro when you begin a task. Beans can log the time for you, so you find out how long things
+            really take.
           </p>
-          <p className={styles.tickNote}>Tick it off and the bean sprouts.</p>
+          <p className={styles.tickNote}>Finished? Check it off and watch it sprout.</p>
           <ul className={cards.cards}>
             <DemoTask title="Review launch plan" estimate="0:45" minutes={45} label="rain" time="10:00am" />
           </ul>
         </Stop>
-        <Stop time="5:45pm" title="Close the day." layout="textLeft" aside={<Stalks />}>
+        <Stop time="5:45pm" title="See where your time went." layout="textLeft" aside={<Stalks />}>
           <p>
-            Daily wrap-up looks back at what got done. It&apos;s optional too. Analytics shows your time by label, with a table view
-            for the numbers.
+            At the end of the day, the daily wrap-up shows what got done. Analytics adds up your time by label, in a chart or a
+            table.
           </p>
         </Stop>
       </ol>
@@ -229,10 +229,10 @@ export function Midnight() {
       </div>
       <div className={styles.nightText} data-reveal>
         <h3 id="night-title" className={styles.h3}>
-          The rest moves to today.
+          Unfinished tasks move to the next day.
         </h3>
         <p className={styles.body}>
-          At your local midnight, unfinished tasks roll to the new day and show a Rolled over tag. Nothing to copy by hand, and nothing to feel bad about.
+          At midnight, anything you didn&apos;t finish moves to the new day on its own, marked Rolled over. You don&apos;t have to copy anything across, and nothing gets lost.
         </p>
         <ul className={`${cards.cards} ${styles.nightCards}`}>
           <DemoTask title="Sketch the onboarding flow" estimate="1:30" minutes={90} label="plum" rolled />
@@ -246,12 +246,12 @@ export function Midnight() {
 const packet = [
   ["Tasks", "Notes, subtasks, labels, priority, due dates, estimates and actual time."],
   ["Timer", "A timer and Pomodoro, with actual time beside your estimate."],
-  ["Repeats", "Repeating tasks and templates."],
-  ["Trash", "Undo when you need it. Items stay 30 days."],
-  ["Finding things", "Search, filter and keyboard shortcuts."],
-  ["Looks", "Light and dark themes."],
-  ["Sync", "Changes sync live between open windows."],
-  ["Phone", "A phone layout in the browser."],
+  ["Repeats", "Repeating tasks, plus templates for the ones you add often."],
+  ["Trash", "Deleted tasks stay for 30 days, and you can undo right away."],
+  ["Search", "Search, filters and keyboard shortcuts."],
+  ["Themes", "Light and dark."],
+  ["Sync", "Changes show up right away in every open window."],
+  ["Phone", "Works in your phone's browser too."],
 ];
 
 /** Everything else, set like the fine print on a seed packet. */
@@ -260,7 +260,7 @@ export function Packet() {
     <section className={styles.packet} aria-labelledby="packet-title">
       <div className={styles.packetText} data-reveal>
         <h2 id="packet-title" className={styles.h2}>
-          On the back of the packet
+          Also in Beans
         </h2>
         <SoilLine />
         <dl className={styles.fine}>
@@ -292,9 +292,9 @@ export function Closing() {
     <section className={styles.closing} aria-labelledby="closing-title">
       <div className={styles.closingText} data-reveal>
         <h2 id="closing-title" className={styles.display}>
-          Spill the beans.
+          Try it on today&apos;s <span className="nowrap">to-do</span> list.
         </h2>
-        <p className={styles.lede}>Start with whatever is on your mind right now.</p>
+        <p className={styles.lede}>Add what&apos;s on your mind, then give it a day and a time.</p>
         <Calls />
       </div>
       <div className={styles.closingArt} data-reveal>

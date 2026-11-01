@@ -12,7 +12,7 @@ const links = [
 
 const body = `# Beans
 
-> A daily planner. Capture tasks in a Brain Dump, plan them on a board with one column per day, then drag them onto the Timebox to give each one a time.
+> A daily planner. Write down everything you need to do in a Brain Dump, plan it on a board with one column per day, then drag tasks onto the Timebox to give each one a time.
 
 Every public page answers \`Accept: text/markdown\` with a markdown version at the same URL.
 

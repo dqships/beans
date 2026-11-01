@@ -74,11 +74,11 @@
     card.querySelector("[data-task-time]").textContent = clock(slot);
     var button = card.querySelector("[data-plant]");
     if (button) button.remove();
-    status.textContent = card.dataset.task + " planted at " + clock(slot) + ".";
+    status.textContent = card.dataset.task + " scheduled at " + clock(slot) + ".";
   }
 
   demo.dataset.dragReady = "";
-  if (matchMedia("(pointer: coarse)").matches) hint.textContent = "This part is live. Press Plant to put a task on the Timebox.";
+  if (matchMedia("(pointer: coarse)").matches) hint.textContent = "Try it. Press Schedule to put a task on the Timebox.";
   hint.hidden = false;
   demo.querySelectorAll("[data-plant]").forEach(function (button) {
     button.hidden = false;
@@ -87,7 +87,7 @@
     });
   });
 
-  // Mouse and pen drag. Touch keeps scrolling the page, and uses the Plant button.
+  // Mouse and pen drag. Touch keeps scrolling the page, and uses the Schedule button.
   demo.addEventListener("pointerdown", function (event) {
     if (event.pointerType === "touch" || event.button !== 0) return;
     var card = event.target.closest("[data-task]");

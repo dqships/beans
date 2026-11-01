@@ -18,7 +18,7 @@ export function NotFoundScene() {
           className={styles.art}
         />
         <div className={styles.text}>
-          <h1 className={styles.h1}>Nothing planted here.</h1>
+          <h1 className={styles.h1}>We can&apos;t find that page.</h1>
           <p className={styles.body}>
             This page doesn&apos;t exist, or it moved. Head back to <a href="/">the Beans home page</a>, or go straight to your
             planner.

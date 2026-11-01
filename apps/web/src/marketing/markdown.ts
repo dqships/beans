@@ -4,49 +4,49 @@ import { absoluteUrl } from "../lib/site";
  * Markdown versions of the public pages, served by `proxy.ts` at the same URLs
  * when a client asks for `text/markdown`. Keep them in step with the pages.
  */
-const home = `# Give every task a day and an hour.
+const home = `# Turn your to-do list into a plan for today.
 
-Beans is a daily planner. Spill everything into the Brain Dump, spread it across the week, then drag tasks onto the Timebox.
+Beans is a daily planner. Write down everything you need to do, choose what you'll get to today, and block out the time to do it.
 
 - [Start planning](${absoluteUrl("/sign-up")})
 - [Sign in](${absoluteUrl("/sign-in")})
 
 ## How a day goes
 
-### 7:40am: Empty your head first
+### 7:40am: Write it all down
 
-Anything without a date lives in the Brain Dump or a list. Open Quick Capture and type. Beans reads labels, dates and times as you go, such as \`#home\`, \`tomorrow\` and \`=30m\`.
+Spill the beans: put every task in the Brain Dump the moment you think of it, with no date and no order. Press Q to add one from anywhere, and Beans picks out the date, label and estimate as you type, such as \`#home\`, \`tomorrow\` and \`=30m\`.
 
-### 8:15am: Lay out the week
+### 8:15am: Plan your week
 
-The board has one column per day and keeps scrolling. Drag tasks into the days you'll do them. Daily planning walks you through it if you want the company. It's optional.
+Every day gets its own column. Drag tasks onto the days you'll do them, and you can see at a glance how full each day is. Daily planning can walk you through it each morning, if you'd like.
 
-### 9:00am: Give each task a time
+### 9:00am: Block out time for each task
 
-The Timebox shows your hours as a beanstalk. Drag a task on and it has a time. Pull a block's edge to resize it. A leaf marks the current time.
+A to-do list won't tell you when anything gets done. Drag a task onto the Timebox to give it a start time, and drag its edge to change how long it takes. A leaf marks the current time, so you can see what's next.
 
-### 1:30pm: Stay with one thing
+### 1:30pm: Focus on one task at a time
 
-Run the timer or a Pomodoro on the task in front of you. Actual time can fill in from the timer, so you see what those 45 minutes really took. Tick the task off and its bean sprouts.
+Start a timer or a Pomodoro when you begin a task. Beans can log the time for you, so you find out how long things really take. Check it off when it's finished and watch it sprout.
 
-### 5:45pm: Close the day
+### 5:45pm: See where your time went
 
-Daily wrap-up looks back at what got done. It's optional too. Analytics shows your time by label, with a table view.
+At the end of the day, the daily wrap-up shows what got done. Analytics adds up your time by label, in a chart or a table.
 
-### 12:00am: The rest moves to today
+### 12:00am: Unfinished tasks move to the next day
 
-At your local midnight, unfinished tasks roll to the new day and show a "Rolled over" tag. Nothing to copy by hand, and nothing to feel bad about.
+At midnight, anything you didn't finish moves to the new day on its own, marked Rolled over. You don't have to copy anything across, and nothing gets lost.
 
-## On the back of the packet
+## Also in Beans
 
 - **Tasks:** notes, subtasks, labels, priority, due dates, estimates and actual time.
 - **Timer:** a timer and Pomodoro.
-- **Repeats:** repeating tasks and templates.
-- **Trash:** undo, and items stay 30 days.
-- **Finding things:** search, filter and keyboard shortcuts.
-- **Looks:** light and dark themes.
-- **Sync:** changes sync live between open windows.
-- **Phone:** a phone layout in the browser.
+- **Repeats:** repeating tasks, plus templates for the ones you add often.
+- **Trash:** deleted tasks stay for 30 days, and you can undo right away.
+- **Search:** search, filters and keyboard shortcuts.
+- **Themes:** light and dark.
+- **Sync:** changes show up right away in every open window.
+- **Phone:** works in your phone's browser too.
 
 ## Pages
 
@@ -58,11 +58,11 @@ At your local midnight, unfinished tasks roll to the new day and show a "Rolled 
 
 const about = `# About Beans
 
-Beans is a daily planner for one person and their day. It keeps your tasks, your week and your hours in one place.
+Beans is a daily planner. It keeps your to-do list, your week and your schedule for the day in one place.
 
-It follows one loop: get everything out of your head, decide which day it belongs to, then give it a time. The Brain Dump, the board and the Timebox are those three steps.
+It works in three steps: write down everything you need to do, decide which day each task belongs to, then give it a time. The Brain Dump, the board and the Timebox are those three steps.
 
-Beans is built around a small garden. Your days are rows, your hours are a beanstalk, and a task you finish grows a sprout. The names stay plain, so you always know what a thing does.
+Beans looks a bit like a small garden: your days are rows, your hours run up a beanstalk, and a finished task grows a sprout. The feature names stay plain, so you always know what a thing does.
 
 Beans runs in the browser on a computer, with a phone layout too. Your account is handled by Clerk and your planner data is stored with Convex. The [privacy page](${absoluteUrl("/privacy")}) has the details.
 
@@ -129,7 +129,7 @@ const bodies: Record<string, string> = {
 
 export const notFoundMarkdown = `# Page not found
 
-There's nothing planted at this address. Try one of these instead:
+There's no page at this address. Try one of these instead:
 
 - [Home](${absoluteUrl("/")})
 - [About](${absoluteUrl("/about")})

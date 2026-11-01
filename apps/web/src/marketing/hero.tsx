@@ -14,7 +14,7 @@ const labelClass: Record<Label, string | undefined> = {
 
 const labelName: Record<Label, string> = { rain: "Work", pumpkin: "Home", sprout: "Health", plum: "Side project" };
 
-/** One task card, the same shape as the app's. The Plant button appears when `landing.js` runs. */
+/** One task card, the same shape as the app's. The Schedule button appears when `landing.js` runs. */
 export function DemoTask({
   title,
   estimate,
@@ -59,7 +59,7 @@ export function DemoTask({
         </strong>
         {time || rolled ? null : (
           <button type="button" className={styles.plant} data-plant hidden>
-            Plant<span className="visually-hidden"> {title} on the Timebox</span>
+            Schedule<span className="visually-hidden"> {title} on the Timebox</span>
           </button>
         )}
       </span>
@@ -114,12 +114,11 @@ export function Hero() {
   return (
     <div className={styles.headline}>
       <h1 className={styles.h1}>
-        Give every task a day and an hour.
+        Turn your <span className="nowrap">to-do</span> list into a plan for today.
       </h1>
       <div className={styles.pitch}>
         <p className={styles.lede}>
-          Beans is a daily planner. Spill everything into the Brain Dump, spread it across the week, then drag tasks onto the
-          Timebox.
+          Beans is a daily planner. Write down everything you need to do, choose what you&apos;ll get to today, and block out the time to do it.
         </p>
         <Calls />
       </div>
@@ -152,7 +151,7 @@ export function Demo() {
             </ul>
           </div>
           <p className={styles.hint} data-hint hidden>
-            This part is live. Drag a task onto the Timebox, or press Plant.
+            Try it. Drag a task onto the Timebox, or press Schedule.
           </p>
         </div>
         <Timebox />
