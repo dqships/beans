@@ -535,6 +535,13 @@ function cardFocus(id: string, frame: number, padX: number, padY: number) {
   };
 }
 
+function cardWhole(id: string, frame: number) {
+  return (l: Layout): Box => {
+    const c = cardRect(stateAt(frame), l, id);
+    return { x0: c.x - 12, y0: c.y - 24, x1: c.x + c.w + 12, y1: c.y + G.card + 24 };
+  };
+}
+
 function blockBox(l: Layout): Box {
   const x = l.w - G.timebox;
   return { x0: x, y0: 100, x1: l.w, y1: 470 };
@@ -551,10 +558,12 @@ const SHOTS: Shot[] = [
   { at: T.timeboxIn - 2, region: (l) => ({ x0: l.sidebar ? columnX(l, 0) - 8 : 0, y0: 52, x1: l.w, y1: Math.min(l.h, 620) }), speed: 0.55 },
   { at: T.resizeIn - 2, region: blockBox, speed: 0.55 },
   { at: T.timerIn, region: (l) => ({ x0: columnX(l, 0) - 12, y0: 104, x1: columnX(l, 0) + 412, y1: 420 }), speed: 0.55 },
-  { at: T.lapseStart, region: (l) => ({ x0: columnX(l, 0) - 16, y0: 52, x1: l.w, y1: l.h }), speed: 0.45 },
+  { at: T.lapseStart, region: full, speed: 0.45 },
   // The leaf climbing past the block and the pill counting up, close enough to read.
   { at: T.lapseStart + 60, region: (l) => ({ x0: l.w - G.timebox - 140, y0: 170, x1: l.w, y1: l.h }), speed: 0.5 },
   { at: T.checkIn, region: cardFocus("t-report", T.checkIn, 150, 70), speed: 0.55, max: 4 },
+  // Back far enough to read the whole card, with actual time now on the chip.
+  { at: T.checkClick + 40, region: cardWhole("t-report", T.checkClick), speed: 0.55, max: 3.2 },
   { at: T.nightIn, region: full, speed: 0.55 },
   { at: T.moonEnd - 10, region: (l) => ({ x0: columnX(l, 0) - 16, y0: 0, x1: columnX(l, 2) - 8, y1: l.h }), speed: 0.55 },
   // Close on the tasks that just landed, so "Rolled over" can be read.

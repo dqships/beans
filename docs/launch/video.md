@@ -30,10 +30,10 @@ One workflow: spill, plan, timebox, focus, finish, roll over. 30 fps. Times are 
 | 0:03 | Quick Capture | The planner rises, empty. `Q` opens Quick Capture, and the real parser highlights `tomorrow`, `#home` and `=30m` as they're typed. Five more tasks follow fast | Spill it all out. Sort it later. / Quick Capture reads labels, dates and times as you type. |
 | 0:18 | Plan | Four drags from the Brain Dump onto today and tomorrow, then the board scrolls through the week | Drag tasks onto the days you'll do them. / Your whole week on one board. |
 | 0:30 | Timebox | Two drags onto the beanstalk, with the real drop preview. A block is pulled from 1h to 1h 30m | Drag a task onto the Timebox to give it a time. / Pull a block down to give it more time. |
-| 0:40 | Timer | The time chip opens, Play starts the timer, and the clock runs fast while the pill counts up and the leaf climbs the vine | Start the timer when you start the task. / Actual time fills in from the timer. |
-| 0:48 | Check off | Zoom on the bean. One click, the sprout, and the chip reads 1:13 / 1:30 | Check it off and watch it sprout. |
-| 0:52 | Midnight | The clock runs to midnight, the mascot sleeps, and three unfinished tasks land on the new today with a "Rolled over" tag | Some tasks won't get done today. / Unfinished tasks move to today at midnight. / No guilt, no copying things over. |
-| 1:02 | Outro | Mascot, soil line, the primary button | **Spill the beans.** Start planning |
+| 0:40 | Timer | The time chip opens, Play starts the timer, and the clock runs fast while the pill counts up and the leaf climbs the vine | Start the timer when you start the task. / The timer keeps count while you work. |
+| 0:48 | Check off | Zoom on the bean. One click and the sprout. The timer stops and the chip reads 1:13 / 1:30 | Check it off and watch it sprout. / Actual time fills in from the timer. |
+| 0:53 | Midnight | The clock runs to midnight, the mascot sleeps, and three unfinished tasks land on the new today with a "Rolled over" tag | Some tasks won't get done today. / Unfinished tasks move to today at midnight. / No guilt, no copying things over. |
+| 1:03 | Outro | Mascot, soil line, the primary button | **Spill the beans.** Start planning |
 
 Every caption was checked against `voice.md`: each claim is on its "Facts you can state" list, none uses a banned word, and there are no questions or exclamation marks.
 
@@ -56,7 +56,7 @@ The square and vertical cuts are recomposed, not letterboxed: the planner's real
 
 ### Mascot art
 
-The intro, outro and midnight scenes use the code-drawn mascot from `apps/web/src/ui/garden.tsx`. To use the `video-intro`, `video-outro` and `rollover` poses, set `USE_ILLUSTRATIONS` to `true` in `apps/video/src/brand/art.tsx` and rerender.
+The intro, outro and midnight scenes use the code-drawn mascot from `apps/web/src/ui/garden.tsx`. To use the `video-intro`, `video-outro` and `rollover` poses, set `USE_ILLUSTRATIONS` to `true` in `apps/video/src/brand/art.tsx` and rerender. The poses draw their own ground, so the film's soil line and spilled beans turn off with the same switch.
 
 ### Sound
 

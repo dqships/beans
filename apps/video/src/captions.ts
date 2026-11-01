@@ -21,8 +21,10 @@ export const CAPTIONS: Caption[] = [
   { from: T.timeboxIn, to: T.resizeIn - beforeNext, text: "Drag a task onto the Timebox to give it a time." },
   { from: T.resizeIn, to: T.timerIn - beforeNext, text: "Pull a block down to give it more time." },
   { from: T.timerIn, to: T.lapseStart + seconds(0.6), text: "Start the timer when you start the task." },
-  { from: T.lapseStart + seconds(0.7), to: T.checkIn - beforeNext, text: "Actual time fills in from the timer." },
-  { from: T.checkIn, to: T.nightIn - beforeNext, text: "Check it off and watch it sprout." },
+  { from: T.lapseStart + seconds(0.7), to: T.checkIn - beforeNext, text: "The timer keeps count while you work." },
+  { from: T.checkIn, to: T.checkClick + seconds(1.4), text: "Check it off and watch it sprout." },
+  // Actual time lands when the timer stops, so this caption waits for the chip to show it.
+  { from: T.checkClick + seconds(1.5), to: T.nightIn - beforeNext, text: "Actual time fills in from the timer." },
   { from: T.nightIn, to: T.midnight + seconds(0.5), text: "Some tasks won't get done today." },
   { from: T.midnight + seconds(0.6), to: T.roll[2]! + seconds(0.5), text: "Unfinished tasks move to today at midnight." },
   { from: T.roll[2]! + seconds(0.6), to: T.outro - beforeNext, text: "No guilt, no copying things over." },

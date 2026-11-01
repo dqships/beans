@@ -1,6 +1,6 @@
 import { random, useCurrentFrame } from "remotion";
 import { Button } from "@/ui/Button";
-import { BrandArt } from "../brand/art";
+import { BrandArt, USE_ILLUSTRATIONS } from "../brand/art";
 import { useFormat, type Format } from "../formats";
 import { mix, sp } from "../motion";
 import { T } from "../timeline";
@@ -45,6 +45,7 @@ const soilY = (format: Format) => {
 
 /** The soil line both ends of the film stand on, and the beans spilled along it. */
 function SpilledBeans({ frame, format }: { frame: number; format: Format }) {
+  if (USE_ILLUSTRATIONS) return null;
   const { art } = scene(format);
   const floor = soilY(format) - 18;
   const ox = art.left + art.width * 0.78;

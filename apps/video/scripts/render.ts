@@ -89,7 +89,7 @@ function poster() {
   const png = path.join(publicDir, "beans-demo-poster.png");
   run("pnpm", ["exec", "remotion", "still", "src/index.ts", "beans-demo-1920", png, `--frame=${POSTER_FRAME}`, `--port=${port}`]);
   const avif = path.join(publicDir, "beans-demo-poster.avif");
-  ffmpeg(["-i", png, "-vf", "scale=1280:720:flags=lanczos,format=yuv420p", "-frames:v", "1", "-c:v", "libsvtav1", "-crf", "32", "-preset", "4", "-still-picture", "1", avif]);
+  ffmpeg(["-i", png, "-vf", "scale=1280:720:flags=lanczos,format=yuv420p", "-frames:v", "1", "-c:v", "libsvtav1", "-crf", "32", "-preset", "4", avif]);
 }
 
 const stage = process.argv.find((a) => a.startsWith("--stage="))?.slice("--stage=".length) ?? "all";

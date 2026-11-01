@@ -92,7 +92,7 @@ const lapseEnd = at(seconds(4.4));
 
 const checkIn = at(seconds(0.5));
 const checkClick = at(seconds(1.3));
-const checkDone = at(seconds(2.6));
+const checkDone = at(seconds(3.4));
 
 const nightIn = at(seconds(0.5));
 const midnight = at(seconds(3.4));
