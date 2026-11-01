@@ -1,7 +1,7 @@
 // Lays the voiceover and music under the demo video, from the raw files in
 // assets/audio. Each voice line starts just after its caption appears, or after
 // the line before it ends. Run with `pnpm video:mix`. Needs ffmpeg.
-// To hear another track, run `pnpm video:mix --music=minimax-take-2`. That builds
+// To hear another track, run `pnpm video:mix --music=minimax-take-1`. That builds
 // trial cuts in apps/video/out and leaves the chosen files alone.
 import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const voiceDir = join(root, "assets/audio/voice");
 const musicDir = join(root, "assets/audio/music");
-const chosen = "minimax-take-1";
+const chosen = "minimax-take-2-no-vocals";
 const pick = process.argv.find((arg) => arg.startsWith("--music="))?.slice("--music=".length) ?? chosen;
 const trial = pick !== chosen;
 const outDir = trial ? join(root, "apps/video/out", pick) : join(root, "assets/video");
@@ -25,7 +25,7 @@ const gap = 0.22; // Seconds of air between two lines.
 const fadeIn = 0.4;
 const fadeOut = 2.5;
 const target = -16; // LUFS, for the voice and for the music-only cut.
-const musicUnderVoice = -10; // dB, the music's level under the voice before ducking.
+const musicUnderVoice = -5; // dB, the music's level under the voice before ducking.
 
 const ffmpeg = (args) => execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", ...args], { stdio: "inherit" });
 const probe = (file) =>
@@ -104,7 +104,7 @@ ffmpeg([
   "-i",
   musicStem,
   "-filter_complex",
-  `[1:a]asplit=2[voice][key];[2:a]volume=${musicUnderVoice}dB[bed];[bed][key]sidechaincompress=threshold=0.04:ratio=4:attack=20:release=400[ducked];[voice][ducked]amix=inputs=2:normalize=0,alimiter=limit=0.89:level=false[mix]`,
+  `[1:a]asplit=2[voice][key];[2:a]volume=${musicUnderVoice}dB[bed];[bed][key]sidechaincompress=threshold=0.06:ratio=2:attack=30:release=500[ducked];[voice][ducked]amix=inputs=2:normalize=0,alimiter=limit=0.89:level=false[mix]`,
   ...finish.slice(0, 2),
   "-map",
   "[mix]",

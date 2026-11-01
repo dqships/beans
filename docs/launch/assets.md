@@ -114,17 +114,18 @@ The intro, outro and midnight scenes use the `video-intro`, `video-outro` and `r
 
 ## 5. Voiceover and music
 
-Generated on Replicate. `pnpm video:mix` rebuilds the stems and both videos from the raw files, so swapping a line or the music takes one command. The landing page still plays the silent film with captions.
+Generated on Replicate. `pnpm video:mix` rebuilds the stems and both videos from the raw files, so swapping a line or the music takes one command. `--music=<raw file name>` builds trial cuts in `apps/video/out` without touching these. The landing page still plays the silent film with captions.
 
 | File | What it is |
 |---|---|
 | `assets/audio/voice/line-01.mp3` to `line-15.mp3` | Raw voice, one file per caption. ElevenLabs v3, voice Rachel, stability 0.5, similarity 0.75. Lines 1, 2 and 13 at speed 1.1, the rest at 1 |
 | `assets/audio/voice/voiceover-full.mp3` | All 15 lines placed on the film's timeline |
 | `assets/audio/voice/timing.json` | When each line starts, against its caption |
-| `assets/audio/music/minimax-take-1.mp3` | Raw music, the one in use. MiniMax Music 2.6, 128 s |
-| `assets/audio/music/minimax-take-2.mp3` | Raw alternate, busier, 140 s |
+| `assets/audio/music/minimax-take-2-no-vocals.mp3` | The music in use: take 2 with its vocal removed by Demucs. DQ chose this |
+| `assets/audio/music/minimax-take-2.mp3` | Raw MiniMax Music 2.6 take, 140 s. It has an unwanted vocal from about 0:21, so never use it as is |
+| `assets/audio/music/minimax-take-1.mp3` | Raw alternate, calmer, 128 s |
 | `assets/audio/music/stable-audio.mp3` | Raw alternate, Stable Audio 2.5, a repeating pattern, 72 s |
-| `assets/audio/music/music-bed.mp3` | Take 1 cut to the film's length, with fades |
+| `assets/audio/music/music-bed.mp3` | The music in use, cut to the film's length, with fades |
 | `assets/video/beans-demo-music.mp4` | 1920×1080 film with music only |
 | `assets/video/beans-demo-voice-music.mp4` | 1920×1080 film with voice and music |
 

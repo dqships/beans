@@ -79,7 +79,7 @@ Left to do on the launch:
 
 ## Done
 
-- 2026-10-31: Added an AI voiceover (ElevenLabs v3 on Replicate) and music (MiniMax Music 2.6), with raw files in `assets/audio` and two cuts in `assets/video`. `pnpm video:mix` rebuilds them. The picture is byte-identical to the silent film.
+- 2026-10-31: Added an AI voiceover (ElevenLabs v3 on Replicate) and music (MiniMax Music 2.6, vocal removed with Demucs), with raw files in `assets/audio` and two cuts in `assets/video`. `pnpm video:mix` rebuilds them. The picture is byte-identical to the silent film. DQ chose take 2 with its vocal removed, and asked for the music to sit closer to the voice.
 - 2026-10-31: Launch audit on `claude/beans-v1`. Checklist probed against a production build, all landing and app screens reviewed in both themes at both widths, and the signed-out Clerk path passes under the production CSP. Fixed "1 of 1 tasks" in daily planning. The full sign-up under that CSP still needs DQ's run.
 - 2026-10-31: Launch work merged into `claude/beans-v1`. Demo video merged, with the square cut on phones. On the merged result: `pnpm check` passes, 82 browser tests pass in development plus 38 of 38 public-page tests on a production build, and Lighthouse on `next start` (mobile, median of 3) is 100 in all four categories with LCP 1.51 s, CLS 0 and 1.9 KB of JavaScript at last measure. Clerk's test passed before the CSP landed, so it needs one more run.
 - 2026-10-31: Landing page merged. Zero framework JavaScript on public pages, plain copy, launch checklist, CSP and markdown negotiation. 15 mascot poses merged and wired into sign-in, Trash and the error page. Fixed the rollover test, which failed on the first of each month.
@@ -147,6 +147,7 @@ Left to do on the launch:
 
 - 2026-10-31: Marketing pages use the Pages Router with no runtime JavaScript, not `app/(marketing)`, because the App Router ships 179 KB gzipped on an empty page and the budget is 70 KB. This overrides the original brief's folder layout to keep its budget. DQ can reverse it.
 - 2026-10-31: One full-color favicon in every browser theme, no monochrome variant. It read well on all tab colors checked, and a silhouette lost the character.
+- 2026-10-31: The demo video uses MiniMax take 2 with its vocal removed. The version with the vocal is never to ship, because its words are unknown. (DQ)
 - 2026-10-31: The launch work merges into `claude/beans-v1`, not a separate PR into `main`. PR #5 carries it all. (DQ)
 - 2026-10-31: Marketing copy leads with plain words that say what Beans does. Garden wordplay stays where the words or screen around it make the meaning clear, such as the empty Brain Dump, and never stands alone. The social image says "Turn your to-do list into a plan for today." and "Beans is a daily planner." (DQ)
 - 2026-10-31: DQ approved the hero pose (`assets/illustrations/hero.png`) for the landing page.
@@ -170,7 +171,7 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 - The dark soil line in the midnight scene has low contrast.
 - The vertical cut's Quick Capture scene has a large dimmed empty area.
 - At 67.8 seconds it runs past Product Hunt's 60-second preview and the 30 to 45 seconds short feeds favor. There's no shorter cut.
-- The voice and music were chosen without being heard. Nobody has listened to them yet.
+- MiniMax ignored the instrumental setting on take 2, so its vocal was removed afterward. Listen for faint ghost singing from 0:21 on.
 - The square and vertical cuts have no audio versions yet.
 - Line 3 starts about 0.9 s after its caption, because the two lines before it run long.
 
