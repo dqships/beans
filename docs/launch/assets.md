@@ -95,15 +95,18 @@ Real app on sample data, remade by `apps/web/scripts/capture-product.mjs` (`pnpm
 
 ## 4. Video (workstream 4)
 
-Files under 10 MB go in `apps/web/public/video/`. Anything larger stays out of git: list its local path here and in Needs DQ for a CDN upload.
+Rendered from code by `pnpm video:render`: 67.8 seconds, 30 fps, silent, captions in the picture. Masters land in `apps/video/out/`, which is git-ignored. Files under 10 MB go in `apps/web/public/video/`. Anything larger stays out of git: list its local path here and in Needs DQ for a CDN upload. Every file below is under 10 MB, so nothing is waiting on a CDN.
 
 | File | Spec | Used by | Status |
 |---|---|---|---|
-| `apps/web/public/video/beans-demo-web.mp4` | H.264, under 6 MB | Landing | |
-| `apps/web/public/video/beans-demo-web.webm` | Under 6 MB | Landing | |
-| `apps/web/public/video/beans-demo-poster.avif` | 1280×720 | Landing | |
-| `apps/web/public/video/beans-demo-poster.png` | 1920×1080 | Social, fallback | |
-| `apps/web/public/video/beans-demo.vtt` | Captions | Landing | |
-| `beans-demo-1920.mp4`, `.webm` | 1920×1080 | Social, full cut | |
-| `beans-demo-square.mp4` | 1080×1080 | Social | |
-| `beans-demo-vertical.mp4` | 1080×1920 | Social | |
+| `apps/web/public/video/beans-demo-web.mp4` | H.264, 1920×1080, 5.48 MB | Landing | Done |
+| `apps/web/public/video/beans-demo-web.webm` | VP9, 1920×1080, 5.16 MB | Landing | Done |
+| `apps/web/public/video/beans-demo-poster.avif` | 1280×720, 20 KB | Landing | Done |
+| `apps/web/public/video/beans-demo-poster.png` | 1920×1080, 220 KB | Social, fallback | Done |
+| `apps/web/public/video/beans-demo.vtt` | 15 cues, matches the captions in the picture | Landing | Done |
+| `apps/web/public/video/beans-demo-1920.mp4` | H.264, 1920×1080, 6.54 MB | Social, full cut | Done |
+| `apps/web/public/video/beans-demo-1920.webm` | VP9, 1920×1080, 5.85 MB | Social, full cut | Done |
+| `apps/web/public/video/beans-demo-square.mp4` | H.264, 1080×1080, 4.64 MB | Social | Done, recomposed for the frame |
+| `apps/web/public/video/beans-demo-vertical.mp4` | H.264, 1080×1920, 5.22 MB | Social | Done, recomposed for the frame |
+
+The intro, outro and midnight scenes use the `video-intro`, `video-outro` and `rollover` poses.

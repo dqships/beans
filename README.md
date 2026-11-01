@@ -56,6 +56,7 @@ Marketing pages use the Pages Router with `unstable_runtimeJS: false`, so they s
 ```text
 assets/logo/      Mascot and app icon
 apps/web/         Next.js app
+apps/video/       Remotion demo film, drawn from the real planner components
 packages/tokens/  Design tokens, generated from DESIGN.md
 packages/core/    Data model and planner logic shared by every screen
 convex/           Schema and server functions
@@ -141,3 +142,13 @@ pnpm --filter @beans/web e2e:clerk
 It signs up a `+clerk_test` user and deletes it afterwards. It only accepts development keys, and skips when there are none.
 
 After editing `DESIGN.md`, run `pnpm tokens` to regenerate the token files.
+
+### Demo video
+
+```bash
+pnpm video:render
+```
+
+That renders the film in all three shapes from code, then writes the web copies, poster and captions to `apps/web/public/video/`. Masters land in `apps/video/out/`, which is git-ignored. It needs `ffmpeg` with `libx264`, `libvpx-vp9` and `libsvtav1`, and takes a few minutes. `pnpm --filter @beans/video studio` opens the film in Remotion Studio on port 3104.
+
+How the film is built, and its script, are in [docs/launch/video.md](docs/launch/video.md).
