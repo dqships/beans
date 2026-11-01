@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @beans/web dev",
+    "dev:clean": "rm -rf apps/web/.next && pnpm dev",
     "build": "pnpm -r --if-present build",
     "tokens": "pnpm --filter @beans/tokens build",
     "assets": "node scripts/build-brand-assets.mjs",

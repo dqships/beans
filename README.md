@@ -109,6 +109,14 @@ pnpm assets
 
 That rewrites every icon, social image and upload logo from `assets/logo/` and the design tokens, plus `apps/web/src/app/manifest.ts`. Commit the results. The list of files is in [docs/launch/assets.md](docs/launch/assets.md).
 
+### If a page keeps reloading in development
+
+A stale Turbopack cache can make `next dev` restart a page in a loop. The terminal shows the same `GET` and `Compiled` lines over and over. Stop the server and clear the cache:
+
+```bash
+pnpm dev:clean
+```
+
 ### Checks
 
 ```bash
