@@ -17,7 +17,7 @@ export function ProsePage({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className={styles.page}>
       <PageHead page={page} />
       <SiteHeader />
       <main className={styles.main}>
@@ -31,6 +31,6 @@ export function ProsePage({
         <div className={styles.prose}>{children}</div>
       </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }

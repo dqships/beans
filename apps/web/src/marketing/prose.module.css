@@ -1,8 +1,16 @@
+/* The footer stays at the foot of the window on short pages. */
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .main {
+  flex: 1;
   display: grid;
   gap: var(--space-4);
+  width: 100%;
   max-width: calc(var(--layout-prose) + var(--page-gutter) * 2);
-  min-height: 70vh;
   margin-inline: auto;
   --page-gutter: var(--space-5);
   padding: var(--layout-section-sm) var(--page-gutter) var(--layout-section);
