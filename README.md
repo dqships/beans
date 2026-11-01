@@ -100,6 +100,14 @@ Without a Convex URL in `apps/web/.env.local`, `pnpm dev` opens the planner on s
 2. Fill in `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` and `NEXT_PUBLIC_CONVEX_URL`, and remove the test sign-in lines.
 3. Turn on Clerk's Convex integration and set its Frontend API URL on Convex: `npx convex env set CLERK_JWT_ISSUER_DOMAIN <url>`.
 
+### Rebuild the brand files
+
+```bash
+pnpm assets
+```
+
+That rewrites every icon, social image and upload logo from `assets/logo/` and the design tokens, plus `apps/web/src/app/manifest.ts`. Commit the results. The list of files is in [docs/launch/assets.md](docs/launch/assets.md).
+
 ### Checks
 
 ```bash
