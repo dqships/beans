@@ -13,6 +13,8 @@ test("rollover moves yesterday's unfinished task to today with a tag", async ({ 
   await today.getByRole("textbox", { name: "Task title" }).press("Escape");
   await card(today, "Left over").click();
   await page.getByRole("dialog", { name: "Task details" }).getByRole("button", { name: "Today" }).click();
+  // On the first of a month, yesterday is on the picker's previous page.
+  if (yesterday.slice(0, 7) !== todayKey().slice(0, 7)) await page.getByRole("button", { name: "Previous month" }).click();
   await page.getByRole("button", { name: yesterday, exact: true }).click();
   await page.keyboard.press("Escape");
   await expect(card(day(page, yesterday), "Left over")).toBeVisible();
