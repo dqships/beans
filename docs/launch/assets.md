@@ -102,6 +102,7 @@ Rendered from code by `pnpm video:render`: 67.8 seconds, 30 fps, silent, caption
 | `apps/web/public/video/beans-demo-web.mp4` | H.264, 1920×1080, 5.48 MB | Landing | Done |
 | `apps/web/public/video/beans-demo-web.webm` | VP9, 1920×1080, 5.16 MB | Landing | Done |
 | `apps/web/public/video/beans-demo-poster.avif` | 1280×720, 20 KB | Landing | Done |
+| `apps/web/public/video/beans-demo-poster-square.avif` | 720×720 | Landing on phones | Done |
 | `apps/web/public/video/beans-demo-poster.png` | 1920×1080, 220 KB | Social, fallback | Done |
 | `apps/web/public/video/beans-demo.vtt` | 15 cues, matches the captions in the picture | Landing | Done |
 | `apps/web/public/video/beans-demo-1920.mp4` | H.264, 1920×1080, 6.54 MB | Social, full cut | Done |

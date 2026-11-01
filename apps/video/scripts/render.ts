@@ -90,6 +90,12 @@ function poster() {
   run("pnpm", ["exec", "remotion", "still", "src/index.ts", "beans-demo-1920", png, `--frame=${POSTER_FRAME}`, `--port=${port}`]);
   const avif = path.join(publicDir, "beans-demo-poster.avif");
   ffmpeg(["-i", png, "-vf", "scale=1280:720:flags=lanczos,format=yuv420p", "-frames:v", "1", "-c:v", "libsvtav1", "-crf", "32", "-preset", "4", avif]);
+
+  // Phones play the square cut, so they get a poster of the same shape.
+  const squarePng = path.join(out, "beans-demo-poster-square.png");
+  run("pnpm", ["exec", "remotion", "still", "src/index.ts", "beans-demo-square", squarePng, `--frame=${POSTER_FRAME}`, `--port=${port}`]);
+  const squareAvif = path.join(publicDir, "beans-demo-poster-square.avif");
+  ffmpeg(["-i", squarePng, "-vf", "scale=720:720:flags=lanczos,format=yuv420p", "-frames:v", "1", "-c:v", "libsvtav1", "-crf", "32", "-preset", "4", squareAvif]);
 }
 
 const stage = process.argv.find((a) => a.startsWith("--stage="))?.slice("--stage=".length) ?? "all";

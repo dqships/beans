@@ -20,6 +20,10 @@
     });
   }
 
+  // Phones play the square cut, so they get its poster too.
+  var film = document.querySelector("video");
+  if (film && matchMedia("(max-width: 720px)").matches) film.poster = "/video/beans-demo-poster-square.avif";
+
   // The hero demo: plant tasks on the Timebox.
   var demo = document.querySelector("[data-demo]");
   var grid = demo && demo.querySelector("[data-timebox]");

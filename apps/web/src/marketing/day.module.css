@@ -502,6 +502,10 @@
     padding-top: var(--layout-section-sm);
   }
 
+  .video {
+    aspect-ratio: 1;
+  }
+
   .day {
     padding-top: var(--layout-section-sm);
   }
