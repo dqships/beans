@@ -83,7 +83,8 @@ Full detail in `docs/BILLING.md`. Stripe secrets go on the Convex deployments on
    npx convex env set --prod STRIPE_WEBHOOK_SECRET 'whsec_…'
    ```
 
-4. Setting `STRIPE_SECRET_KEY` turns the paywall on for that deployment. Accounts made before then (DQ's own) see it too: give yourself a 100% forever coupon in the Stripe dashboard if you want free access.
+4. Make the live Beans portal configuration with `scripts/stripe-portal-config.mjs` and put the `bpc_…` it prints in `packages/core/src/billing.ts` (`docs/BILLING.md`, Stripe objects).
+5. Setting `STRIPE_SECRET_KEY` turns the paywall on for that deployment. Accounts made before then (DQ's own) see it too: give yourself a 100% forever coupon in the Stripe dashboard if you want free access.
 
 ### 5. Before a public launch
 

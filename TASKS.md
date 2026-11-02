@@ -148,6 +148,7 @@ Left to do on the launch:
 - 2026-11-02: The paywall comes right after sign-up, before first-run setup, because the trial needs a card. It isn't an onboarding step.
 - 2026-11-02: Monthly and yearly are separate Stripe products so the coupons can't touch yearly, even through a plan switch in the portal.
 - 2026-11-02: Refunds are by hand: a full refund within 14 days of a charge, by email to support@followusai.com (DQ, in the terms).
+- 2026-11-02: Beans gets its own Stripe portal configuration in live mode instead of sharing Vidzilla's default, so neither app's subscribers see the other's plans when switching. (DQ)
 - 2026-11-02: Stripe secrets live only on the Convex deployments. Billing is enforced only where `STRIPE_SECRET_KEY` is set.
 - 2026-11-02: Legal pages name FollowUs AI LLC as the operator, with support@followusai.com for all contact (DQ).
 - 2026-11-02: Michigan law, courts in Genesee County, small claims allowed, no arbitration clause (DQ).
@@ -268,6 +269,7 @@ Steps only DQ can do. Filled in as phases finish.
 
 - **Stripe keys and webhooks**: make restricted keys and set `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` on the Convex dev and production deployments, as `docs/BILLING.md` lists. Enable the test webhook endpoint once the code is on the dev deployment.
 - **Live launch code**: on launch day, add promotion code `BEANS100` to the live "Launch offer" coupon with 100 uses and a 4-week end date (`docs/BILLING.md`, Start a round).
+- **Live Beans portal**: run `STRIPE_SECRET_KEY='rk_live_…' node scripts/stripe-portal-config.mjs --site https://<your domain>` once, then put the `bpc_…` it prints in `STRIPE_IDS.live.portalConfiguration` (`packages/core/src/billing.ts`). Until then Beans opens the shared default portal: cancel, card and invoices work, plan switching doesn't.
 - **Comp your own account**: setting the Stripe key turns the paywall on for existing accounts too.
 1. **Clerk sign-up asks for a password as well as an email code.** That differs from `docs/DEPLOY.md`, which says email codes and Google. Keep it, or turn off the password in the Clerk dashboard.
 2. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.

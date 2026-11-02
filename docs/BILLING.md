@@ -39,13 +39,23 @@ The mode follows the secret key: `sk_test_`/`rk_test_` uses the test IDs, `sk_li
 | Price $6/month | `price_1UXOuBDyfH6JDnExdLFn4NRD` (lookup key `beans_monthly`) | `price_1UXQBoDyfH6JDnExCMcFrOqj` |
 | Product "Beans yearly" | `prod_VYW4SHnFpac8kb` | `prod_VYXTt1M6CU6hHQ` |
 | Price $48/year | `price_1UXP2qDyfH6JDnExV04uvxl0` (lookup key `beans_yearly`) | `price_1UXQOLDyfH6JDnExGPJCdM8E` |
-| Portal configuration "Beans" | `bpc_1UXOx4DyfH6JDnExOjVGxgv8` | not yet: live uses the account default for now |
+| Portal configuration "Beans" | `bpc_1UXOx4DyfH6JDnExOjVGxgv8` | not yet: run `scripts/stripe-portal-config.mjs` (below). Until then live uses the account default |
 | Coupons, monthly product only, no promotion codes yet | `beans-launch-100`, `beans-round-2-50`, `beans-round-3-25` | same IDs, created |
 | Webhook endpoint | `we_1UXOyBDyfH6JDnExIerJxiQb`, to the dev deployment, **disabled** until the code is deployed there | not yet: needs the production Convex deployment URL |
 
 Monthly and yearly are separate products on purpose: the coupons apply only to the monthly product, so a launch code can't discount a yearly plan, even if someone switches plans in the portal while it's running.
 
 The portal configuration is not the account's default (Vidzilla uses that one). Beans passes its own configuration ID when it opens the portal. Settings in it: cancel at period end with a reason, switch between the two prices with proration, yearly to monthly at the end of the year, trials continue across a switch, card updates, invoices, billing email.
+
+Why its own: a portal configuration offers every product in its plan-switch list to every customer who opens it. Adding the Beans plans to the default would show them to Vidzilla subscribers, and Vidzilla's plans to Beans subscribers. The default stays Vidzilla's.
+
+**Make or update it** with the script, which copies the settings above (and the test-mode configuration) using that mode's Beans prices:
+
+```bash
+STRIPE_SECRET_KEY='rk_live_…' node scripts/stripe-portal-config.mjs --site https://<your domain>
+```
+
+It prints the `bpc_…` ID: put it in `STRIPE_IDS.live.portalConfiguration` in `packages/core/src/billing.ts` and deploy. `--site` adds the privacy and terms links and the return URL; leave it out until the domain is set and run the script again later (it updates the same configuration, found by `metadata.app = beans`). `--dry-run` prints the parameters without calling Stripe. The Beans restricted key works (Customer portal: Write); so does the account's secret key.
 
 Webhook events: `checkout.session.completed` and `customer.subscription.created`, `.updated`, `.deleted`, `.paused`, `.resumed`, at API version `2024-06-20` (the version the code pins).
 
