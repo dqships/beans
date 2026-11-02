@@ -24,9 +24,12 @@ const music = join(musicDir, `${pick}.mp3`);
 
 const leadIn = 0.18; // Seconds between a caption appearing and its line starting.
 const gap = 0.22; // Seconds of air between two lines.
-const fadeIn = 0.4;
+const fadeIn = 0.1;
 const fadeOut = 2.5;
-const target = -16; // LUFS, for the voice and for the music-only cut.
+const target = -16; // LUFS, for the music.
+const voiceTarget = -20; // LUFS. Four dB under the music's level, so the voice sits in the mix instead of on top of it.
+// Seconds of the track's quiet opening notes to skip, so the music starts on its first full beat.
+const musicStart = 2.45;
 const webLimit = 6_000_000; // Bytes, the landing page's budget for each video file.
 const musicUnderVoice = -5; // dB, the music's level under the voice before ducking.
 
@@ -81,7 +84,7 @@ if (!trial) ffmpeg([
   rawStem,
 ]);
 if (!trial) {
-  const voiceGain = gainTo(rawStem, target);
+  const voiceGain = gainTo(rawStem, voiceTarget);
   ffmpeg(["-i", rawStem, "-af", `volume=${voiceGain.toFixed(2)}dB,alimiter=limit=0.84:level=false`, "-c:a", "libmp3lame", "-b:a", "192k", voiceStem]);
   execFileSync("rm", [rawStem]);
 }
@@ -89,7 +92,7 @@ if (!trial) {
 // The music, cut to the film's length and leveled.
 const musicStem = join(trial ? outDir : musicDir, "music-bed.mp3");
 const rawMusic = join(outDir, "music-bed.wav");
-ffmpeg(["-i", music, "-af", `atrim=0:${length},afade=in:d=${fadeIn},afade=out:st=${length - fadeOut}:d=${fadeOut}`, rawMusic]);
+ffmpeg(["-i", music, "-af", `atrim=${musicStart}:${musicStart + length},asetpts=PTS-STARTPTS,afade=in:d=${fadeIn},afade=out:st=${length - fadeOut}:d=${fadeOut}`, rawMusic]);
 const musicGain = gainTo(rawMusic, target);
 ffmpeg(["-i", rawMusic, "-af", `volume=${musicGain.toFixed(2)}dB,alimiter=limit=0.84:level=false`, "-c:a", "libmp3lame", "-b:a", "192k", musicStem]);
 
