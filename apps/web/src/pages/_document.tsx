@@ -3,7 +3,7 @@ import { Head, Html, Main, NextScript, type DocumentProps } from "next/document"
 /**
  * Production marketing pages run no React, so `landing.js` owns the DOM. In
  * development Next hydrates these pages anyway, and the two would collide, so
- * the script only ships in production builds.
+ * the landing page adds the script itself once hydration is done.
  */
 const landingScript = process.env.NODE_ENV === "production";
 

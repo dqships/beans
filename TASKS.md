@@ -81,13 +81,14 @@ Left to do on the launch:
 
 ### Later
 
-- [ ] Re-render the demo video and its posters: they still show the leaf now marker and the 52px top bar (`pnpm video:render`, then `pnpm video:mix`)
 
 - [ ] Desktop app: see "Desktop app, saved for later" in `RESEARCH.md`
 - [ ] Calendar accounts, attachments, import and export, notifications
 
 ## Done
 
+- 2026-11-02: Re-rendered the demo video, its three cuts and posters, then re-mixed the approved voice and music (`pnpm video:render`, `pnpm video:mix`). They show the bean now marker and the 60px top bar. The film had been showing first-run onboarding since onboarding landed, so its sample account is now marked onboarded, and its pointer geometry follows the taller top bar. Web cuts stay under 6 MB.
+- 2026-11-02: At the foot of the landing page the bean lands on the vine's root (the closing art's soil line on desktop, the vine's tip on phones). The landing page loads `landing.js` on the dev server too, after hydration, so localhost matches production. Fixed a class clash: the bean's wrapper and the analytics chart's bars both used `.stalk`. Landing copy now says a bean marks the current time.
 - 2026-11-02: The landing bean rides the vine without `landing.js`, which only ships in production builds, so it works on the dev server too. On desktop CSS places it on the now line; on phones and for the outlines the script is still needed. Fixed CI: the video's caption bar imported the removed leaf marker and now uses the bean. Recaptured the board, Timebox and phone screenshots so they show the new marker and the 60px top bar.
 - 2026-11-02: The app's top bar is 60px tall, up from 52 (`--layout-topbar`, DQ). The day and sidebar header rows grow with it, so they still line up. The top-bar profile photo now fills its circle; the button's default padding had shrunk it to a square. The demo video was recorded at 52 and isn't re-rendered.
 - 2026-11-02: The landing page's Timebox now bean is the one that rides the vine: a checked-off bean with its sprout, holding at 10:40 until it reaches mid-screen. It passes behind the demo video, the board and the Timebox screenshot, and an outline draws round each from where it goes in to where it comes out. The hero Timebox vine now lines up with the page vine to the pixel (it was 1px right). Checked at 1440 and 375, light and dark; 38 landing tests pass on a production build.

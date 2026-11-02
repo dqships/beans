@@ -269,19 +269,19 @@ export function layoutAt(format: Format, phase: Phase): Layout {
 
 /** Measured from the rendered planner. Column and panel sizes are DESIGN.md tokens. */
 const G = {
-  topbar: 52,
+  topbar: 60,
   sidebar: 272,
   column: 272,
   gap: 16,
   timebox: 280,
-  headerRow: 56,
+  headerRow: 64,
   listPad: 12,
   composer: 36,
   listGap: 8,
   card: 68,
   chipFromRight: 34,
   beanX: 22,
-  timeboxTop: 137,
+  timeboxTop: 153,
   gutter: 56,
   hour: 80,
 };
@@ -559,7 +559,7 @@ const SHOTS: Shot[] = [
   { at: T.resizeIn - 2, region: blockBox, speed: 0.55 },
   { at: T.timerIn, region: (l) => ({ x0: columnX(l, 0) - 12, y0: 104, x1: columnX(l, 0) + 412, y1: 420 }), speed: 0.55 },
   { at: T.lapseStart, region: full, speed: 0.45 },
-  // The leaf climbing past the block and the pill counting up, close enough to read.
+  // The now bean climbing past the block and the pill counting up, close enough to read.
   { at: T.lapseStart + 60, region: (l) => ({ x0: l.w - G.timebox - 140, y0: 170, x1: l.w, y1: l.h }), speed: 0.5 },
   { at: T.checkIn, region: cardFocus("t-report", T.checkIn, 150, 70), speed: 0.55, max: 4 },
   // Back far enough to read the whole card, with actual time now on the chip.

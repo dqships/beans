@@ -193,14 +193,14 @@ export function Day() {
               width={560}
               height={700}
               shown={560}
-              alt="The Timebox for Tuesday, with four tasks placed on a beanstalk of hours and a leaf at 10:40am"
+              alt="The Timebox for Tuesday, with four tasks placed on a beanstalk of hours and a checked-off bean at 10:40am"
               className={styles.shot}
             />
           }
         >
           <p>
             A to-do list won&apos;t tell you when anything gets done. Drag a task onto the Timebox to give it a start time, and drag
-            its edge to change how long it takes. A leaf marks the current time, so you can see what&apos;s next.
+            its edge to change how long it takes. A bean marks the current time, so you can see what&apos;s next.
           </p>
         </Stop>
         <Stop
@@ -350,5 +350,5 @@ export function Vine() {
 }
 
 /** The demo and the garden share one vine, and one stacking order, so the bean can pass behind things. */
-export const stalkClass = styles.stalk;
+export const stalkClass = styles.beanstalk;
 export const gardenClass = styles.garden;

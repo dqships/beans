@@ -4,6 +4,7 @@ import {
   baseTask,
   defaultSettings,
   emptyState,
+  ONBOARDED,
   put,
   timeToMinutes,
   type BeansState,
@@ -40,6 +41,8 @@ export function initialState(): BeansState {
     // A finished task stays where it is, so the sprout happens in place.
     completedToBottom: false,
     lastRollover: TODAY,
+    // The film shows a planner in use, so it skips first-run onboarding.
+    onboarding: ONBOARDED,
   };
   const record = { createdAt: now, updatedAt: now, deletedAt: null };
   const labels: Label[] = [

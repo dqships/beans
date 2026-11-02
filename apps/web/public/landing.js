@@ -50,9 +50,21 @@
       c.halves[1].setAttribute("d", "M" + x + " 0H" + r + arc + "0 0 " + r + "V" + (h - r) + arc + "0 " + r + " " + h + "H" + x);
     };
 
+    var hold = 0;
+
+    // Near the foot of the page the vine's root is still below the middle of the screen, so in the
+    // last stretch of scrolling the bean speeds up and lands on the root just as the page ends.
+    var land = function () {
+      var root = track.getBoundingClientRect().bottom - parseFloat(getComputedStyle(traveler).height);
+      var left = Math.max(0, document.documentElement.scrollHeight - innerHeight - scrollY);
+      var gap = root - left - hold;
+      traveler.style.translate = "-50% calc(-50% + " + Math.max(0, gap - left) + "px)";
+    };
+
     var queued = false;
     var trace = function () {
       queued = false;
+      land();
       var bean = traveler.getBoundingClientRect();
       var x = bean.left + bean.width / 2;
       var y = bean.top + bean.height / 2;
@@ -81,7 +93,8 @@
       var lineY = line.top + line.height / 2;
       stalk.style.setProperty("--bean-start", lineY - stalk.getBoundingClientRect().top + "px");
       // Hold halfway down the screen, unless the now line starts higher than that.
-      stalk.style.setProperty("--bean-stick", Math.min(innerHeight / 2, lineY + scrollY) + "px");
+      hold = Math.min(innerHeight / 2, lineY + scrollY);
+      stalk.style.setProperty("--bean-stick", hold + "px");
       stalk.dataset.bean = "";
       crossings.forEach(function (c) {
         c.key = "";

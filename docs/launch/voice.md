@@ -37,7 +37,7 @@ Each of these works today in the app.
 - Brain Dump and Lists hold tasks without a date.
 - The board has one column per day and keeps scrolling.
 - The Timebox shows the day's hours as a beanstalk, and tasks drag onto it. Blocks resize.
-- A leaf marks the current time.
+- A checked-off bean marks the current time.
 - Quick Capture reads labels, dates and times as you type, such as `#home`, `tomorrow` and `=30m`.
 - Tasks have notes, subtasks, labels, priority, due dates, estimates and actual time.
 - Timer and Pomodoro. Actual time can fill in from the timer.

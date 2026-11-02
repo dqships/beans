@@ -9,12 +9,15 @@
   /* The checked-off bean that rides the vine, and the gap its outline keeps around things on the vine. */
   --bean-traveler: calc(var(--space-6) - var(--space-1));
   --bean-outline-gap: calc(var(--space-1) + var(--focus-ring));
+  /* How far above the foot of the garden the vine ends, in the closing art's soil line. The bean ends there too. */
+  --vine-root: calc(var(--layout-section-sm) + var(--space-2));
   --page-pad: max(var(--space-5), calc(50vw - var(--layout-page) / 2));
 }
 
 @media (max-width: 720px) { /* --layout-phone */
   :root {
     --vine-x: var(--vine-gutter);
+    --vine-root: 0%;
     --page-pad: var(--space-4);
   }
 }

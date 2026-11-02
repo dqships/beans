@@ -23,7 +23,7 @@ Every day gets its own column. Drag tasks onto the days you'll do them, and you 
 
 ### 9:00am: Block out time for each task
 
-A to-do list won't tell you when anything gets done. Drag a task onto the Timebox to give it a start time, and drag its edge to change how long it takes. A leaf marks the current time, so you can see what's next.
+A to-do list won't tell you when anything gets done. Drag a task onto the Timebox to give it a start time, and drag its edge to change how long it takes. A bean marks the current time, so you can see what's next.
 
 ### 1:30pm: Focus on one task at a time
 

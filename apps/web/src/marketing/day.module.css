@@ -1,5 +1,5 @@
 /* The demo and everything below it hang off one vine. One stacking context, so things on the vine can sit above the bean. */
-.stalk {
+.beanstalk {
   position: relative;
   isolation: isolate;
 }
@@ -13,7 +13,7 @@
   content: "";
   position: absolute;
   top: 0;
-  bottom: calc(var(--layout-section-sm) + var(--space-2));
+  bottom: var(--vine-root);
   left: calc(var(--vine-x) - var(--vine-width) / 2);
   z-index: -1;
   width: var(--vine-width);
@@ -32,7 +32,8 @@
     --bean-start,
     calc(var(--border-width) * 2 + var(--space-3) * 2 + var(--text-lg-line) + var(--layout-hour) * 2.667 + var(--focus-ring) / 2)
   );
-  bottom: var(--layout-section);
+  /* The bean is centered on the top of its box, so its box runs one bean past the root. */
+  bottom: calc(var(--vine-root) - var(--bean-traveler));
   left: var(--vine-x);
   z-index: 1;
   width: 0;
@@ -539,12 +540,8 @@
     line-height: var(--text-md-line);
   }
 
-  .beanTrack {
-    bottom: var(--layout-section-sm);
-  }
-
   /* No fallback start on phones, so the hero's own bean stands in until `landing.js` places this one. */
-  .stalk:not([data-bean]) .beanTrack {
+  .beanstalk:not([data-bean]) .beanTrack {
     display: none;
   }
 
@@ -667,9 +664,6 @@
     margin-left: 0;
   }
 
-  .garden::before {
-    bottom: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
