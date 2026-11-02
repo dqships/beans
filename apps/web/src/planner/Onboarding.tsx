@@ -30,6 +30,7 @@ import {
   useTimeZone,
   useToday,
 } from "@/data/hooks";
+import { useBilling } from "@/data/billing";
 import { Button } from "@/ui/Button";
 import { Chip, LabelDot, TextInput } from "@/ui/controls";
 import { BeanMark, Mascot } from "@/ui/garden";
@@ -452,6 +453,8 @@ function TimeboxStep() {
 function PlantedStep() {
   const actions = useActions();
   const ui = useUi();
+  // Without a subscription the paywall comes next, so the button doesn't promise the planner.
+  const locked = useBilling()?.status.access === false;
   const { day, today } = useStep();
   const tasks = useDayTasks(day);
   const dump = useListTasks(null);
@@ -468,7 +471,7 @@ function PlantedStep() {
       title={day === today ? "Your day is planned." : "Tomorrow is planned."}
       lead={summary.filter(Boolean).join(" ")}
       next={{
-        label: "Open my planner",
+        label: locked ? "Continue" : "Open my planner",
         onClick: () => {
           ui.setTimeboxDate(day === today ? null : day);
           actions.endOnboarding("finished");

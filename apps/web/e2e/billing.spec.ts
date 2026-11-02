@@ -66,8 +66,10 @@ test.describe("with Stripe test mode", () => {
   test.skip(!stripe, "Set E2E_STRIPE=1 with a Stripe test key on the local backend.");
   test.setTimeout(120_000);
 
-  test("a new account starts the trial with a card, then plans; Settings shows the trial", async ({ page }) => {
+  test("a new account sets up first, then starts the trial with a card; Settings shows the trial", async ({ page }) => {
     await signInOnly(page);
+    // First-run setup comes before the paywall.
+    await page.getByRole("button", { name: "Skip setup" }).click({ timeout: 20_000 });
     await expect(page.getByRole("heading", { name: "Try Beans free for 7 days" })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole("radio", { name: /Monthly/ })).toHaveAttribute("aria-checked", "true");
     await page.getByRole("button", { name: "Start 7-day free trial" }).click();
@@ -75,9 +77,8 @@ test.describe("with Stripe test mode", () => {
     await expect(page.getByText("7 days free").first()).toBeVisible({ timeout: 30_000 });
     await payOnCheckout(page, "4242424242424242");
 
-    // Back in Beans: the paywall is gone and first-run setup starts.
+    // Back in Beans: the planner opens.
     await expect(page).toHaveURL(/localhost:\d+\/app$/, { timeout: 60_000 });
-    await page.getByRole("button", { name: "Skip setup" }).click();
     await expect(page.getByRole("region", { name: "Days" })).toBeVisible();
 
     await page.keyboard.press("Control+,");
@@ -89,6 +90,7 @@ test.describe("with Stripe test mode", () => {
 
   test("leaving checkout keeps the paywall up", async ({ page }) => {
     await signInOnly(page);
+    await page.getByRole("button", { name: "Skip setup" }).click({ timeout: 20_000 });
     await page.getByRole("radio", { name: /Yearly/ }).click();
     await page.getByRole("button", { name: "Start 7-day free trial" }).click();
     await expect(page).toHaveURL(/checkout\.stripe\.com/, { timeout: 30_000 });

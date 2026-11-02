@@ -89,7 +89,7 @@ Left to do on the launch:
 - [x] First-run onboarding: labels, Brain Dump, choose a day, Timebox, done
 - [x] Saved per account, resumes after a reload and on a second device, and can be skipped
 - [ ] Run the real Clerk sign-up through onboarding (DQ, see Needs DQ)
-- [ ] Decide on a paywall step once pricing is settled. It goes in as one more step
+- [x] Paywall after first-run setup, with 3 free days and no card as the alternative to the card trial
 
 ### Later
 
@@ -99,6 +99,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: The paywall moved after first-run setup: a new account plans its first day, then sees "Try Beans free for 7 days" with "Everything you just planned is saved." The paywall also offers 3 free days with no card, once per account; when they end the planner locks to the paywall and the card trial is still available. Server writes are allowed during a never-subscribed account's setup only. 37 Convex, 82 core and 20 web unit tests pass, plus the onboarding and billing browser tests; screens checked at 1440 and 390 in light and dark.
 - 2026-11-02: Clerk production moved from `followusai.com` to `beans.followusai.com` (secondary application): Frontend API `clerk.beans.followusai.com`, account portal `accounts.beans.followusai.com`, email from `@beans.followusai.com`. Five new DNS records in Cloudflare, verified; the five old `followusai.com` Clerk records were removed. Convex production's `CLERK_JWT_ISSUER_DOMAIN` and the Google redirect URI follow the new domain.
 - 2026-11-02: Google Cloud project "Beans" (`beans-513522`) with its OAuth app (External, app name Beans) for Clerk production's Google sign-in. The Web client "Clerk production" redirects to `https://clerk.beans.followusai.com/v1/oauth_callback`.
 - 2026-11-02: Live webhook endpoint `we_1UXTZRDyfH6JDnExkg7amGZv` ("Beans production") sends the six Beans events to the production Convex deployment `avid-mole-890`. DQ deleted the old, unused followusai.com endpoint.
@@ -147,6 +148,7 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-02: The paywall comes after first-run setup, so people see their plan before paying, as in the Ellie teardown. A no-card 3-day pass is offered from the paywall; when it ends Beans locks to the paywall (not view-only) and the 7-day card trial stays available. (DQ)
 - 2026-11-02: Beans lives on `beans.followusai.com`; `followusai.com` hosts other products. Clerk uses the subdomain so its sign-in hosts, account portal and cookies stay under Beans. (DQ)
 - 2026-11-02: Beans' Google sign-in uses its own Google Cloud project, not Guppy's, so the consent screen says Beans. Support email `dclouwork@gmail.com`, because this Google account has no organization or group for support@followusai.com; developer contacts dq@followusai.com and dclouwork@gmail.com, as for Guppy (DQ).
 - 2026-11-02: Beans costs $6 a month or $48 a year, with a 7-day free trial that needs a card, once per account. After the trial or subscription ends the planner locks to the plans screen and keeps every task. (DQ)

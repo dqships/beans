@@ -426,7 +426,7 @@ function Subscription() {
   return (
     <div className={styles.group}>
       <Row title={status.plan === "yearly" ? "Yearly plan" : status.plan === "monthly" ? "Monthly plan" : "Plan"} hint={statusLine(status)}>
-        <span className={styles.value}>{status.status === "trialing" ? "Free trial" : status.access ? "Active" : "Ended"}</span>
+        <span className={styles.value}>{status.status === "trialing" ? "Free trial" : !status.status && status.passEnd ? "Free days" : status.access ? "Active" : "Ended"}</span>
       </Row>
       <Row
         title="Manage subscription"

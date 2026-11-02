@@ -24,6 +24,13 @@ export const PLANS: Record<PlanId, Plan> = {
 export const TRIAL_DAYS = 7;
 
 /**
+ * Free days with no card, once per account, for a new account that isn't
+ * ready to start the trial. When they end the planner locks to the paywall
+ * and keeps every task. The card trial stays available afterwards.
+ */
+export const PASS_DAYS = 3;
+
+/**
  * Launch offer codes, oldest first. A round starts when its promotion code is
  * made in Stripe; the last one still running is applied at checkout. Codes
  * Stripe doesn't know are skipped. They discount the monthly plan only: the
@@ -61,6 +68,11 @@ const LIVE_STATUSES = new Set(["trialing", "active", "past_due"]);
 
 export function grantsAccess(status: string | null | undefined): boolean {
   return Boolean(status && LIVE_STATUSES.has(status));
+}
+
+/** True while the planner is open: no Stripe, a live subscription, or free days that haven't ended. */
+export function openAt(s: Pick<BillingStatus, "enforced" | "status" | "passEnd">, now: number): boolean {
+  return !s.enforced || grantsAccess(s.status) || (s.passEnd !== null && now < s.passEnd);
 }
 
 /** "$6", "$0.50" */
@@ -279,6 +291,10 @@ export type BillingStatus = {
   discountEnd: number | null;
   /** A first subscription starts with the free trial. */
   trialAvailable: boolean;
+  /** When the no-card free days end, or null if they were never started. */
+  passEnd: number | null;
+  /** A new account can start the no-card free days once, before any subscription. */
+  passAvailable: boolean;
   hasCustomer: boolean;
 };
 
@@ -294,6 +310,7 @@ export function statusLine(s: BillingStatus): string {
         ? `free until ${offerDate(s.discountEnd)}, then `
         : `${priceLine(plan, Math.round((plan.amount * (100 - s.discountPercent)) / 100))} until ${offerDate(s.discountEnd)}, then `
       : "";
+  if (!s.status && s.passEnd) return `Free days with no card until ${offerDate(s.passEnd)}.`;
   if (!s.status) return "No subscription yet.";
   if (s.status === "trialing") {
     if (s.cancelAtPeriodEnd) return `Free trial until ${when(s.trialEnd)}. Cancelled, so you won't be charged.`;

@@ -57,6 +57,8 @@ export default defineSchema({
     discountEnd: v.optional(v.union(v.number(), v.null())),
     /** Set by the first subscription, so the free trial is given once. */
     trialUsed: v.boolean(),
+    /** When the no-card free days end. Set once, so they're given once. */
+    passEnd: v.optional(v.union(v.number(), v.null())),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])

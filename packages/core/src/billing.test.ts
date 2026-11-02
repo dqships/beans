@@ -6,6 +6,7 @@ import {
   describePastPromo,
   describePromo,
   grantsAccess,
+  openAt,
   pickPromos,
   planForPrice,
   readPromo,
@@ -146,6 +147,8 @@ describe("status line", () => {
     discountPercent: null,
     discountEnd: null,
     trialAvailable: false,
+    passEnd: null,
+    passAvailable: false,
     hasCustomer: true,
   };
 
@@ -156,11 +159,24 @@ describe("status line", () => {
     expect(statusLine({ ...base, status: "active", cancelAtPeriodEnd: true })).toBe("Cancelled. Beans stays open until 9 November.");
     expect(statusLine({ ...base, status: "canceled", access: false })).toBe("Your subscription has ended.");
     expect(statusLine({ ...base, status: null })).toBe("No subscription yet.");
+    expect(statusLine({ ...base, status: null, passEnd: Date.UTC(2026, 10, 5) })).toBe("Free days with no card until 5 November.");
     const launch = { discountPercent: 100, discountEnd: Date.UTC(2027, 1, 2) };
     expect(statusLine({ ...base, ...launch })).toBe("Free trial until 9 November, then free until 2 February, then $6 a month.");
     expect(statusLine({ ...base, ...launch, status: "active" })).toBe("Free until 2 February, then $6 a month.");
     expect(statusLine({ ...base, discountPercent: 50, discountEnd: Date.UTC(2027, 1, 2) })).toBe(
       "Free trial until 9 November, then $3 a month until 2 February, then $6 a month.",
     );
+  });
+});
+
+describe("open at", () => {
+  const end = Date.UTC(2026, 10, 5, 18);
+  it("opens for a live subscription or free days that haven't ended, and always without Stripe", () => {
+    expect(openAt({ enforced: false, status: null, passEnd: null }, end)).toBe(true);
+    expect(openAt({ enforced: true, status: null, passEnd: null }, end)).toBe(false);
+    expect(openAt({ enforced: true, status: "trialing", passEnd: null }, end)).toBe(true);
+    expect(openAt({ enforced: true, status: null, passEnd: end }, end - 1)).toBe(true);
+    expect(openAt({ enforced: true, status: null, passEnd: end }, end)).toBe(false);
+    expect(openAt({ enforced: true, status: "canceled", passEnd: end }, end + 1)).toBe(false);
   });
 });

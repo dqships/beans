@@ -4,7 +4,9 @@ Beans sells one subscription through Stripe, on the FollowUs AI account (the sam
 
 - **Plans:** $6 a month or $48 a year, USD.
 - **Trial:** 7 days, card up front, once per account. Stripe charges when the trial ends unless the subscription was cancelled.
-- **Lock:** without a trialing, active or past-due subscription, the planner shows the paywall instead. Nothing is deleted, and subscribing again opens it with everything in place. Writes are refused on the server too (`planner.apply`).
+- **Free days, no card:** 3 days, once per account, offered from the paywall ("Not ready to add a card?") to an account that has never subscribed. No Stripe involved: `billing.startPass` saves the end time on the `billing` row. When they end the planner locks to the paywall, and the 7-day card trial is still available.
+- **When the paywall shows:** after first-run setup. A new account plans its first day (labels, Brain Dump, choose, Timebox, done), then meets the paywall, so it has seen its plan before it's asked to pay. Skipping setup goes straight to the paywall.
+- **Lock:** without a trialing, active or past-due subscription, or free days that haven't ended, the planner shows the paywall instead. Nothing is deleted, and subscribing again opens it with everything in place. Writes are refused on the server too (`planner.apply`), except while a never-subscribed account's first-run setup is active, so setup can save. Finishing or skipping setup ends that, and a locked account can't set it active again.
 - **Manage:** Settings, Subscription, Manage subscription opens the Stripe customer portal: cancel at the end of the period, switch monthly and yearly, update the card, billing email, invoices.
 - **Refunds:** by hand. Email support@followusai.com within 14 days of a charge for a full refund (the terms promise this). Refund in the Stripe dashboard; the webhook follows whatever the subscription becomes.
 - **Launch offers:** promotion codes on the monthly plan, for a first subscription only. See below.

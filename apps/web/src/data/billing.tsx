@@ -16,6 +16,8 @@ export type Billing = {
   startCheckout(plan: PlanId): Promise<void>;
   /** Sends the browser to the Stripe customer portal. */
   openPortal(): Promise<void>;
+  /** Starts the no-card free days. */
+  startPass(): Promise<void>;
 };
 
 export const BillingContext = createContext<Billing | null>(null);

@@ -192,6 +192,45 @@
   font-weight: var(--text-md-weight);
 }
 
+/* The free days: two beans on a soil line, today and the day they end. */
+.steps {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0 0 0 var(--space-1);
+  list-style: none;
+  border-left: var(--border-width) solid var(--color-border);
+}
+
+.step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+  align-items: center;
+  margin-left: calc(var(--space-3) * -1);
+}
+
+.stepBean {
+  grid-row: span 2;
+  align-self: start;
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.stepWhen {
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+.stepWhat {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-sm-weight);
+}
+
 .actions {
   display: grid;
   justify-items: start;

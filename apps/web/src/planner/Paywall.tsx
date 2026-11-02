@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { countLine, PLANS, TRIAL_DAYS, type PlanId } from "@beans/core";
+import { countLine, PASS_DAYS, PLANS, TRIAL_DAYS, type PlanId } from "@beans/core";
 import { useBilling } from "@/data/billing";
-import { useClock } from "@/data/hooks";
+import { useClock, useOnboarding } from "@/data/hooks";
 import { Button } from "@/ui/Button";
 import { BeanMark, Mascot } from "@/ui/garden";
 import { Illustration } from "@/ui/Illustration";
@@ -11,6 +11,7 @@ import { useAccount } from "./account";
 import styles from "./paywall.module.css";
 
 const DAY = new Intl.DateTimeFormat("en-US", { day: "numeric", month: "long" });
+const MOMENT = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" });
 
 /** "9 November" */
 function dayMonth(date: Date): string {
@@ -20,14 +21,17 @@ function dayMonth(date: Date): string {
 
 /**
  * Shown instead of the planner until the account has a trial or a
- * subscription: two seed packets, one per plan, and the launch offer when
- * one is running. Checkout happens on Stripe's page.
+ * subscription, after first-run setup for a new account: two seed packets,
+ * one per plan, and the launch offer when one is running. Checkout happens on
+ * Stripe's page.
  */
 export function Paywall() {
   const billing = useBilling();
   const account = useAccount();
+  const planned = useOnboarding()?.status === "finished";
   const [plan, setPlan] = useState<PlanId>("monthly");
-  const [busy, setBusy] = useState<"checkout" | "portal" | null>(null);
+  const [view, setView] = useState<"plans" | "pass">("plans");
+  const [busy, setBusy] = useState<"checkout" | "portal" | "pass" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const now = useClock();
   // Coming back from Stripe with the Back button restores this page as it was left.
@@ -44,20 +48,95 @@ export function Paywall() {
   // Launch offers are for a first subscription, like the trial.
   const promo = trial ? offer.promo : null;
   const ended = status.status !== null;
+  const passOver = !ended && status.passEnd !== null;
   const trialEnds = dayMonth(new Date(now + TRIAL_DAYS * 86_400_000));
   const price = offer.plans.find((p) => p.id === plan)!.price;
 
-  async function run(kind: "checkout" | "portal") {
+  async function run(kind: "checkout" | "portal" | "pass") {
     setBusy(kind);
     setError(null);
     try {
       if (kind === "checkout") await billing!.startCheckout(plan);
-      else await billing!.openPortal();
+      else if (kind === "portal") await billing!.openPortal();
+      // The planner opens as soon as the free days are saved.
+      else await billing!.startPass();
     } catch (e) {
       console.error(e);
-      setError(kind === "checkout" ? "Stripe's checkout didn't open. Try again in a minute." : "The billing page didn't open. Try again in a minute.");
+      setError(
+        kind === "checkout"
+          ? "Stripe's checkout didn't open. Try again in a minute."
+          : kind === "portal"
+            ? "The billing page didn't open. Try again in a minute."
+            : "The free days didn't start. Try again in a minute.",
+      );
       setBusy(null);
     }
+  }
+
+  const header = (
+    <header className={styles.header}>
+      <span className={styles.brand}>
+        <Mascot className={styles.brandMark} />
+        Beans
+      </span>
+      {account.signOut ? (
+        <Button variant="quiet" onClick={account.signOut}>
+          Sign out
+        </Button>
+      ) : null}
+    </header>
+  );
+
+  if (view === "pass") {
+    const passEnds = MOMENT.format(new Date(now + PASS_DAYS * 86_400_000));
+    return (
+      <div className={styles.page}>
+        {header}
+        <main className={styles.main}>
+          <div className={styles.intro}>
+            <div className={styles.words}>
+              <h1 className={styles.title}>{`${PASS_DAYS} days free, no card`}</h1>
+              <p className={styles.lead}>Use all of Beans before you decide. There&apos;s no card to add, so nothing can charge you when the days end.</p>
+            </div>
+            <Illustration name="welcome" alt="" className={styles.art} eager />
+          </div>
+
+          <ol className={styles.steps}>
+            <li className={styles.step}>
+              <BeanMark done className={styles.stepBean} />
+              <span className={styles.stepWhen}>Today</span>
+              <span className={styles.stepWhat}>Your planner opens with everything you just planned.</span>
+            </li>
+            <li className={styles.step}>
+              <BeanMark done={false} className={styles.stepBean} />
+              <span className={styles.stepWhen}>{passEnds}</span>
+              <span className={styles.stepWhat}>{`Beans comes back to this page until you pick a plan. Every task stays saved, and the ${TRIAL_DAYS}-day trial is still yours.`}</span>
+            </li>
+          </ol>
+
+          <div className={styles.actions}>
+            <Button variant="primary" onClick={() => void run("pass")} disabled={busy !== null}>
+              {busy === "pass" ? "Starting…" : `Start ${PASS_DAYS} free days`}
+            </Button>
+            {error ? (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            ) : null}
+            <Button
+              variant="quiet"
+              onClick={() => {
+                setError(null);
+                setView("plans");
+              }}
+              disabled={busy !== null}
+            >
+              Back to plans
+            </Button>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   let fine: string;
@@ -67,25 +146,21 @@ export function Paywall() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <span className={styles.brand}>
-          <Mascot className={styles.brandMark} />
-          Beans
-        </span>
-        {account.signOut ? (
-          <Button variant="quiet" onClick={account.signOut}>
-            Sign out
-          </Button>
-        ) : null}
-      </header>
+      {header}
       <main className={styles.main}>
         <div className={styles.intro}>
           <div className={styles.words}>
-            <h1 className={styles.title}>{ended ? "Your Beans subscription has ended" : trial ? `Try Beans free for ${TRIAL_DAYS} days` : "Choose a plan"}</h1>
+            <h1 className={styles.title}>
+              {ended ? "Your Beans subscription has ended" : passOver ? "Your free days are over" : trial ? `Try Beans free for ${TRIAL_DAYS} days` : "Choose a plan"}
+            </h1>
             <p className={styles.lead}>
               {ended
                 ? "Your tasks are saved. Choose a plan to open your planner again."
-                : "Pick a plan to start. You get the whole planner: Brain Dump, the board, the Timebox, timers and analytics."}
+                : passOver
+                  ? `Your tasks are saved. Start the ${TRIAL_DAYS}-day trial or pick a plan to keep planning.`
+                  : planned
+                  ? "Everything you just planned is saved. Pick a plan to open it in the planner, with the board, the Timebox, timers and analytics."
+                  : "Pick a plan to start. You get the whole planner: Brain Dump, the board, the Timebox, timers and analytics."}
             </p>
           </div>
           <Illustration name="welcome" alt="" className={styles.art} eager />
@@ -135,6 +210,18 @@ export function Paywall() {
             <p className={styles.error} role="alert">
               {error}
             </p>
+          ) : null}
+          {status.passAvailable ? (
+            <Button
+              variant="quiet"
+              onClick={() => {
+                setError(null);
+                setView("pass");
+              }}
+              disabled={busy !== null}
+            >
+              {`Not ready to add a card? Try ${PASS_DAYS} days free`}
+            </Button>
           ) : null}
           {status.hasCustomer && ended ? (
             <Button variant="quiet" onClick={() => void run("portal")} disabled={busy !== null}>

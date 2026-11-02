@@ -1,11 +1,13 @@
 import { ConvexError, v } from "convex/values";
-import { action, internalMutation, internalQuery, query, type ActionCtx, type MutationCtx, type QueryCtx } from "./_generated/server";
+import { action, internalMutation, internalQuery, mutation, query, type ActionCtx, type MutationCtx, type QueryCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
 import {
   BASE_OFFER,
   describeOffer,
   grantsAccess,
+  openAt,
+  PASS_DAYS,
   pickPromos,
   planForPrice,
   PROMO_CODES,
@@ -20,7 +22,7 @@ import {
   type StripePromotionCode,
   TRIAL_DAYS,
 } from "../packages/core/src/billing";
-import { requireUser } from "./lib";
+import { getSettings, requireUser } from "./lib";
 import { stripeClient, subscriptionFields, type StripeCall, type StripeObject, type SubscriptionFields } from "./stripe";
 
 /**
@@ -46,21 +48,33 @@ async function rowFor(ctx: QueryCtx | MutationCtx, userId: string) {
     .unique();
 }
 
-/** True when this user may change their planner. */
-export async function hasAccess(ctx: QueryCtx | MutationCtx, userId: string): Promise<boolean> {
-  if (!billingEnforced()) return true;
-  return grantsAccess((await rowFor(ctx, userId))?.status);
+/** True while a subscription or the no-card free days keep the planner open. */
+function rowOpen(row: Doc<"billing"> | null, now: number): boolean {
+  return openAt({ enforced: billingEnforced(), status: row?.status ?? null, passEnd: row?.passEnd ?? null }, now);
 }
 
-/** Throws for a locked planner, so writes can't get round the paywall. */
+/** True when this user may change their planner. */
+export async function hasAccess(ctx: QueryCtx | MutationCtx, userId: string): Promise<boolean> {
+  return rowOpen(await rowFor(ctx, userId), Date.now());
+}
+
+/**
+ * Throws for a locked planner, so writes can't get round the paywall. An
+ * account that has never subscribed can write while onboarding is active: it
+ * plans its first day, then meets the paywall. Finishing or skipping
+ * onboarding ends that, and a locked account can't set it active again.
+ */
 export async function requireAccess(ctx: QueryCtx | MutationCtx, userId: string) {
-  if (!(await hasAccess(ctx, userId))) throw new ConvexError("A subscription is needed to change your planner");
+  const row = await rowFor(ctx, userId);
+  if (rowOpen(row, Date.now())) return;
+  if (!row?.status && (await getSettings(ctx, userId))?.onboarding?.status === "active") return;
+  throw new ConvexError("A subscription is needed to change your planner");
 }
 
 function toStatus(row: Doc<"billing"> | null): BillingStatus {
   return {
     enforced: billingEnforced(),
-    access: !billingEnforced() || grantsAccess(row?.status),
+    access: rowOpen(row, Date.now()),
     status: row?.status ?? null,
     plan: planForPrice(row?.priceId),
     trialEnd: row?.trialEnd ?? null,
@@ -69,6 +83,8 @@ function toStatus(row: Doc<"billing"> | null): BillingStatus {
     discountPercent: row?.discountPercent ?? null,
     discountEnd: row?.discountEnd ?? null,
     trialAvailable: !row?.trialUsed,
+    passEnd: row?.passEnd ?? null,
+    passAvailable: !row?.passEnd && !row?.status && !row?.trialUsed,
     hasCustomer: Boolean(row?.customerId),
   };
 }
@@ -77,6 +93,22 @@ export const status = query({
   args: {},
   handler: async (ctx): Promise<BillingStatus> => {
     const userId = await requireUser(ctx);
+    return toStatus(await rowFor(ctx, userId));
+  },
+});
+
+/** Starts the no-card free days. A new account gets them once, before any subscription. */
+export const startPass = mutation({
+  args: {},
+  handler: async (ctx): Promise<BillingStatus> => {
+    const userId = await requireUser(ctx);
+    if (!billingEnforced()) throw new ConvexError("Payments aren't set up yet");
+    const row = await rowFor(ctx, userId);
+    if (row?.passEnd || row?.status || row?.trialUsed) throw new ConvexError("The free days are only for a new account");
+    const now = Date.now();
+    const passEnd = now + PASS_DAYS * 86_400_000;
+    if (row) await ctx.db.patch(row._id, { passEnd, updatedAt: now });
+    else await ctx.db.insert("billing", { ...emptyRow(userId, now), passEnd });
     return toStatus(await rowFor(ctx, userId));
   },
 });

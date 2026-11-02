@@ -1,32 +1,30 @@
 "use client";
 
 import { useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { useAction, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { BASE_OFFER, type BillingStatus, type Offer, type PlanId } from "@beans/core";
 import { BillingContext, type Billing } from "./billing";
 import { DataStoreContext } from "./store";
 
 /**
- * Shows the paywall instead of the planner until the account has a trial or a
- * subscription. Sample data and deployments without Stripe skip it.
+ * Provides the subscription to the planner, which shows the paywall after
+ * first-run setup until the account has a trial or a subscription. Sample data
+ * and deployments without Stripe skip it.
  */
-export function BillingGate({ children, loading, paywall }: { children: ReactNode; loading: ReactNode; paywall: ReactNode }) {
+export function BillingGate({ children, loading }: { children: ReactNode; loading: ReactNode }) {
   const backend = useContext(DataStoreContext)?.backend;
   if (backend !== "convex") return <>{children}</>;
-  return (
-    <ConvexBillingGate loading={loading} paywall={paywall}>
-      {children}
-    </ConvexBillingGate>
-  );
+  return <ConvexBillingGate loading={loading}>{children}</ConvexBillingGate>;
 }
 
-function ConvexBillingGate({ children, loading, paywall }: { children: ReactNode; loading: ReactNode; paywall: ReactNode }) {
+function ConvexBillingGate({ children, loading }: { children: ReactNode; loading: ReactNode }) {
   const status = useQuery(api.billing.status);
   const offerAction = useAction(api.billing.offer);
   const checkoutAction = useAction(api.billing.checkout);
   const portalAction = useAction(api.billing.portal);
   const confirm = useAction(api.billing.confirm);
+  const passMutation = useMutation(api.billing.startPass);
   const [offer, setOffer] = useState<Offer>(BASE_OFFER);
   const returning = useReturnFromCheckout(confirm);
 
@@ -47,11 +45,13 @@ function ConvexBillingGate({ children, loading, paywall }: { children: ReactNode
     window.location.assign(url);
   }, [portalAction]);
 
+  const startPass = useCallback(async () => {
+    await passMutation({});
+  }, [passMutation]);
+
   if (!status) return <>{loading}</>;
-  const value: Billing = { status, offer, startCheckout, openPortal };
-  let content = children;
-  if (!status.access) content = returning ? loading : paywall;
-  return <BillingContext.Provider value={value}>{content}</BillingContext.Provider>;
+  const value: Billing = { status, offer, startCheckout, openPortal, startPass };
+  return <BillingContext.Provider value={value}>{!status.access && returning ? loading : children}</BillingContext.Provider>;
 }
 
 /**
