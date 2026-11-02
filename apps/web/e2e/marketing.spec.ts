@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
-const publicPaths = ["/", "/about", "/contact", "/privacy", "/terms"];
+const publicPaths = ["/", "/pricing", "/about", "/contact", "/privacy", "/terms"];
 
 /** `landing.js` and the zero-JS build only exist in production. Point E2E_URL at `next start` to run those. */
 const production = Boolean(process.env.E2E_URL);

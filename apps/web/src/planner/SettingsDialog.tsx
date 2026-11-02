@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import {
   CalendarBlank,
+  CreditCard,
   Faders,
   Keyboard,
   PuzzlePiece,
@@ -12,7 +13,8 @@ import {
   UserCircle,
   X,
 } from "@phosphor-icons/react";
-import { formatDuration, formatHour, ESTIMATE_PRESETS, type FeatureFlags, type Settings } from "@beans/core";
+import { formatDuration, formatHour, ESTIMATE_PRESETS, statusLine, type FeatureFlags, type Settings } from "@beans/core";
+import { useBilling } from "@/data/billing";
 import { useActions, useBackend, useLabels, useSettings } from "@/data/hooks";
 import { Button, IconButton } from "@/ui/Button";
 import { LabelDot, Switcher, TextInput, Toggle } from "@/ui/controls";
@@ -35,18 +37,22 @@ const SECTIONS: { id: SettingsSection; label: string; icon: typeof Faders }[] = 
   { id: "features", label: "Optional features", icon: PuzzlePiece },
   { id: "shortcuts", label: "Keyboard shortcuts", icon: Keyboard },
   { id: "account", label: "Account", icon: UserCircle },
+  { id: "subscription", label: "Subscription", icon: CreditCard },
 ];
 
 export function SettingsDialog() {
   const ui = useUi();
   const section = ui.settingsSection;
+  // Subscription only shows where Stripe is set up.
+  const billed = Boolean(useBilling()?.status.enforced);
+  const sections = SECTIONS.filter((s) => s.id !== "subscription" || billed);
   return (
     <Modal open={section !== null} onClose={() => ui.openSettings(null)} label="Settings" width="wide" className={styles.modal}>
       {section ? (
         <div className={styles.layout}>
           <nav className={styles.nav} aria-label="Settings sections">
             <h2 className={styles.navTitle}>Settings</h2>
-            {SECTIONS.map((s) => (
+            {sections.map((s) => (
               <button
                 key={s.id}
                 type="button"
@@ -70,6 +76,7 @@ export function SettingsDialog() {
             {section === "features" ? <Features /> : null}
             {section === "shortcuts" ? <Shortcuts /> : null}
             {section === "account" ? <Account /> : null}
+            {section === "subscription" ? <Subscription /> : null}
           </div>
         </div>
       ) : null}
@@ -406,6 +413,45 @@ function Account() {
           <Button onClick={account.signOut}>Sign out</Button>
         </Row>
       ) : null}
+    </div>
+  );
+}
+
+function Subscription() {
+  const billing = useBilling();
+  const [opening, setOpening] = useState(false);
+  const [failed, setFailed] = useState(false);
+  if (!billing) return null;
+  const { status } = billing;
+  return (
+    <div className={styles.group}>
+      <Row title={status.plan === "yearly" ? "Yearly plan" : status.plan === "monthly" ? "Monthly plan" : "Plan"} hint={statusLine(status)}>
+        <span className={styles.value}>{status.status === "trialing" ? "Free trial" : status.access ? "Active" : "Ended"}</span>
+      </Row>
+      <Row
+        title="Manage subscription"
+        hint={failed ? "The billing page didn't open. Try again in a minute." : "Cancel, switch between monthly and yearly, update your card, or download invoices. Opens Stripe's billing page."}
+      >
+        <Button
+          disabled={opening || !status.hasCustomer}
+          onClick={() => {
+            setOpening(true);
+            setFailed(false);
+            billing.openPortal().catch((e: unknown) => {
+              console.error(e);
+              setFailed(true);
+              setOpening(false);
+            });
+          }}
+        >
+          {opening ? "Opening…" : "Manage subscription"}
+        </Button>
+      </Row>
+      <Row title="Refunds and help" hint="Email support@followusai.com within 14 days of a charge for a full refund. We can also cancel for you.">
+        <a className={styles.value} href="mailto:support@followusai.com">
+          support@followusai.com
+        </a>
+      </Row>
     </div>
   );
 }

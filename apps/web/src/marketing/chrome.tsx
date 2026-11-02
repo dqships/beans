@@ -14,6 +14,9 @@ export function SiteHeader() {
         <a href="/#day" className={styles.navLink}>
           How a day goes
         </a>
+        <a href="/pricing" className={styles.navLink}>
+          Pricing
+        </a>
         <a href="/about" className={styles.navLink}>
           About
         </a>
@@ -38,6 +41,9 @@ export function SiteFooter() {
       </p>
       <nav aria-label="Footer">
         <ul className={styles.footerLinks}>
+          <li>
+            <a href="/pricing">Pricing</a>
+          </li>
           <li>
             <a href="/about">About</a>
           </li>

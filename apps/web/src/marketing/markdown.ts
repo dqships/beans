@@ -119,8 +119,36 @@ Your tasks are stored with Convex so the planner can show them to you and sync t
 The full terms aren't written yet. They'll appear on this page after review.
 `;
 
+const pricing = `# Try Beans free for 7 days
+
+Then $6 a month, or $48 a year. Every part of the planner is included, and you can cancel any time.
+
+- [Start your free trial](${absoluteUrl("/sign-up")})
+
+## Plans
+
+- **Monthly:** $6 a month, after 7 days free.
+- **Yearly:** $48 a year, after 7 days free. That's 33% less than paying monthly.
+
+When a launch offer is running, the [pricing page](${absoluteUrl("/pricing")}) shows its code, how many are left and when it ends. Checkout applies it for you.
+
+## How the free trial works
+
+1. Sign up and pick a plan. Stripe, our payment provider, asks for your card. Nothing is charged yet.
+2. Plan your days for 7 days with everything in Beans.
+3. Your plan starts on day 8, unless you cancel in Settings before then. Cancel during the trial and you're never charged.
+
+## Questions
+
+- **How do I cancel?** In Beans, open Settings, then Subscription, and press Manage subscription. Beans stays open until the end of the time you paid for.
+- **Can I switch between monthly and yearly?** Yes, in the same place. Moving to yearly starts right away, with credit for unused time. Moving to monthly starts when your year ends.
+- **What happens to my tasks if I stop paying?** They stay saved. The planner locks until you choose a plan again.
+- **Can I get a refund?** Yes. Email support@followusai.com within 14 days of a charge and we'll refund it in full.
+`;
+
 const bodies: Record<string, string> = {
   "/": home,
+  "/pricing": pricing,
   "/about": about,
   "/contact": contact,
   "/privacy": privacy,
@@ -132,6 +160,7 @@ export const notFoundMarkdown = `# Page not found
 There's no page at this address. Try one of these instead:
 
 - [Home](${absoluteUrl("/")})
+- [Pricing](${absoluteUrl("/pricing")})
 - [About](${absoluteUrl("/about")})
 - [Contact](${absoluteUrl("/contact")})
 - [Privacy (draft)](${absoluteUrl("/privacy")})
