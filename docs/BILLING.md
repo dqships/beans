@@ -41,7 +41,7 @@ The mode follows the secret key: `sk_test_`/`rk_test_` uses the test IDs, `sk_li
 | Price $48/year | `price_1UXP2qDyfH6JDnExV04uvxl0` (lookup key `beans_yearly`) | `price_1UXQOLDyfH6JDnExGPJCdM8E` |
 | Portal configuration "Beans" | `bpc_1UXOx4DyfH6JDnExOjVGxgv8` | `bpc_1UXSNWDyfH6JDnExI20FeQYC` |
 | Coupons, monthly product only, no promotion codes yet | `beans-launch-100`, `beans-round-2-50`, `beans-round-3-25` | same IDs, created |
-| Webhook endpoint | `we_1UXOyBDyfH6JDnExIerJxiQb`, to the dev deployment, **disabled** until the code is deployed there | not yet: needs the production Convex deployment URL |
+| Webhook endpoint | `we_1UXOyBDyfH6JDnExIerJxiQb`, to the dev deployment, **disabled** until the code is deployed there | `we_1UXTZRDyfH6JDnExkg7amGZv` "Beans production", to `https://avid-mole-890.convex.site/stripe/webhook` |
 
 Monthly and yearly are separate products on purpose: the coupons apply only to the monthly product, so a launch code can't discount a yearly plan, even if someone switches plans in the portal while it's running.
 
@@ -57,7 +57,7 @@ STRIPE_SECRET_KEY='rk_live_…' node scripts/stripe-portal-config.mjs --site htt
 
 It prints the `bpc_…` ID, which goes in `STRIPE_IDS` in `packages/core/src/billing.ts` (both modes are filled in already). `--site` adds the privacy and terms links and the return URL; leave it out until the domain is set and run the script again later (it updates the same configuration, found by `metadata.app = beans`). `--dry-run` prints the parameters without calling Stripe. The Beans restricted key works (Customer portal: Write); so does the account's secret key.
 
-Webhook events: `checkout.session.completed` and `customer.subscription.created`, `.updated`, `.deleted`, `.paused`, `.resumed`, at API version `2024-06-20` (the version the code pins).
+Webhook events: `checkout.session.completed` and `customer.subscription.created`, `.updated`, `.deleted`, `.paused`, `.resumed`. The endpoint's API version doesn't matter: the handler reads only the event type, the object ID and the checkout metadata, then fetches the subscription itself at `2024-06-20` (the version the code pins). The dashboard no longer offers `2024-06-20` for new endpoints, so the live one uses the account default, `2025-02-24.acacia`.
 
 A new price or coupon in Stripe can't be edited; it's a new object with a new ID. Change `STRIPE_IDS` (and `PLANS` for the amount) and redeploy.
 
