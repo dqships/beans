@@ -2,9 +2,9 @@
 
 ## Now
 
-Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done. Phase 4 (planner behavior) is done. Phase 5 launch prep is done on the repo side; creating services and deploying is for DQ, listed under Needs DQ. The PR from `claude/beans-v1` into `main` is ready for review.
+Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done. Phase 4 (planner behavior) is done. Phase 5 launch prep is done on the repo side; creating services and deploying is for DQ, listed under Needs DQ. Everything is on `main`: PR #5 merged `claude/beans-v1` on 2026-11-02.
 
-The Launch phase is merged into `claude/beans-v1`, so PR #5 now carries it too. What's left is listed under Launch. See `docs/launch/PLAN.md`.
+The Launch phase went to `main` with PR #5. What's left is listed under Launch. See `docs/launch/PLAN.md`.
 
 - [x] Review `DESIGN.md` and the mascot
 - [x] Answer the open decisions below
@@ -87,6 +87,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: PR #5 merged `claude/beans-v1` into `main` once CI and GitGuardian passed (DQ). The `claude/beans-v1` branch is deleted on GitHub and locally.
 - 2026-11-02: Demo audio rebalanced (DQ): voice −23 LUFS and music −22 before ducking, and the music skips its quiet opening notes to start on its first full beat at 2.45 s. Settings live at the top of `scripts/mix-video-audio.mjs`.
 - 2026-11-02: Re-rendered the demo video, its three cuts and posters, then re-mixed the approved voice and music (`pnpm video:render`, `pnpm video:mix`). They show the bean now marker and the 60px top bar. The film had been showing first-run onboarding since onboarding landed, so its sample account is now marked onboarded, and its pointer geometry follows the taller top bar. Web cuts stay under 6 MB.
 - 2026-11-02: At the foot of the landing page the bean lands on the vine's root (the closing art's soil line on desktop, the vine's tip on phones). The landing page loads `landing.js` on the dev server too, after hydration, so localhost matches production. Fixed a class clash: the bean's wrapper and the analytics chart's bars both used `.stalk`. Landing copy now says a bean marks the current time.
@@ -245,7 +246,6 @@ Steps only DQ can do. Filled in as phases finish.
 7. **Set `NEXT_PUBLIC_SITE_URL`** to the production domain on Vercel, then check HTTPS on the live domain.
 8. **Upload the brand logos**: `assets/brand/clerk-logo.png` to the Clerk application, `assets/brand/google-oauth-logo.png` to the Google consent screen, and `assets/brand/github-social-preview.png` to GitHub (repo settings, Social preview).
 9. **Legal review** before public release: privacy policy, terms, and what Clerk and Convex store.
-10. **Review and merge the PR** from `claude/beans-v1` into `main`.
-11. **Try onboarding with a real sign-up.** Agents can't create Clerk accounts, so `e2e:clerk` hasn't been run since onboarding landed. Its sign-up test now skips onboarding. Run `pnpm --filter @beans/web e2e:clerk`, then sign up once by hand and walk the five steps.
-12. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
-13. **Try Manage account with a real sign-in.** Agents can't sign in to Clerk. Open Settings, Account, press Manage account, change the name and photo, and check the top bar avatar updates.
+10. **Try onboarding with a real sign-up.** Agents can't create Clerk accounts, so `e2e:clerk` hasn't been run since onboarding landed. Its sign-up test now skips onboarding. Run `pnpm --filter @beans/web e2e:clerk`, then sign up once by hand and walk the five steps.
+11. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
+12. **Try Manage account with a real sign-in.** Agents can't sign in to Clerk. Open Settings, Account, press Manage account, change the name and photo, and check the top bar avatar updates.
