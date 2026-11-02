@@ -39,7 +39,8 @@ export const STRIPE_IDS: Record<StripeMode, { prices: Record<PlanId, string>; po
     portalConfiguration: "bpc_1UXOx4DyfH6JDnExOjVGxgv8",
   },
   live: {
-    prices: { monthly: "", yearly: "" },
+    prices: { monthly: "price_1UXQBoDyfH6JDnExCMcFrOqj", yearly: "price_1UXQOLDyfH6JDnExGPJCdM8E" },
+    // Empty uses the account's default portal (shared with Vidzilla) until a Beans configuration exists in live mode.
     portalConfiguration: "",
   },
 };

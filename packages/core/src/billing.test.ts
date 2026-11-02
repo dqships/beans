@@ -52,6 +52,8 @@ describe("plans", () => {
   it("knows which plan a price is", () => {
     expect(planForPrice(STRIPE_IDS.test.prices.monthly)).toBe("monthly");
     expect(planForPrice(STRIPE_IDS.test.prices.yearly)).toBe("yearly");
+    expect(planForPrice(STRIPE_IDS.live.prices.monthly)).toBe("monthly");
+    expect(planForPrice(STRIPE_IDS.live.prices.yearly)).toBe("yearly");
     expect(planForPrice("price_other")).toBeNull();
     expect(planForPrice(null)).toBeNull();
   });

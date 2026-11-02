@@ -35,13 +35,13 @@ The mode follows the secret key: `sk_test_`/`rk_test_` uses the test IDs, `sk_li
 
 | Object | Test mode | Live mode |
 |---|---|---|
-| Product "Beans monthly" | `prod_VYVv3deCpZmo1k` | copied, see `STRIPE_IDS` |
-| Price $6/month | `price_1UXOuBDyfH6JDnExdLFn4NRD` (lookup key `beans_monthly`) | see `STRIPE_IDS` |
-| Product "Beans yearly" | `prod_VYW4SHnFpac8kb` | see `STRIPE_IDS` |
-| Price $48/year | `price_1UXP2qDyfH6JDnExV04uvxl0` (lookup key `beans_yearly`) | see `STRIPE_IDS` |
-| Portal configuration "Beans" | `bpc_1UXOx4DyfH6JDnExOjVGxgv8` | see `STRIPE_IDS` |
-| Coupons | `beans-launch-100`, `beans-round-2-50`, `beans-round-3-25` | same IDs |
-| Webhook endpoint | `we_1UXOyBDyfH6JDnExIerJxiQb`, to the dev deployment, **disabled** until the code is deployed there | the production deployment |
+| Product "Beans monthly" | `prod_VYVv3deCpZmo1k` | `prod_VYXGevO6K7Zl0T` |
+| Price $6/month | `price_1UXOuBDyfH6JDnExdLFn4NRD` (lookup key `beans_monthly`) | `price_1UXQBoDyfH6JDnExCMcFrOqj` |
+| Product "Beans yearly" | `prod_VYW4SHnFpac8kb` | `prod_VYXTt1M6CU6hHQ` |
+| Price $48/year | `price_1UXP2qDyfH6JDnExV04uvxl0` (lookup key `beans_yearly`) | `price_1UXQOLDyfH6JDnExGPJCdM8E` |
+| Portal configuration "Beans" | `bpc_1UXOx4DyfH6JDnExOjVGxgv8` | not yet: live uses the account default for now |
+| Coupons, monthly product only, no promotion codes yet | `beans-launch-100`, `beans-round-2-50`, `beans-round-3-25` | same IDs, created |
+| Webhook endpoint | `we_1UXOyBDyfH6JDnExIerJxiQb`, to the dev deployment, **disabled** until the code is deployed there | not yet: needs the production Convex deployment URL |
 
 Monthly and yearly are separate products on purpose: the coupons apply only to the monthly product, so a launch code can't discount a yearly plan, even if someone switches plans in the portal while it's running.
 
