@@ -20,6 +20,11 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
   if (CLERK_ROUTES.test(pathname)) return clerk ? clerk(request, event) : NextResponse.next();
 
   const read = request.method === "GET" || request.method === "HEAD";
+  // `/pricing.md` and friends: the same markdown at a URL of its own. `/index.md` is the home page.
+  if (read && pathname.endsWith(".md")) {
+    const body = markdownFor(pathname === "/index.md" ? "/" : pathname.slice(0, -3));
+    if (body) return new NextResponse(body, { headers: { "Content-Type": "text/markdown; charset=utf-8" } });
+  }
   if (read && prefersMarkdown(request.headers.get("accept"))) {
     const body = markdownFor(pathname);
     return new NextResponse(body ?? notFoundMarkdown, { status: body ? 200 : 404, headers: markdownHeaders });

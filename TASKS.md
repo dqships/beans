@@ -99,6 +99,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Rechecked the new site launch checklist on a production build of this branch. Added: JSON-LD `WebApplication` with both plans and an `Organization` (FollowUs AI LLC, support contact), `.md` URLs for every public page (`/pricing.md`), and full head tags on sign-in and sign-up. 44 public-page tests pass (axe in both themes, no console errors, headers, robots, sitemap, 404s, markdown), and mobile Lighthouse is 100 in every category on `/` and `/pricing`.
 - 2026-11-02: The paywall now shows the account's saved tasks, "$0 due today" with the trial end date, yearly as $4 a month, where the card goes, and a founder note with DQ's photo. Yearly is selected unless a launch code is running. The paywall page also scrolls now: the app shell's `overflow: hidden` had been cutting it off on short screens. Checked at 1440 and 390 in light and dark.
 - 2026-11-02: The paywall moved after first-run setup: a new account plans its first day, then sees "Try Beans free for 7 days" with "Everything you just planned is saved." The paywall also offers 3 free days with no card, once per account; when they end the planner locks to the paywall and the card trial is still available. Server writes are allowed during a never-subscribed account's setup only. 37 Convex, 82 core and 20 web unit tests pass, plus the onboarding and billing browser tests; screens checked at 1440 and 390 in light and dark.
 - 2026-11-02: Clerk production moved from `followusai.com` to `beans.followusai.com` (secondary application): Frontend API `clerk.beans.followusai.com`, account portal `accounts.beans.followusai.com`, email from `@beans.followusai.com`. Five new DNS records in Cloudflare, verified; the five old `followusai.com` Clerk records were removed. Convex production's `CLERK_JWT_ISSUER_DOMAIN` and the Google redirect URI follow the new domain.
@@ -277,6 +278,8 @@ None right now.
 
 Steps only DQ can do. Filled in as phases finish.
 
+- **JSON-LD details**: a mailing address for FollowUs AI LLC and any company profiles (X, GitHub, LinkedIn) for `sameAs`, if you want them in the Organization schema. Optional.
+- **After the Vercel deploy**: check HTTPS on beans.followusai.com, and that Vercel's bot protection doesn't block ChatGPT-User, OAI-SearchBot, Claude-User or PerplexityBot. Then run yourwebsitescore.com and is-agentic.com.
 - **Live webhook secret**: reveal the signing secret of "Beans production" in Stripe (Workbench, Webhooks) and set it with `npx convex env set --prod STRIPE_WEBHOOK_SECRET 'whsec_…'`. The live key is already set on production.
 - **Dev Stripe (test mode)**: set a `rk_test_…` key on the dev deployment, enable the test webhook endpoint `we_1UXOyBDyfH6JDnExIerJxiQb` and set its secret, as `docs/BILLING.md` lists.
 - **Live launch code**: on launch day, add promotion code `BEANS100` to the live "Launch offer" coupon with 100 uses and a 4-week end date (`docs/BILLING.md`, Start a round).
