@@ -2,57 +2,121 @@
 
 ## Now
 
-Planning is done. Next is Phase 2: build the web UI with sample data.
+Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done. Phase 4 (planner behavior) is done. Phase 5 launch prep is done on the repo side; creating services and deploying is for DQ, listed under Needs DQ. The PR from `claude/beans-v1` into `main` is ready for review.
 
-- [ ] Review `DESIGN.md` and the mascot
-- [ ] Answer the open decisions below
-- [ ] Set up pnpm workspaces, Next.js in `apps/web`, and `packages/tokens`
+The Launch phase is merged into `claude/beans-v1`, so PR #5 now carries it too. What's left is listed under Launch. See `docs/launch/PLAN.md`.
+
+- [x] Review `DESIGN.md` and the mascot
+- [x] Answer the open decisions below
+- [x] Set up pnpm workspaces, Next.js in `apps/web`, and `packages/tokens`
 
 ## Plan
 
 ### Phase 2: Web UI with sample data
 
-- [ ] Token files generated from `DESIGN.md`, plus Figtree through `next/font` and Phosphor icons
-- [ ] App shell: top bar, sidebar, board, Timebox, panel toggles
-- [ ] Task card, composer and task details with every picker
-- [ ] Drag between lists, days and the Timebox
-- [ ] Calendar view: day, week, month
-- [ ] Focus mode, search, filter, Quick Capture, shortcut reference
-- [ ] Timer and Pomodoro UI
-- [ ] Settings, optional features, daily planning and shutdown, analytics, Trash
-- [ ] Bean checkbox, leaf now marker, leaf timer ring, empty states
-- [ ] Phone layout
-- [ ] Check all screens in light and dark, at desktop and phone widths
+- [x] Token files generated from `DESIGN.md`, plus Figtree through `next/font` and Phosphor icons
+- [x] App shell: top bar, sidebar, board, Timebox, panel toggles
+- [x] Task card, composer and task details with every picker
+- [x] Drag between lists, days and the Timebox
+- [x] Calendar view: day, week, month
+- [x] Focus mode, search, filter, Quick Capture, shortcut reference
+- [x] Timer and Pomodoro UI
+- [x] Settings, optional features, daily planning and shutdown, analytics, Trash
+- [x] Bean checkbox, leaf now marker, leaf timer ring, empty states
+- [x] Phone layout
+- [x] Check all screens in light and dark, at desktop and phone widths
 
 ### Phase 3: Accounts and data
 
-- [ ] Clerk sign-in with `@clerk/nextjs`
-- [ ] Convex schema and functions, connected to Clerk
-- [ ] Data hooks between the screens and Convex
-- [ ] Optimistic updates for dragging, checking off and reordering
-- [ ] Test: changes appear live in a second browser window
+- [x] Clerk sign-in with `@clerk/nextjs`
+- [x] Convex schema and functions, connected to Clerk
+- [x] Data hooks between the screens and Convex
+- [x] Optimistic updates for dragging, checking off and reordering
+- [x] Test: changes appear live in a second browser window
 
 ### Phase 4: Planner behavior
 
-- [ ] Scheduled rollover at each user's local midnight
-- [ ] Repeats, templates, actual-time fill, workload limit
-- [ ] Trash with undo and 30-day expiry
-- [ ] Unit tests for dates, rollover and repeats
+- [x] Scheduled rollover at each user's local midnight
+- [x] Repeats, templates, actual-time fill, workload limit
+- [x] Trash with undo and 30-day expiry
+- [x] Unit tests for dates, rollover and repeats
 
 ### Phase 5: Launch
 
-- [ ] Deploy to Vercel with Root Directory `apps/web`
-- [ ] Add the build-skip script and confirm a non-web change skips the build
-- [ ] Deploy Convex production through the Vercel build
-- [ ] Set up the production Clerk instance
-- [ ] Legal review before public release
+- [x] Prepare the Vercel config for Root Directory `apps/web` (`apps/web/vercel.json`, steps in `docs/DEPLOY.md`)
+- [x] Add the build-skip script and confirm a non-web change skips the build (tested locally against a throwaway repo and this repo's history)
+- [ ] Deploy to Vercel with Root Directory `apps/web` (DQ, see Needs DQ)
+- [ ] Deploy Convex production through the Vercel build (DQ; the build command is ready but needs a deploy key)
+- [ ] Set up the production Clerk instance (DQ)
+- [ ] Legal review before public release (DQ)
+
+### Launch
+
+Tracked in `docs/launch/PLAN.md`.
+
+- [x] Move the planner to `/app`, with providers out of the root layout
+- [x] Add the Clerk end-to-end test (`pnpm --filter @beans/web e2e:clerk`)
+- [x] Brand asset files
+- [x] Mascot poses and illustrations
+- [x] Landing page
+- [x] Demo video
+- [x] Launch audit, apart from the items below that need DQ or a live deployment
+
+Left to do on the launch:
+
+- [ ] Run `pnpm --filter @beans/web e2e:clerk:prod`: real sign-up, saving and sync under the production CSP (DQ, it creates a test account). The signed-out path already passes on a production build
+- [x] Watch and listen to `assets/video/beans-demo-voice-music.mp4` at full speed: DQ approved the track and the voice and music balance
+- [x] Landing page plays the version with voice and music, on click only (DQ)
+- [ ] Check the ElevenLabs, MiniMax and Stability terms before paid or public use of the audio (DQ)
+- [x] Walk `docs/launch/checklist.md` on the merged branch: 47 items met, pricing and HTTPS still open
+- [x] Fresh screenshots of every landing and app screen at 1440 and 390, light and dark, with no overflow and no broken images
+- [ ] Test on Vercel, Safari, Firefox and with a screen reader
+
+### Onboarding
+
+- [x] First-run onboarding: labels, Brain Dump, choose a day, Timebox, done
+- [x] Saved per account, resumes after a reload and on a second device, and can be skipped
+- [ ] Run the real Clerk sign-up through onboarding (DQ, see Needs DQ)
+- [ ] Decide on a paywall step once pricing is settled. It goes in as one more step
 
 ### Later
+
 
 - [ ] Desktop app: see "Desktop app, saved for later" in `RESEARCH.md`
 - [ ] Calendar accounts, attachments, import and export, notifications
 
 ## Done
+
+- 2026-11-02: Demo audio rebalanced (DQ): voice −23 LUFS and music −22 before ducking, and the music skips its quiet opening notes to start on its first full beat at 2.45 s. Settings live at the top of `scripts/mix-video-audio.mjs`.
+- 2026-11-02: Re-rendered the demo video, its three cuts and posters, then re-mixed the approved voice and music (`pnpm video:render`, `pnpm video:mix`). They show the bean now marker and the 60px top bar. The film had been showing first-run onboarding since onboarding landed, so its sample account is now marked onboarded, and its pointer geometry follows the taller top bar. Web cuts stay under 6 MB.
+- 2026-11-02: At the foot of the landing page the bean lands on the vine's root (the closing art's soil line on desktop, the vine's tip on phones). The landing page loads `landing.js` on the dev server too, after hydration, so localhost matches production. Fixed a class clash: the bean's wrapper and the analytics chart's bars both used `.stalk`. Landing copy now says a bean marks the current time.
+- 2026-11-02: The landing bean rides the vine without `landing.js`, which only ships in production builds, so it works on the dev server too. On desktop CSS places it on the now line; on phones and for the outlines the script is still needed. Fixed CI: the video's caption bar imported the removed leaf marker and now uses the bean. Recaptured the board, Timebox and phone screenshots so they show the new marker and the 60px top bar.
+- 2026-11-02: The app's top bar is 60px tall, up from 52 (`--layout-topbar`, DQ). The day and sidebar header rows grow with it, so they still line up. The top-bar profile photo now fills its circle; the button's default padding had shrunk it to a square. The demo video was recorded at 52 and isn't re-rendered.
+- 2026-11-02: The landing page's Timebox now bean is the one that rides the vine: a checked-off bean with its sprout, holding at 10:40 until it reaches mid-screen. It passes behind the demo video, the board and the Timebox screenshot, and an outline draws round each from where it goes in to where it comes out. The hero Timebox vine now lines up with the page vine to the pixel (it was 1px right). Checked at 1440 and 375, light and dark; 38 landing tests pass on a production build.
+- 2026-11-02: The app's Timebox now marker is the same checked-off bean, centered on the vine.
+- 2026-11-02: Settings, Account shows the profile photo and name, and Manage account opens Clerk's profile, where people change their name, photo, email and password. The top bar avatar shows the photo too. Not yet tried with a real Clerk sign-in (see Needs DQ).
+- 2026-11-02: Switching to the calendar view closes the right panel; going back to Tasks restores it as it was. Also fixed the right-panel toggle, which had `display: contents` on the button itself and so had no box.
+- 2026-11-01: First-run onboarding merged into `claude/beans-v1` (PR #10, DQ). New accounts pick labels, spill tasks into the Brain Dump, choose what goes on today or tomorrow, give tasks a time and land on a populated planner. 15 browser tests, 11 core tests and 4 Convex tests cover finishing, skipping, reloading, a second device, existing accounts, the keyboard, axe in both themes and the phone layout.
+- 2026-11-01: Fixed the sign-in and sign-up pages on short screens. The page couldn't scroll, so Clerk's Continue button could end up cut off and out of reach. Removed the duplicate mascot from Clerk's card, and added a test.
+- 2026-11-01: Fixed the sign-in reload loop on the local dev server. Next's dev hot reload kept restarting `(app)` pages from a stale `.next/dev` cache. A clean checkout never looped, and neither did builds run alongside dev, so the exact trigger is unknown. Added `pnpm dev:clean`.
+- 2026-10-31: The landing page plays the film with voice and music, on click only, with each file under 6 MB. Sound checked in Chromium on the desktop layout and Chrome on the phone layout, and no video loads before pressing play.
+- 2026-10-31: Added an AI voiceover (ElevenLabs v3 on Replicate) and music (MiniMax Music 2.6, vocal removed with Demucs), with raw files in `assets/audio` and two cuts in `assets/video`. `pnpm video:mix` rebuilds them. The picture is byte-identical to the silent film. DQ chose take 2 with its vocal removed, and asked for the music to sit closer to the voice.
+- 2026-10-31: Launch audit on `claude/beans-v1`. Checklist probed against a production build, all landing and app screens reviewed in both themes at both widths, and the signed-out Clerk path passes under the production CSP. Fixed "1 of 1 tasks" in daily planning. The full sign-up under that CSP still needs DQ's run.
+- 2026-10-31: Launch work merged into `claude/beans-v1`. Demo video merged, with the square cut on phones. On the merged result: `pnpm check` passes, 82 browser tests pass in development plus 38 of 38 public-page tests on a production build, and Lighthouse on `next start` (mobile, median of 3) is 100 in all four categories with LCP 1.51 s, CLS 0 and 1.9 KB of JavaScript at last measure. Clerk's test passed before the CSP landed, so it needs one more run.
+- 2026-10-31: Landing page merged. Zero framework JavaScript on public pages, plain copy, launch checklist, CSP and markdown negotiation. 15 mascot poses merged and wired into sign-in, Trash and the error page. Fixed the rollover test, which failed on the first of each month.
+- 2026-10-31: Clerk sign-in verified end to end against the development instances: sign-up, saving a task across a reload, live sync to a second window, and sign-out (`e2e:clerk`, 3 of 3 passed, run by DQ).
+- 2026-10-31: Clerk setup checked. Convex functions pushed to the hosted dev deployment, `CLERK_JWT_ISSUER_DOMAIN` confirmed on it and matching the keys, the `convex` JWT template created in the Clerk development instance, and a test confirms signed-out visitors reach the Clerk form.
+- 2026-10-31: Planner moved to `/app`. 50 browser tests and `pnpm check` pass on the local backend.
+
+- 2026-10-31: Phase 5 prep done. `apps/web/vercel.json`, the build-skip script with 7 tests, security headers, and `docs/DEPLOY.md` with every remaining step.
+
+- 2026-10-31: Phase 4 done. A Convex cron runs every 15 minutes and rolls each user's unfinished tasks onto today after their local midnight, then clears Trash older than 30 days. The app also runs it when it opens. Covered by 58 core tests, 12 Convex tests (time zones, idempotence, paging, Trash expiry) and 6 more browser tests (rollover through the backend, actual-time fill, workload limit, undo, template drag, past-midnight warning).
+
+- 2026-10-31: Phase 3 data layer done. Convex schema, `load`, `apply`, `init` and `ensureInstances` functions with 8 `convex-test` unit tests. The app talks to a local Convex backend through the same data hooks, with optimistic updates. 6 browser tests against the real backend cover sign-in redirects, saving, reordering, timeboxing, repeats, Trash, sign-out and live sync between two windows.
+
+- 2026-10-31: Phase 2 done. 37 Playwright tests cover the board, dragging between lists, days and the Timebox, task details, calendar views, Quick Capture, search, filter, focus, timers, settings, Trash, analytics, rituals and the phone layout. Screens checked at 1440 and 390 px in light and dark.
+- 2026-10-31: Set up the pnpm workspace with `apps/web`, `packages/tokens` (generated from `DESIGN.md`) and `packages/core` (data model, dates, ordering, repeats, Quick Capture parsing, rollover)
+- 2026-10-31: Confirmed Phase 1 planning is complete
 
 - 2026-10-31: Finished product research and planning
 - 2026-10-31: Wrote `DESIGN.md` and `RESEARCH.md`
@@ -61,6 +125,7 @@ Planning is done. Next is Phase 2: build the web UI with sample data.
 
 ## Decisions
 
+- 2026-11-02: The landing bean timeline follows the approved preview (https://claude.ai/artifact/SXrHyqLcwHN1Juh5eQXsT5), and the app's now marker uses the same bean (DQ).
 - 2026-10-31: The app is called Beans and lives in the `beans` folder, not `daily-planner`.
 - 2026-10-31: Build the web app first, in Next.js. The desktop app is saved for later.
 - 2026-10-31: Convex for the database, Clerk for authentication.
@@ -69,13 +134,118 @@ Planning is done. Next is Phase 2: build the web UI with sample data.
 - 2026-10-31: The site lives in its own subfolder, and Vercel builds only for changes that affect it.
 - 2026-10-31: `DESIGN.md`, `TASKS.md` and `RESEARCH.md` stay in `beans`. Other research material stays outside this repo.
 
+- 2026-10-31: All v1 extras stay in scope. (The earlier call that the site opens on sign-in is replaced by the routes decision below.)
+- 2026-10-31: The desktop app, offline mode, AI and integrations stay out of scope for v1.
+- 2026-10-31: Every change is a list of small patch ops (`packages/core/src/ops.ts`). The same ops update the screen instantly, give Undo for free, and will feed the desktop outbox later.
+- 2026-10-31: Records use a client-made UUIDv7 `id` as their identity, so new items work before the server answers.
+- 2026-10-31: Screens use the hooks in `apps/web/src/data`. A lint rule blocks importing Convex anywhere else.
+- 2026-10-31: `scripts/check-tokens.mjs` runs with lint and fails on hardcoded colors, sizes, shadows, radii, z-index and easing.
+- 2026-10-31: Next.js 16 with `cacheComponents` off. The planner is a client app behind sign-in, so partial prerendering adds nothing yet.
+- 2026-10-31: Labels use the 8 palette colors only, no custom color, so text on every label block keeps 4.5:1 contrast.
+- 2026-10-31: The label palette fails colorblind separation in charts, so analytics always names each label in text next to its bar, and has a table view.
+- 2026-10-31: Daily planning and wrap-up apply moves as you go instead of on Finish. Leaving early asks first and says that changes are kept.
+- 2026-10-31: Keyboard shortcuts can't be rebound in v1. The reference lists them, and single keys only fire when no field has focus.
+- 2026-10-31: Tab only switches Calendar and Tasks when nothing has focus, so it still moves focus for keyboard users.
+- 2026-10-31: A timebox with no estimate shows as 30 minutes. Clicking an empty slot makes a 15 minute task.
+- 2026-10-31: The All Day row is left out until calendar accounts arrive, since tasks have no all-day state.
+- 2026-10-31: The phone layout shows one day with tabs for Brain Dump, the day and its Timebox, plus a Quick Capture button.
+- 2026-10-31: Convex stores every record with `userId` (the token identifier) and the client-made `clientId`. One `apply` mutation takes the same patch ops the client used, validated per table, so the optimistic copy and the database can't drift.
+- 2026-10-31: The planner loads settings, lists, labels, templates, repeats, undated tasks, Trash and the last 120 days of dated tasks. Scrolling further back widens the window.
+- 2026-10-31: Local development and tests use a test-only sign-in: the Next dev server signs short-lived JWTs that the local Convex backend trusts. Production can't use it: its routes return 404 in production builds (checked), the client only offers it in development builds, and Convex only reads its issuer when `CLERK_JWT_ISSUER_DOMAIN` is `none` and only accepts a localhost issuer.
+- 2026-10-31: `/app?sample` opens the planner on sample data in development builds, so the UI tests don't need a backend.
+- 2026-10-31: Pages check sign-in themselves, as Clerk now recommends, and `proxy.ts` only runs `clerkMiddleware()` when Clerk keys are set.
+- 2026-10-31: Card hover controls float over the card's corner instead of adding a row, so hovering never shifts the cards below. Found while testing: the shift made clicks land on the wrong element.
+- 2026-10-31: Dropping on the Timebox puts the board's scroll back where it was, since passing the board's edge can scroll the days.
+- 2026-10-31: Rollover runs from a 15-minute cron so zones with half-hour offsets roll soon after midnight. It records `lastRollover` per user, so repeats are harmless, and the app runs it on open in case the cron hasn't reached that user yet.
+- 2026-10-31: Rolled tasks lose their timebox time and keep their order, and carry `rolledFrom` for the "Rolled over" tag.
+- 2026-10-31: Trash cleanup runs with each user's daily rollover and also removes trashed lists, templates and repeats after 30 days.
+- 2026-10-31: "Start the next task" moves a running timer to the next unfinished task of the same day when one is checked off.
+- 2026-10-31: The build-skip script lives in `apps/web/scripts/` so its watched paths read relative to the Root Directory. When it can't compare commits, it builds.
+- 2026-10-31: The Vercel build runs `npx convex deploy --cmd` from the repo root, so Convex functions and the web app ship together with a matching `NEXT_PUBLIC_CONVEX_URL`.
+
+- 2026-10-31: The landing page lives at `/` and the planner moves to `/app`. Sign-in and sign-up keep their paths. Clerk and Convex providers sit in the `(app)` route group's layout, so marketing pages ship neither.
+- 2026-10-31: Marketing pages get two sizes above the five planner sizes (`--text-title`, `--text-display`) and their own layout steps. The planner keeps the five.
+- 2026-10-31: `pnpm backend:setup` refuses to run against a hosted Convex deployment, because it sets `CLERK_JWT_ISSUER_DOMAIN` to `none`. Use a separate worktree for the local backend.
+
+- 2026-10-31: Marketing pages use the Pages Router with no runtime JavaScript, not `app/(marketing)`, because the App Router ships 179 KB gzipped on an empty page and the budget is 70 KB. This overrides the original brief's folder layout to keep its budget. DQ can reverse it.
+- 2026-10-31: One full-color favicon in every browser theme, no monochrome variant. It read well on all tab colors checked, and a silhouette lost the character.
+- 2026-10-31: The landing page video has sound, and starts only when someone presses play. (DQ)
+- 2026-10-31: The demo video uses MiniMax take 2 with its vocal removed. The version with the vocal is never to ship, because its words are unknown. (DQ)
+- 2026-10-31: The launch work merges into `claude/beans-v1`, not a separate PR into `main`. PR #5 carries it all. (DQ)
+- 2026-10-31: Marketing copy leads with plain words that say what Beans does. Garden wordplay stays where the words or screen around it make the meaning clear, such as the empty Brain Dump, and never stands alone. The social image says "Turn your to-do list into a plan for today." and "Beans is a daily planner." (DQ)
+- 2026-10-31: DQ approved the hero pose (`assets/illustrations/hero.png`) for the landing page.
+- 2026-10-31: Clerk test accounts can't be created by the agent, so the real sign-up test is DQ's to run.
+- 2026-11-01: Onboarding has five steps: labels, Brain Dump, choose a day, Timebox, done. Every question has to change the planner, so there's no role or feelings question, no spotlight tour, no settings questions and no paywall in this phase. (DQ)
+- 2026-11-01: Onboarding state lives in settings as `onboarding`. Only `init` writes it, so accounts made earlier have no value and read as finished, with no migration.
+- 2026-11-01: Onboarding saves each tap as it happens, like daily planning, so there's no draft to lose. Skipping keeps what was added and doesn't come back.
+- 2026-11-01: Adding an onboarding step means adding its id to `ONBOARDING_STEPS` and its screen in `Onboarding.tsx`.
+- 2026-11-01: Removing a task during onboarding deletes it for good instead of sending it to Trash, because it only undoes the add a moment earlier.
+
 ### Saved for the desktop app
 
 - 2026-10-31: Electron for Windows and Mac, released unsigned at first.
 - 2026-10-31: Desktop stores data locally and works offline. Convex doesn't sync while offline; all changes are sent once the computer is back online.
 - 2026-10-31: All data stays in sync between desktop and web through Convex.
 
+## Things DQ might want to fix
+
+Found during the launch reviews. None of these block the merge. Delete a line once it's fixed or you decide to leave it.
+
+**Demo video**
+
+- The intro is the least lively part: only a small hop, and the mascot is smaller than the code-drawn version.
+- The timer and check-off zooms crop content at the left edge.
+- The dark soil line in the midnight scene has low contrast.
+- The vertical cut's Quick Capture scene has a large dimmed empty area.
+- At 67.8 seconds it runs past Product Hunt's 60-second preview and the 30 to 45 seconds short feeds favor. There's no shorter cut.
+- MiniMax ignored the instrumental setting on take 2, so its vocal was removed afterward. Listen for faint ghost singing from 0:21 on.
+- The vertical cut and the 1920 social cut are still silent.
+- Line 3 starts about 0.9 s after its caption, because the two lines before it run long.
+
+**Landing page**
+
+- The hero demo shows estimates such as 0:15, while the real screenshot further down shows 0:00 for the same tasks.
+- The approved hero pose sits at the bottom of the page, not in the top hero, which is the live demo.
+- The workflow and "How a day goes" are one timeline, not two sections.
+- There's empty space under the hero's task columns, next to the taller Timebox.
+- The video poster on phones is a busy mid-film frame, and the player controls cover its caption.
+- `/contact` has about 350 characters of content, under the checklist's 500, until it has a real address.
+- The video starts on click only, with no autoplay when it comes into view.
+
+**Mascot art**
+
+- Hero pose: the bean going into the ground reads small, and the 2x copy is slightly soft.
+- `welcome`: the watering can floats, because the mascot has no arms.
+- `analytics`: the basket is more detailed than the other poses.
+- `phone`: on model, but plain.
+
+**App**
+
+- Sign-in shows two greetings: ours above Clerk's card, which has its own heading. Clerk's heading stays because it labels the email code step.
+- Clerk's input fields have almost no visible edge in dark mode.
+- After Empty Trash, the earlier "Moved to Trash" toast with Undo stays next to "Trash emptied".
+- `app/(app)/error.tsx` can't catch a Clerk or Convex provider failure in the layout. That would need `global-error`.
+- App routes use `'unsafe-inline'` for scripts in the CSP. Nonces would force dynamic rendering. Public pages have no inline scripts.
+- `viewport.themeColor` isn't set, and the manifest's theme color is light only.
+
 ## Open decisions
 
-1. **Does the site need a public landing page at launch?** Default: open on sign-in, and add a landing page later.
-2. **Which v1 extras can wait?** Default: build everything in the v1 extras row of `RESEARCH.md`.
+None right now.
+
+## Needs DQ
+
+Steps only DQ can do. Filled in as phases finish.
+
+1. **Clerk sign-up asks for a password as well as an email code.** That differs from `docs/DEPLOY.md`, which says email codes and Google. Keep it, or turn off the password in the Clerk dashboard.
+2. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.
+3. **Create the Vercel project** from the GitHub repo with Root Directory `apps/web`, keep "Include files outside the root directory" on, and add the environment variables listed in `docs/DEPLOY.md`. Then deploy.
+4. **Set up the production Clerk instance**: domain, DNS records and Google OAuth credentials.
+5. **Add a contact address** for `/contact` and `/privacy`, and optional real Organization details for JSON-LD.
+6. **Decide pricing.** The pricing page stays out until then.
+7. **Set `NEXT_PUBLIC_SITE_URL`** to the production domain on Vercel, then check HTTPS on the live domain.
+8. **Upload the brand logos**: `assets/brand/clerk-logo.png` to the Clerk application, `assets/brand/google-oauth-logo.png` to the Google consent screen, and `assets/brand/github-social-preview.png` to GitHub (repo settings, Social preview).
+9. **Legal review** before public release: privacy policy, terms, and what Clerk and Convex store.
+10. **Review and merge the PR** from `claude/beans-v1` into `main`.
+11. **Try onboarding with a real sign-up.** Agents can't create Clerk accounts, so `e2e:clerk` hasn't been run since onboarding landed. Its sign-up test now skips onboarding. Run `pnpm --filter @beans/web e2e:clerk`, then sign up once by hand and walk the five steps.
+12. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
+13. **Try Manage account with a real sign-in.** Agents can't sign in to Clerk. Open Settings, Account, press Manage account, change the name and photo, and check the top bar avatar updates.

@@ -1,0 +1,265 @@
+/* Custom-drawn pieces made from the mascot. */
+
+.bean {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: var(--bean-size);
+  height: var(--bean-size);
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+}
+
+.beanSmall {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.bean svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.beanBody {
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  transition: fill var(--duration-fade) linear, stroke var(--duration-fade) linear;
+}
+
+.bean:hover .beanBody {
+  fill: var(--color-surface-2);
+  stroke: var(--color-accent);
+}
+
+.beanDone {
+  color: var(--color-accent);
+}
+
+.beanDone .beanBody,
+.beanDone:hover .beanBody {
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
+}
+
+.sprout {
+  transform-origin: 55% 20%;
+  transform: scale(0);
+  transition: transform var(--duration-spring) var(--ease-spring);
+}
+
+.beanDone .sprout {
+  transform: scale(1);
+}
+
+.stem {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.leaf {
+  fill: var(--color-primary);
+}
+
+.ring {
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  flex: none;
+}
+
+.ringTrack {
+  fill: none;
+  stroke: currentColor;
+  opacity: 0.25;
+  stroke-width: 3;
+}
+
+.ringProgress {
+  fill: none;
+  stroke: var(--mascot-leaf);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--duration-spring) linear;
+}
+
+.ringStem {
+  fill: none;
+  stroke: var(--mascot-leaf-2);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.ringLeaf {
+  fill: var(--mascot-leaf);
+}
+
+/* Mascot */
+.mascot {
+  display: block;
+  overflow: visible;
+}
+
+.soil {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.mStem {
+  fill: none;
+  stroke: var(--mascot-stem);
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+
+.mLeaf {
+  fill: var(--mascot-leaf);
+}
+
+.mLeaf2 {
+  fill: var(--mascot-leaf-2);
+}
+
+.mBean {
+  fill: var(--mascot-bean);
+}
+
+.mShade {
+  fill: var(--mascot-shade);
+}
+
+.mHighlight {
+  fill: none;
+  stroke: var(--mascot-highlight);
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+
+.mEye {
+  fill: var(--mascot-eyes);
+}
+
+.mGlint {
+  fill: var(--mascot-glint);
+}
+
+.mLid,
+.mMouth {
+  fill: none;
+  stroke: var(--mascot-eyes);
+  stroke-width: 11;
+  stroke-linecap: round;
+}
+
+.mCheek {
+  fill: var(--mascot-cheek);
+}
+
+.prop {
+  stroke-linejoin: round;
+}
+
+.propBody {
+  fill: var(--color-text-muted);
+}
+
+.propPaper {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+  stroke-width: 6;
+}
+
+.propLine {
+  fill: none;
+  stroke: var(--color-text-muted);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.propLens {
+  fill: var(--color-surface);
+  stroke: var(--color-text-muted);
+  stroke-width: 12;
+}
+
+.propHandle {
+  stroke: var(--color-text-muted);
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+
+.drop {
+  fill: var(--label-rain);
+}
+
+.hop {
+  animation: hop calc(var(--duration-spring) * 2) var(--ease-spring) infinite alternate;
+  transform-origin: center bottom;
+  transform-box: fill-box;
+}
+
+@keyframes hop {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(var(--space-2) * -1));
+  }
+}
+
+/* Empty state */
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.emptyCompact {
+  padding: var(--space-3) var(--space-2);
+  gap: var(--space-1);
+}
+
+.emptyMascot {
+  width: calc(var(--space-6) * 3);
+  height: auto;
+}
+
+.emptyArt {
+  display: block;
+  width: calc(var(--space-6) * 5);
+  height: auto;
+}
+
+.emptyCompact .emptyMascot {
+  width: calc(var(--space-6) * 2);
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+  color: var(--color-text);
+}
+
+.emptyCompact .emptyTitle {
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+.emptyBody {
+  max-width: calc(var(--layout-column) - var(--space-5));
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+}

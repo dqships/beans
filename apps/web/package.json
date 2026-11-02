@@ -1,0 +1,52 @@
+{
+  "name": "@beans/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "rm -rf .next/dev/types && next build",
+    "start": "next start",
+    "lint": "eslint . && node ../../scripts/check-tokens.mjs",
+    "typecheck": "rm -rf .next/dev/types && next typegen && tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "e2e": "playwright test",
+    "e2e:clerk": "playwright test --config playwright.clerk.config.ts",
+    "capture": "node scripts/capture-product.mjs",
+    "e2e:clerk:prod": "pnpm build && E2E_CLERK_PROD=1 playwright test --config playwright.clerk.config.ts"
+  },
+  "dependencies": {
+    "@beans/core": "workspace:*",
+    "@beans/tokens": "workspace:*",
+    "@clerk/nextjs": "^7.9.23",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tiptap/extensions": "^3.32.2",
+    "@tiptap/pm": "^3.32.2",
+    "@tiptap/react": "^3.32.2",
+    "@tiptap/starter-kit": "^3.32.2",
+    "convex": "1.49.0",
+    "motion": "^12.38.0",
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@clerk/backend": "^3.26.5",
+    "@clerk/testing": "^2.2.53",
+    "@edge-runtime/vm": "^5.0.0",
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "convex-test": "^0.0.66",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "sharp": "^0.35.5",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.5"
+  }
+}

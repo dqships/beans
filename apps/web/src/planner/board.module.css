@@ -1,0 +1,147 @@
+.board {
+  position: relative;
+  display: flex;
+  gap: var(--space-4);
+  height: 100%;
+  padding: 0 var(--space-4);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+}
+
+.column {
+  flex: none;
+  width: var(--layout-column);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.past .dayTitle {
+  color: var(--color-text-muted);
+}
+
+.dayHeader {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-height: calc(var(--layout-topbar) + var(--space-1));
+  padding: var(--space-4) 0 var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.dayTitle {
+  margin: 0;
+  font-size: var(--text-lg-size);
+  line-height: var(--text-lg-line);
+  font-weight: var(--text-lg-weight);
+  white-space: nowrap;
+}
+
+.dayTitle span {
+  color: var(--color-text-muted);
+  font-weight: var(--text-md-weight);
+}
+
+.todayTag {
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+  color: var(--color-primary);
+}
+
+.focusButton {
+  margin-left: auto;
+  align-self: center;
+  opacity: 0;
+}
+
+.column:hover .focusButton,
+.focusButton:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .focusButton {
+    opacity: 1;
+  }
+}
+
+.columnBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-1) var(--space-6);
+  margin: 0 calc(var(--space-1) * -1);
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+  min-height: var(--layout-hour);
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fade) linear;
+}
+
+.dropActive {
+  background: var(--color-surface-2);
+}
+
+.dragSource {
+  opacity: var(--opacity-ghost);
+}
+
+.insertLine {
+  height: var(--focus-ring);
+  margin: calc(var(--space-1) * -1) 0;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+.overlayWrap {
+  position: relative;
+  width: var(--layout-column);
+}
+
+.overlayCount {
+  position: absolute;
+  top: calc(var(--space-2) * -1);
+  right: calc(var(--space-2) * -1);
+  display: grid;
+  place-items: center;
+  min-width: var(--icon-md);
+  height: var(--icon-md);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: var(--text-xs-size);
+  font-weight: var(--text-md-weight);
+}
+
+.focusWrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.focusBar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-2) var(--space-4) 0;
+}
+
+.focusWrap .board {
+  justify-content: center;
+}
+
+.focusColumn {
+  width: min(calc(var(--layout-column) * 1.6), 100%);
+}

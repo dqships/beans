@@ -1,0 +1,147 @@
+/* Global styles for the marketing pages. The planner uses app/globals.css instead. */
+
+:root {
+  color-scheme: light dark;
+  /* The beanstalk: hour labels sit in this gutter, left of the vine. */
+  --vine-gutter: calc(var(--space-6) * 1.75);
+  --vine-x: 50%;
+  --vine-width: var(--focus-ring);
+  /* The checked-off bean that rides the vine, and the gap its outline keeps around things on the vine. */
+  --bean-traveler: calc(var(--space-6) - var(--space-1));
+  --bean-outline-gap: calc(var(--space-1) + var(--focus-ring));
+  /* How far above the foot of the garden the vine ends, in the closing art's soil line. The bean ends there too. */
+  --vine-root: calc(var(--layout-section-sm) + var(--space-2));
+  --page-pad: max(var(--space-5), calc(50vw - var(--layout-page) / 2));
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  :root {
+    --vine-x: var(--vine-gutter);
+    --vine-root: 0%;
+    --page-pad: var(--space-4);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: var(--space-5);
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-sm-weight);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+.site {
+  font-family: var(--font-sans);
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: var(--focus-ring) solid var(--color-primary);
+  outline-offset: var(--focus-ring);
+}
+
+::selection {
+  background: var(--color-surface-2);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: var(--border-width);
+  height: var(--border-width);
+  margin: calc(var(--border-width) * -1);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/*
+ * Reveal on view. `landing.js` adds the hidden state, so with no JavaScript
+ * everything stays visible. Each element animates once.
+ */
+[data-reveal="wait"] {
+  opacity: 0;
+  translate: 0 var(--space-5);
+}
+
+[data-reveal="in"] {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity var(--duration-spring) linear,
+    translate var(--duration-spring) var(--ease-spring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal="wait"] {
+    translate: none;
+  }
+
+  [data-reveal="in"] {
+    translate: none;
+    transition: opacity var(--duration-fade) linear;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition-property: opacity !important;
+    transition-duration: var(--duration-fade) !important;
+  }
+}
+
+/* Keeps a hyphenated word from breaking across lines in a large heading. */
+.nowrap {
+  white-space: nowrap;
+}

@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["node"],
+    "paths": {
+      "@/*": ["../web/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "scripts/**/*.ts", "remotion.config.ts"],
+  "exclude": ["node_modules", "out"]
+}

@@ -1,0 +1,207 @@
+.body {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-5);
+}
+
+.head,
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-lg-size);
+  line-height: var(--text-lg-line);
+  font-weight: var(--text-lg-weight);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--layout-column) * 0.6), 1fr));
+  gap: var(--space-4);
+}
+
+.tile {
+  display: grid;
+  gap: var(--space-1);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.tileLabel,
+.muted {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+}
+
+.muted {
+  margin: 0;
+}
+
+.tileValue {
+  font-size: var(--text-xl-size);
+  line-height: var(--text-xl-line);
+  font-weight: var(--text-xl-weight);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+.bars {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: minmax(0, calc(var(--layout-column) * 0.55)) 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.barName {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track {
+  height: var(--space-3);
+}
+
+/* Analytics bars are rounded stalks. */
+.stalk {
+  display: block;
+  height: 100%;
+  min-width: var(--space-1);
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+
+.barValue {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.columns {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--focus-ring);
+  height: calc(var(--layout-hour) * 1.5);
+  padding-bottom: var(--space-5);
+  border-bottom: var(--border-width) solid var(--color-border);
+  position: relative;
+}
+
+.column {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.column:hover .vstalk {
+  background: var(--color-text);
+}
+
+.vstalk {
+  display: block;
+  width: min(100%, var(--space-5));
+  min-height: var(--focus-ring);
+  border-radius: var(--radius-full) var(--radius-full) 0 0;
+  background: var(--color-primary);
+}
+
+.colLabel {
+  position: absolute;
+  bottom: calc(var(--space-5) * -1);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table th {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  font-weight: var(--text-md-weight);
+}
+
+.table td:first-child {
+  white-space: normal;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.staleList {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.staleList li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.linkish {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+}

@@ -1,0 +1,237 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.headRow {
+  display: flex;
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.gutterHead {
+  flex: none;
+  width: calc(var(--space-6) * 1.75);
+}
+
+.dayHead {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+}
+
+.dayHead strong {
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+  color: var(--color-text);
+}
+
+.dayHeadToday strong {
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.grid {
+  position: relative;
+  display: flex;
+  min-width: 0;
+}
+
+.gutter {
+  position: relative;
+  flex: none;
+  width: calc(var(--space-6) * 1.75);
+  /* The beanstalk: a vine runs down the edge of the hour labels. */
+  border-right: var(--focus-ring) solid var(--color-border);
+}
+
+.hourLabel {
+  position: relative;
+  height: var(--hour);
+  padding-right: var(--space-3);
+  text-align: right;
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+  color: var(--color-text-muted);
+}
+
+.hourLabel span {
+  position: relative;
+  top: calc(var(--text-xs-line) / -2);
+}
+
+.vineLeaf {
+  position: absolute;
+  top: calc(var(--space-1) * -1);
+  right: calc(var(--space-2) * -1);
+  width: var(--space-3);
+  height: var(--space-2);
+  fill: var(--mascot-leaf);
+  opacity: 0.7;
+}
+
+.vineLeaf:nth-child(1) {
+  transform: scaleX(-1);
+}
+
+.hourLabel:nth-child(even) .vineLeaf {
+  right: calc(var(--space-1) * -1);
+  transform: scaleX(-1);
+}
+
+.day {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  border-right: var(--border-width) solid var(--color-border);
+  cursor: cell;
+}
+
+.day:last-child {
+  border-right: 0;
+}
+
+.dayOver {
+  background: var(--color-surface-2);
+}
+
+.hourLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: var(--border-width) solid var(--color-border);
+  pointer-events: none;
+}
+
+.block {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-1) / 2);
+  overflow: hidden;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--color-on-label);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+  touch-action: none;
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+}
+
+.block:focus-visible {
+  outline: var(--focus-ring) solid var(--color-primary);
+}
+
+.blockPlain {
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  color: var(--color-text);
+}
+
+.blockDone {
+  opacity: var(--opacity-done);
+}
+
+.blockDone .blockTitle {
+  text-decoration: line-through;
+}
+
+.blockDragging {
+  opacity: var(--opacity-ghost);
+}
+
+.blockPast {
+  border-bottom: var(--focus-ring) dashed var(--color-danger);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.blockTop {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.blockTop button {
+  color: inherit;
+}
+
+.blockTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--text-md-weight);
+}
+
+.blockTime {
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resize {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--space-2);
+  cursor: ns-resize;
+}
+
+.preview {
+  position: absolute;
+  left: var(--space-1);
+  right: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: var(--focus-ring) dashed var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+  pointer-events: none;
+  z-index: var(--z-sticky);
+}
+
+.now {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: var(--focus-ring) solid var(--color-accent);
+  pointer-events: none;
+  z-index: var(--z-sticky);
+}
+
+/* Centered on the vine (the gutter's right border) and on the line itself. */
+.nowBean {
+  position: absolute;
+  left: calc(var(--bean-size) / -2 - var(--focus-ring) / 2);
+  top: calc(var(--bean-size) / -2 - var(--focus-ring) / 2);
+}

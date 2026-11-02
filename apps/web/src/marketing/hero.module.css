@@ -1,0 +1,465 @@
+.headline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--layout-page) * 0.4)), 1fr));
+  gap: var(--space-6) calc(var(--vine-gutter) * 2);
+  align-items: end;
+  padding: var(--space-6) var(--page-pad) var(--layout-section-sm);
+}
+
+.h1 {
+  font-size: var(--text-display-size);
+  line-height: var(--text-display-line);
+  font-weight: var(--text-display-weight);
+  text-wrap: balance;
+}
+
+.pitch {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.lede {
+  max-width: var(--layout-prose);
+  font-size: var(--text-lg-size);
+  line-height: var(--text-lg-line);
+  font-weight: var(--text-sm-weight);
+  color: var(--color-text-muted);
+}
+
+/* The demo splits on the same axis as the page's beanstalk. */
+.demo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.rows {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: flex-end;
+  gap: var(--space-5) var(--space-4);
+  padding: 0 calc(var(--vine-gutter) + var(--space-4)) var(--space-5) var(--page-pad);
+}
+
+.column {
+  flex: 1 1 calc(var(--layout-column) - var(--space-6));
+  min-width: 0;
+}
+
+.columnTitle {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+  font-size: var(--text-lg-size);
+  line-height: var(--text-lg-line);
+  font-weight: var(--text-lg-weight);
+}
+
+.columnDate {
+  color: var(--color-text-muted);
+}
+
+.todayTag {
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+  color: var(--color-primary);
+}
+
+.cards {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--bean-size) 1fr auto;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  transition: border-color var(--duration-fade) linear;
+}
+
+.card:has(input:checked) .title {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+[data-drag-ready] .card:not([data-time]) {
+  cursor: grab;
+}
+
+.card:hover {
+  border-color: var(--color-border);
+}
+
+.title {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.estimate {
+  grid-column: 3;
+  align-self: start;
+  padding: 0 var(--space-2);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs-size);
+  line-height: calc(var(--space-5) - var(--space-1));
+  color: var(--color-text-muted);
+}
+
+.meta {
+  grid-column: 2 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  min-height: var(--space-4);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  color: var(--color-text-muted);
+}
+
+.meta:empty {
+  display: none;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--label-color);
+}
+
+.time {
+  color: var(--color-text);
+  font-weight: var(--text-md-weight);
+}
+
+.time:empty {
+  display: none;
+}
+
+.plant {
+  margin-left: auto;
+  padding: 0 var(--space-2);
+  min-height: var(--control-height-sm);
+  background: none;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background var(--duration-fade) linear;
+}
+
+.plant:hover {
+  background: var(--color-surface-2);
+}
+
+/* Hidden until `landing.js` runs, but still holding its space, so nothing shifts when it does. */
+.plant[hidden],
+.hint[hidden] {
+  display: block;
+  visibility: hidden;
+}
+
+.hint {
+  flex-basis: 100%;
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  color: var(--color-text-muted);
+}
+
+/* The bean checkbox: the real input sits on top of the drawing. */
+.bean {
+  position: relative;
+  display: block;
+  width: var(--bean-size);
+  height: var(--bean-size);
+  margin-top: var(--border-width);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.beanInput {
+  position: absolute;
+  inset: calc(var(--space-1) * -1);
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.bean:has(.beanInput:focus-visible) {
+  outline: var(--focus-ring) solid var(--color-primary);
+  outline-offset: var(--focus-ring);
+}
+
+.bean svg path:last-child {
+  transition: fill var(--duration-fade) linear, stroke var(--duration-fade) linear;
+}
+
+.bean:hover svg > path {
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
+}
+
+.bean:has(.beanInput:checked) svg > path {
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
+}
+
+.bean:hover svg > g,
+.bean:has(.beanInput:checked) svg > g {
+  transform: scale(1);
+}
+
+/* The Timebox. Its hour gutter sits left of the page's vine, and its border sits left of that, so its vine is the page's vine. */
+.timebox {
+  display: flex;
+  flex-direction: column;
+  margin-left: calc(var(--vine-gutter) * -1 - var(--border-width));
+  background: var(--color-surface);
+  border-top: var(--border-width) solid var(--color-border);
+  border-left: var(--border-width) solid var(--color-border);
+  border-top-left-radius: var(--radius-lg);
+}
+
+.timeboxHead {
+  padding: var(--space-3) var(--space-4) 0 var(--vine-gutter);
+}
+
+.timeboxHead .columnTitle {
+  margin-bottom: 0;
+  padding-left: var(--space-3);
+  border-bottom: 0;
+}
+
+.grid {
+  position: relative;
+  flex: 1;
+  --hour-height: var(--layout-hour);
+  --half: calc(var(--hour-height) / 2);
+  min-height: calc(var(--hour-height) * 8);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* The Timebox's stretch of the vine. The page's vine carries on from its foot. */
+.grid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--vine-gutter) - var(--vine-width) / 2);
+  width: var(--vine-width);
+  background: var(--mascot-leaf-2);
+}
+
+.hours {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-auto-rows: var(--hour-height);
+}
+
+.hour {
+  position: relative;
+  border-top: var(--border-width) solid transparent;
+}
+
+.hour::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--vine-gutter);
+  right: 0;
+  height: var(--border-width);
+  background: var(--color-border);
+}
+
+.hourLabel {
+  position: absolute;
+  top: calc(var(--space-2) * -1);
+  left: 0;
+  width: calc(var(--vine-gutter) - var(--space-3));
+  text-align: right;
+  white-space: nowrap;
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  color: var(--color-text-muted);
+}
+
+.hour:first-child .hourLabel {
+  top: var(--space-1);
+}
+
+.blocks {
+  position: absolute;
+  inset: 0 var(--space-3) 0 calc(var(--vine-gutter) + var(--space-3));
+  z-index: 1;
+  display: grid;
+  grid-template-rows: repeat(16, var(--half));
+}
+
+.block {
+  grid-column: 1;
+  min-height: 0;
+  margin-bottom: var(--focus-ring);
+  padding: var(--border-width) var(--space-3);
+  overflow: hidden;
+  background: var(--label-color);
+  color: var(--color-on-label);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+}
+
+.blockTitle {
+  display: block;
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+}
+
+.blockTime {
+  display: block;
+}
+
+.blockDone .blockTitle {
+  text-decoration: line-through;
+}
+
+.blockNew {
+  animation: plant var(--duration-spring) var(--ease-spring) both;
+}
+
+@keyframes plant {
+  from {
+    scale: 0.9;
+    opacity: 0;
+  }
+}
+
+.slotWalk {
+  grid-row: 1 / span 1;
+}
+
+.slotUpdate {
+  grid-row: 3 / span 1;
+}
+
+.slotReview {
+  grid-row: 5 / span 2;
+}
+
+/* 10:40 on the 8 AM grid: 2 hours and 40 minutes down. */
+.nowLine {
+  position: absolute;
+  top: calc(var(--hour-height) * 2.667);
+  left: var(--vine-gutter);
+  right: 0;
+  z-index: 1;
+  height: var(--focus-ring);
+  background: var(--color-accent);
+}
+
+.nowBean {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--bean-traveler);
+  height: var(--bean-traveler);
+  translate: -50% -50%;
+  rotate: -12deg;
+}
+
+/* On desktop the traveling bean starts right here, so this one stays out of sight. */
+.nowBean {
+  visibility: hidden;
+}
+
+.rain {
+  --label-color: var(--label-rain);
+}
+
+.pumpkin {
+  --label-color: var(--label-pumpkin);
+}
+
+.sprout {
+  --label-color: var(--label-sprout);
+}
+
+.plum {
+  --label-color: var(--label-plum);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .headline {
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-6);
+  }
+
+  .h1 {
+    font-size: var(--text-title-size);
+    line-height: var(--text-title-line);
+    font-weight: var(--text-title-weight);
+  }
+
+  .lede {
+    font-size: var(--text-md-size);
+    line-height: var(--text-md-line);
+  }
+
+  .demo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rows {
+    padding-right: var(--page-pad);
+  }
+
+  .today {
+    display: none;
+  }
+
+  .timebox {
+    margin-left: 0;
+    border-left: 0;
+    border-top-left-radius: 0;
+  }
+
+  .timeboxHead {
+    padding-left: var(--vine-gutter);
+  }
+
+  /* Phones show it until `landing.js` places the traveling bean on top. */
+  .nowBean {
+    visibility: visible;
+  }
+
+  [data-bean] .nowBean {
+    visibility: hidden;
+  }
+
+}

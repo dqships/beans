@@ -1,0 +1,17 @@
+/* The film sets every state from the frame, so nothing may animate on its own. */
+*,
+*::before,
+*::after {
+  transition: none !important;
+  animation: none !important;
+  caret-color: transparent;
+}
+
+:root {
+  --font-figtree: "Figtree Variable";
+}
+
+html,
+body {
+  background: transparent;
+}
