@@ -89,7 +89,7 @@ Left to do on the launch:
 - [x] First-run onboarding: labels, Brain Dump, choose a day, Timebox, done
 - [x] Saved per account, resumes after a reload and on a second device, and can be skipped
 - [ ] Run the real Clerk sign-up through onboarding (DQ, see Needs DQ)
-- [ ] Decide on a paywall step once pricing is settled. It goes in as one more step
+- [x] Paywall after first-run setup, with 3 free days and no card as the alternative to the card trial
 
 ### Later
 
@@ -99,6 +99,9 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Rechecked the new site launch checklist on a production build of this branch. Added: JSON-LD `WebApplication` with both plans and an `Organization` (FollowUs AI LLC, support contact), `.md` URLs for every public page (`/pricing.md`), and full head tags on sign-in and sign-up. 44 public-page tests pass (axe in both themes, no console errors, headers, robots, sitemap, 404s, markdown), and mobile Lighthouse is 100 in every category on `/` and `/pricing`.
+- 2026-11-02: The paywall now shows the account's saved tasks, "$0 due today" with the trial end date, yearly as $4 a month, where the card goes, and a founder note with DQ's photo. Yearly is selected unless a launch code is running. The paywall page also scrolls now: the app shell's `overflow: hidden` had been cutting it off on short screens. Checked at 1440 and 390 in light and dark.
+- 2026-11-02: The paywall moved after first-run setup: a new account plans its first day, then sees "Try Beans free for 7 days" with "Everything you just planned is saved." The paywall also offers 3 free days with no card, once per account; when they end the planner locks to the paywall and the card trial is still available. Server writes are allowed during a never-subscribed account's setup only. 37 Convex, 82 core and 20 web unit tests pass, plus the onboarding and billing browser tests; screens checked at 1440 and 390 in light and dark.
 - 2026-11-02: Clerk production moved from `followusai.com` to `beans.followusai.com` (secondary application): Frontend API `clerk.beans.followusai.com`, account portal `accounts.beans.followusai.com`, email from `@beans.followusai.com`. Five new DNS records in Cloudflare, verified; the five old `followusai.com` Clerk records were removed. Convex production's `CLERK_JWT_ISSUER_DOMAIN` and the Google redirect URI follow the new domain.
 - 2026-11-02: Google Cloud project "Beans" (`beans-513522`) with its OAuth app (External, app name Beans) for Clerk production's Google sign-in. The Web client "Clerk production" redirects to `https://clerk.beans.followusai.com/v1/oauth_callback`.
 - 2026-11-02: Live webhook endpoint `we_1UXTZRDyfH6JDnExkg7amGZv` ("Beans production") sends the six Beans events to the production Convex deployment `avid-mole-890`. DQ deleted the old, unused followusai.com endpoint.
@@ -147,6 +150,8 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-02: The paywall selects monthly while a launch code is running and yearly otherwise. No student, teacher or nonprofit discount for now. The founder note uses DQ's own words about why Beans costs what it does. (DQ)
+- 2026-11-02: The paywall comes after first-run setup, so people see their plan before paying, as in the Ellie teardown. A no-card 3-day pass is offered from the paywall; when it ends Beans locks to the paywall (not view-only) and the 7-day card trial stays available. (DQ)
 - 2026-11-02: Beans lives on `beans.followusai.com`; `followusai.com` hosts other products. Clerk uses the subdomain so its sign-in hosts, account portal and cookies stay under Beans. (DQ)
 - 2026-11-02: Beans' Google sign-in uses its own Google Cloud project, not Guppy's, so the consent screen says Beans. Support email `dclouwork@gmail.com`, because this Google account has no organization or group for support@followusai.com; developer contacts dq@followusai.com and dclouwork@gmail.com, as for Guppy (DQ).
 - 2026-11-02: Beans costs $6 a month or $48 a year, with a 7-day free trial that needs a card, once per account. After the trial or subscription ends the planner locks to the plans screen and keeps every task. (DQ)
@@ -273,6 +278,8 @@ None right now.
 
 Steps only DQ can do. Filled in as phases finish.
 
+- **JSON-LD details**: a mailing address for FollowUs AI LLC and any company profiles (X, GitHub, LinkedIn) for `sameAs`, if you want them in the Organization schema. Optional.
+- **After the Vercel deploy**: check HTTPS on beans.followusai.com, and that Vercel's bot protection doesn't block ChatGPT-User, OAI-SearchBot, Claude-User or PerplexityBot. Then run yourwebsitescore.com and is-agentic.com.
 - **Live webhook secret**: reveal the signing secret of "Beans production" in Stripe (Workbench, Webhooks) and set it with `npx convex env set --prod STRIPE_WEBHOOK_SECRET 'whsec_…'`. The live key is already set on production.
 - **Dev Stripe (test mode)**: set a `rk_test_…` key on the dev deployment, enable the test webhook endpoint `we_1UXOyBDyfH6JDnExIerJxiQb` and set its secret, as `docs/BILLING.md` lists.
 - **Live launch code**: on launch day, add promotion code `BEANS100` to the live "Launch offer" coupon with 100 uses and a 4-week end date (`docs/BILLING.md`, Start a round).

@@ -1,9 +1,11 @@
 /* The paywall: the same seed-packet paper as first-run setup, with one packet per plan. */
 
+/* The app shell never scrolls, so the paywall scrolls itself. */
 .page {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  height: 100%;
+  overflow-y: auto;
   background: var(--color-bg);
 }
 
@@ -75,6 +77,67 @@
   display: block;
   width: calc(var(--space-6) * 4);
   height: auto;
+}
+
+/* The account's own plan: a garden row on its soil line, like the board's day columns. */
+.plan {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.planTitle {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-border);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+.planCount,
+.planMore {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-sm-weight);
+}
+
+.planTasks {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.planTask {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.planBean {
+  flex: none;
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.planText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-sm-weight);
+}
+
+.planMore {
+  margin: 0;
 }
 
 /* The launch offer: a plant marker pushed into the soil line, with an accent edge. */
@@ -192,10 +255,56 @@
   font-weight: var(--text-md-weight);
 }
 
+/* The free days: two beans on a soil line, today and the day they end. */
+.steps {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0 0 0 var(--space-1);
+  list-style: none;
+  border-left: var(--border-width) solid var(--color-border);
+}
+
+.step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+  align-items: center;
+  margin-left: calc(var(--space-3) * -1);
+}
+
+.stepBean {
+  grid-row: span 2;
+  align-self: start;
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.stepWhen {
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+.stepWhat {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-sm-weight);
+}
+
 .actions {
   display: grid;
   justify-items: start;
   gap: var(--space-2);
+}
+
+.due {
+  margin: 0;
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
 }
 
 .fine,
@@ -243,5 +352,78 @@
 
   .packets {
     gap: var(--space-3);
+  }
+}
+
+/* The founder note: a folded seed-packet flap that opens to a short letter. */
+.note {
+  border-top: var(--border-width) solid var(--color-border);
+  padding-top: var(--space-4);
+}
+
+.noteSummary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  list-style: none;
+  border-radius: var(--radius-sm);
+}
+
+.noteSummary::-webkit-details-marker {
+  display: none;
+}
+
+.noteSummary:focus-visible {
+  outline: var(--focus-ring) solid var(--color-primary);
+  outline-offset: var(--space-1);
+}
+
+.notePhoto {
+  flex: none;
+  width: var(--control-height);
+  height: var(--control-height);
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.noteLabel {
+  flex: 1;
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+.noteCaret {
+  flex: none;
+  color: var(--color-text-muted);
+  transition: transform var(--duration-spring) var(--ease-spring);
+}
+
+.note[open] .noteCaret {
+  transform: rotate(90deg);
+}
+
+.noteBody {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding-left: calc(var(--control-height) + var(--space-3));
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-sm-weight);
+}
+
+.noteBody p {
+  margin: 0;
+}
+
+.noteSign {
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .noteCaret {
+    transition: none;
   }
 }

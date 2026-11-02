@@ -96,13 +96,32 @@ test.describe("head tags", () => {
       await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
 
       const jsonLd = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}");
-      expect(jsonLd["@type"]).toBe("SoftwareApplication");
-      expect(jsonLd).not.toHaveProperty("address");
-      expect(jsonLd).not.toHaveProperty("contactPoint");
+      const [app, organization] = jsonLd["@graph"];
+      expect(app["@type"]).toBe("WebApplication");
+      expect(app.offers.map((o: { price: string }) => o.price)).toEqual(["6", "48"]);
+      expect(organization).toMatchObject({ "@type": "Organization", name: "FollowUs AI LLC", contactPoint: { email: "support@followusai.com" } });
+      // No address until DQ supplies a real one.
+      expect(organization).not.toHaveProperty("address");
 
       await expect(page.locator("h1")).toHaveCount(1);
       await expect(page.locator("main")).toHaveCount(1);
     });
+  }
+});
+
+test("sign-in and sign-up have full head tags", async ({ page }) => {
+  for (const path of ["/sign-in", "/sign-up"]) {
+    await page.goto(path);
+    const content = (selector: string) => page.locator(selector).first().getAttribute("content");
+    const title = await page.title();
+    expect(title.length).toBeGreaterThanOrEqual(30);
+    expect(title.length).toBeLessThanOrEqual(60);
+    const description = (await content('meta[name="description"]')) ?? "";
+    expect(description.length).toBeGreaterThanOrEqual(120);
+    expect(description.length).toBeLessThanOrEqual(160);
+    expect(await page.locator('link[rel="canonical"]').getAttribute("href")).toMatch(new RegExp(`${path}$`));
+    expect(await content('meta[property="og:url"]')).toMatch(new RegExp(`${path}$`));
+    expect(await content('meta[property="og:image"]')).toContain("/social/og-image.png");
   }
 });
 
@@ -115,6 +134,16 @@ test.describe("HTTP behavior", () => {
       expect(response.headers().vary).toMatch(/\bAccept\b/);
       expect(await response.text()).toMatch(/^# /);
     }
+  });
+
+  test("each public page also has a .md URL", async ({ request }) => {
+    for (const path of publicPaths) {
+      const response = await request.get(path === "/" ? "/index.md" : `${path}.md`);
+      expect(response.status()).toBe(200);
+      expect(response.headers()["content-type"]).toContain("text/markdown");
+      expect(await response.text()).toMatch(/^# /);
+    }
+    expect((await request.get("/no-such-page.md")).status()).toBe(404);
   });
 
   test("browsers still get HTML, with Vary set", async ({ request }) => {

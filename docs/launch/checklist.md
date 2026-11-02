@@ -17,7 +17,7 @@ Shared tags live in `apps/web/src/marketing/head.tsx`. Titles and descriptions l
 - [x] Favicon. `/favicon.ico`, `/icon.svg` and `/apple-icon.png` from workstream 1.
 - [x] Open Graph: title, description, image, url, type. e2e checks image and type; the rest come from the same tag block.
 - [x] Twitter card: `summary_large_image`, title, description, image. e2e.
-- [x] JSON-LD. `SoftwareApplication` on every public page, with no address or contact point. e2e. Organization and `sameAs` are left out until DQ supplies real details.
+- [x] JSON-LD. A `WebApplication` with both plans as offers, published by an `Organization` (FollowUs AI LLC, support contact point) on every public page. e2e. The Organization's address and `sameAs` profiles are left out until DQ supplies them.
 - [x] No `noindex` in meta tags or an `X-Robots-Tag` header. e2e checks the meta tag; nothing sets the header. The 404 has Next's `noindex`, which is correct.
 - [x] `<meta name="is-agentic-site-type" content="app">`. e2e.
 
@@ -44,6 +44,7 @@ Shared tags live in `apps/web/src/marketing/head.tsx`. Titles and descriptions l
 - [x] `llms.txt` with markdown links that all resolve. e2e follows each link.
 - [x] About, Contact, Privacy and Terms pages. Contact gives support@followusai.com.
 - [x] Public pricing page at `/pricing`: plans, the trial, how to cancel and refunds, and the live launch offer. Static, rebuilt at most once a minute. In the header and footer, sitemap, `llms.txt` and the markdown versions. e2e.
+- [x] `/pricing.md`: every public page also answers at `<path>.md` (`/index.md` for the home page), from `proxy.ts`. e2e.
 
 ## 4. Server and HTTP behavior
 

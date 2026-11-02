@@ -4,7 +4,6 @@ import { useSyncExternalStore } from "react";
 import { BillingGate } from "@/data/billing-gate";
 import { PlannerSession } from "@/data/session";
 import { LoadingScreen, PlannerApp, SetupNeeded } from "@/planner/PlannerApp";
-import { Paywall } from "@/planner/Paywall";
 
 const subscribe = () => () => {};
 
@@ -14,7 +13,7 @@ export function PlannerRoot() {
   if (!client) return <LoadingScreen />;
   return (
     <PlannerSession loading={<LoadingScreen />} unconfigured={<SetupNeeded />}>
-      <BillingGate loading={<LoadingScreen />} paywall={<Paywall />}>
+      <BillingGate loading={<LoadingScreen />}>
         <PlannerApp />
       </BillingGate>
     </PlannerSession>

@@ -1,21 +1,52 @@
 import Head from "next/head";
+import { PLANS, type Plan } from "@beans/core";
 import { absoluteUrl, themeColors } from "@/lib/site";
+import { operator, supportEmail } from "./legal";
 import type { PublicPage } from "./pages";
 
 const OG_IMAGE = "/social/og-image.png";
 const TWITTER_IMAGE = "/social/twitter-image.png";
 const IMAGE_ALT = "The Beans mascot and name";
 
+const ORGANIZATION_ID = "https://followusai.com/#organization";
+
+/** Price as schema.org wants it: "6", "48". */
+const price = (plan: Plan) => String(plan.amount / 100);
+
+/**
+ * The app and the company that runs it. The Organization has the operator's
+ * name and support email from the legal pages; its address and `sameAs`
+ * profiles stay out until DQ supplies them.
+ */
 const jsonLd = (page: PublicPage) =>
   JSON.stringify({
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "Beans",
-    url: absoluteUrl("/"),
-    description: page.description,
-    applicationCategory: "ProductivityApplication",
-    operatingSystem: "Web browser",
-    image: absoluteUrl(OG_IMAGE),
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        name: "Beans",
+        url: absoluteUrl("/"),
+        description: page.description,
+        applicationCategory: "ProductivityApplication",
+        operatingSystem: "Web browser",
+        image: absoluteUrl(OG_IMAGE),
+        offers: (Object.values(PLANS) as Plan[]).map((plan) => ({
+          "@type": "Offer",
+          name: plan.interval === "month" ? "Monthly" : "Yearly",
+          price: price(plan),
+          priceCurrency: plan.currency.toUpperCase(),
+          url: absoluteUrl("/pricing"),
+        })),
+        publisher: { "@id": ORGANIZATION_ID },
+      },
+      {
+        "@type": "Organization",
+        "@id": ORGANIZATION_ID,
+        name: operator,
+        url: "https://followusai.com",
+        contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: supportEmail, url: absoluteUrl("/contact") },
+      },
+    ],
   }).replace(/</g, "\\u003c");
 
 /** Every head tag a public page needs. Pages Router pages get none of the App Router's metadata. */

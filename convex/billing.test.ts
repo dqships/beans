@@ -123,17 +123,58 @@ describe("entitlement", () => {
     await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { theme: "dark" } }] });
   });
 
-  it("locks writes until a subscription starts, then opens on the webhook", async () => {
+  it("lets a new account plan its first day, then locks writes until a subscription starts", async () => {
     const { t, alice } = setup();
     await alice.mutation(api.planner.init, { timeZone: "UTC" });
     expect(await alice.query(api.billing.status, {})).toMatchObject({ enforced: true, access: false, trialAvailable: true, status: null });
-    await expect(alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { theme: "dark" } }] })).rejects.toThrow(/subscription is needed/);
+    // Onboarding saves before the paywall, and finishing it is the last free write.
+    await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { theme: "dark" } }] });
+    await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { onboarding: { status: "finished", at: 1 } } }] });
+    await expect(alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { theme: "light" } }] })).rejects.toThrow(/subscription is needed/);
+    await expect(
+      alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { onboarding: { status: "active", step: "labels", day: null } } }] }),
+    ).rejects.toThrow(/subscription is needed/);
 
     stripe.subscriptions.set("sub_1", subscription("sub_1"));
     const res = await deliver(t, { id: "evt_1", type: "checkout.session.completed", data: { object: { metadata: { app: "beans", user_id: ALICE }, subscription: "sub_1" } } });
     expect(res.status).toBe(200);
     expect(await alice.query(api.billing.status, {})).toMatchObject({ access: true, status: "trialing", plan: "monthly", trialAvailable: false, hasCustomer: true, discountPercent: null });
     await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { theme: "dark" } }] });
+  });
+
+  it("gives an ended subscription no onboarding writes", async () => {
+    const { t, alice } = setup();
+    await alice.mutation(api.planner.init, { timeZone: "UTC" });
+    stripe.subscriptions.set("sub_1", subscription("sub_1", { status: "canceled" }));
+    await deliver(t, subscriptionEvent("customer.subscription.deleted", subscription("sub_1")));
+    expect(await alice.query(api.billing.status, {})).toMatchObject({ access: false, status: "canceled" });
+    await expect(alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { theme: "dark" } }] })).rejects.toThrow(/subscription is needed/);
+  });
+
+  it("gives a new account free days with no card once, then locks when they end", async () => {
+    const { alice } = setup();
+    await alice.mutation(api.planner.init, { timeZone: "UTC" });
+    expect(await alice.query(api.billing.status, {})).toMatchObject({ access: false, passAvailable: true, passEnd: null });
+    const started = await alice.mutation(api.billing.startPass, {});
+    expect(started).toMatchObject({ access: true, passAvailable: false, trialAvailable: true, status: null });
+    expect(started.passEnd! - Date.now()).toBeGreaterThan(3 * 86_400_000 - 60_000);
+    await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { onboarding: { status: "finished", at: 1 } } }] });
+    await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { theme: "dark" } }] });
+    await expect(alice.mutation(api.billing.startPass, {})).rejects.toThrow(/only for a new account/);
+
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(started.passEnd! + 1);
+    expect(await alice.query(api.billing.status, {})).toMatchObject({ access: false, passAvailable: false, trialAvailable: true });
+    await expect(alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { theme: "light" } }] })).rejects.toThrow(/subscription is needed/);
+    vi.useRealTimers();
+  });
+
+  it("gives no free days after a subscription", async () => {
+    const { t, alice } = setup();
+    stripe.subscriptions.set("sub_1", subscription("sub_1", { status: "canceled" }));
+    await deliver(t, subscriptionEvent("customer.subscription.deleted", subscription("sub_1")));
+    expect(await alice.query(api.billing.status, {})).toMatchObject({ passAvailable: false });
+    await expect(alice.mutation(api.billing.startPass, {})).rejects.toThrow(/only for a new account/);
   });
 
   it("follows cancelling, plan changes and the end of a subscription", async () => {

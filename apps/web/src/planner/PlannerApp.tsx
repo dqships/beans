@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { useDataReady, useOnboarding, useSettings, useSyncError } from "@/data/hooks";
+import { openAt } from "@beans/core";
+import { useBilling } from "@/data/billing";
+import { useClock, useDataReady, useOnboarding, useSettings, useSyncError } from "@/data/hooks";
 import { THEME_STORAGE_KEY } from "@/app/theme-script";
 import { Mascot } from "@/ui/garden";
 import { Board } from "./Board";
@@ -21,6 +23,7 @@ import { SettingsDialog } from "./SettingsDialog";
 import { TrashDrawer } from "./TrashDrawer";
 import { Analytics } from "./Analytics";
 import { Onboarding } from "./Onboarding";
+import { Paywall } from "./Paywall";
 import { Rituals } from "./Rituals";
 import { TimeboxPanel } from "./TimeboxPanel";
 import { Toasts } from "./Toasts";
@@ -40,10 +43,18 @@ export function PlannerApp() {
   );
 }
 
-/** A new account plans its first day before it reaches the planner. */
+/**
+ * A new account plans its first day, then meets the paywall, so it has seen
+ * its plan before it's asked to pay. A locked account, including one whose
+ * no-card free days have ended, goes straight to the paywall.
+ */
 function FirstRun() {
   const onboarding = useOnboarding();
+  const billing = useBilling();
+  // The clock locks the planner when the no-card free days end, without a reload.
+  const now = useClock();
   if (onboarding?.status === "active") return <Onboarding />;
+  if (billing && !openAt(billing.status, now)) return <Paywall />;
   return (
     <PlannerDnd>
       <Shell />
