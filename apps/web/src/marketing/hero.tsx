@@ -102,7 +102,7 @@ function Timebox() {
           </div>
         </div>
         <div className={styles.nowLine} aria-hidden="true" data-now>
-          {/* Stands in for the traveling bean until `landing.js` places that one right here. */}
+          {/* Stands in for the traveling bean on phones, until `landing.js` places that one right here. */}
           <BeanMark done className={styles.nowBean} />
         </div>
       </div>

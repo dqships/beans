@@ -339,7 +339,7 @@ export function Closing() {
 
 /**
  * The checked-off bean that rides the vine as you read. It sets off from the now line on the
- * hero's Timebox, so it only shows once `landing.js` has measured where that is.
+ * hero's Timebox. On phones it waits for `landing.js` to measure where that is.
  */
 export function Vine() {
   return (

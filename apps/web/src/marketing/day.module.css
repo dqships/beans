@@ -21,21 +21,22 @@
 }
 
 /*
- * Sticky, so the bean rides the vine as the page scrolls. `landing.js` sets where it starts (the
- * hero's now line) and where it holds on screen: halfway down, or higher if the now line starts higher.
+ * Sticky, so the bean rides the vine as the page scrolls, with no script. It starts on the hero's
+ * now line: on desktop the Timebox tops the stalk, so that's its border, its head, then 10:40 on
+ * the grid. `landing.js` measures the real spot instead (phones need it, since the Timebox sits
+ * below the task columns there) and holds the bean higher than halfway if the now line starts higher.
  */
 .beanTrack {
   position: absolute;
-  top: var(--bean-start, 0);
+  top: var(
+    --bean-start,
+    calc(var(--border-width) * 2 + var(--space-3) * 2 + var(--text-lg-line) + var(--layout-hour) * 2.667 + var(--focus-ring) / 2)
+  );
   bottom: var(--layout-section);
   left: var(--vine-x);
   z-index: 1;
   width: 0;
   pointer-events: none;
-}
-
-.stalk:not([data-bean]) .beanTrack {
-  display: none;
 }
 
 .traveler {
@@ -540,6 +541,11 @@
 
   .beanTrack {
     bottom: var(--layout-section-sm);
+  }
+
+  /* No fallback start on phones, so the hero's own bean stands in until `landing.js` places this one. */
+  .stalk:not([data-bean]) .beanTrack {
+    display: none;
   }
 
   .film,

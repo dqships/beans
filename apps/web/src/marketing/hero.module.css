@@ -393,7 +393,8 @@
   rotate: -12deg;
 }
 
-[data-bean] .nowBean {
+/* On desktop the traveling bean starts right here, so this one stays out of sight. */
+.nowBean {
   visibility: hidden;
 }
 
@@ -450,6 +451,15 @@
 
   .timeboxHead {
     padding-left: var(--vine-gutter);
+  }
+
+  /* Phones show it until `landing.js` places the traveling bean on top. */
+  .nowBean {
+    visibility: visible;
+  }
+
+  [data-bean] .nowBean {
+    visibility: hidden;
   }
 
 }

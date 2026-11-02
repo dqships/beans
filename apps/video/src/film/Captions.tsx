@@ -1,5 +1,5 @@
 import { useCurrentFrame } from "remotion";
-import { LeafMarker } from "@/ui/garden";
+import { NowBean } from "@/ui/garden";
 import { CAPTIONS } from "../captions";
 import { useFormat } from "../formats";
 import { sp } from "../motion";
@@ -44,7 +44,7 @@ function Vine({ frame }: { frame: number }) {
     <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: "var(--focus-ring)", borderRadius: "var(--radius-full)", background: "var(--color-border)" }}>
       <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${progress * 100}%`, borderRadius: "var(--radius-full)", background: "var(--mascot-stem)" }}>
         <div style={{ position: "absolute", right: 0, top: "calc(var(--space-2) * -1)", translate: "50% 0", display: "flex" }}>
-          <LeafMarker />
+          <NowBean />
         </div>
       </div>
     </div>
