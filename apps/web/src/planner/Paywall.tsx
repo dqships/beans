@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { countLine, PASS_DAYS, PLANS, TRIAL_DAYS, type PlanId } from "@beans/core";
+import { CaretRight } from "@phosphor-icons/react";
+import { addDays, countLine, money, PASS_DAYS, PLANS, TRIAL_DAYS, type PlanId, type Task } from "@beans/core";
 import { useBilling } from "@/data/billing";
-import { useClock, useOnboarding } from "@/data/hooks";
+import { useClock, useDayTasks, useListTasks, useOnboarding, useToday } from "@/data/hooks";
 import { Button } from "@/ui/Button";
 import { BeanMark, Mascot } from "@/ui/garden";
 import { Illustration } from "@/ui/Illustration";
@@ -29,7 +30,8 @@ export function Paywall() {
   const billing = useBilling();
   const account = useAccount();
   const planned = useOnboarding()?.status === "finished";
-  const [plan, setPlan] = useState<PlanId>("monthly");
+  // Null until the buyer picks: then the default follows the launch offer.
+  const [picked, setPlan] = useState<PlanId | null>(null);
   const [view, setView] = useState<"plans" | "pass">("plans");
   const [busy, setBusy] = useState<"checkout" | "portal" | "pass" | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +49,8 @@ export function Paywall() {
   const trial = status.trialAvailable;
   // Launch offers are for a first subscription, like the trial.
   const promo = trial ? offer.promo : null;
+  // Launch codes discount the monthly plan, so it leads while one runs; otherwise yearly, the better deal.
+  const plan: PlanId = picked ?? (promo ? "monthly" : "yearly");
   const ended = status.status !== null;
   const passOver = !ended && status.passEnd !== null;
   const trialEnds = dayMonth(new Date(now + TRIAL_DAYS * 86_400_000));
@@ -139,10 +143,12 @@ export function Paywall() {
     );
   }
 
+  const due = trial ? `$0 due today. Free until ${trialEnds}.` : `${price.charAt(0).toUpperCase()}${price.slice(1)}, starting today.`;
+  const secure = "You'll add your card on Stripe's secure checkout page.";
   let fine: string;
-  if (plan === "monthly" && promo && trial) fine = `${promo.monthlyLine} Your card is needed now. Cancel any time in Settings.`;
-  else if (trial) fine = `Free until ${trialEnds}, then ${price}. Your card is needed now, and you won't be charged if you cancel before then in Settings.`;
-  else fine = `${price.charAt(0).toUpperCase()}${price.slice(1)}, starting today. Cancel any time in Settings.`;
+  if (plan === "monthly" && promo && trial) fine = `${promo.monthlyLine} Cancel any time in Settings. ${secure}`;
+  else if (trial) fine = `Then ${price}. Cancel in Settings before ${trialEnds} and you won't be charged. ${secure}`;
+  else fine = `Cancel any time in Settings. ${secure}`;
 
   return (
     <div className={styles.page}>
@@ -165,6 +171,8 @@ export function Paywall() {
           </div>
           <Illustration name="welcome" alt="" className={styles.art} eager />
         </div>
+
+        <YourPlan />
 
         {promo ? (
           <section className={styles.offer} aria-label={promo.label}>
@@ -192,7 +200,7 @@ export function Paywall() {
                 <span className={styles.packetName}>{id === "monthly" ? "Monthly" : "Yearly"}</span>
                 <BeanMark done={plan === id} className={styles.packetBean} />
                 <span className={styles.packetPrice}>{amount.price.replace(/ a (month|year)$/, "")}</span>
-                <span className={styles.packetPer}>a {p.interval}</span>
+                <span className={styles.packetPer}>{id === "yearly" ? `a year, ${money(amount.amount / 12, amount.currency)} a month` : `a ${p.interval}`}</span>
                 <span className={styles.packetNote}>
                   {id === "yearly" ? `Save ${offer.yearlySaving}%` : promo ? promo.headline.replace(" on the monthly plan.", "") : "Cancel any time"}
                 </span>
@@ -205,6 +213,7 @@ export function Paywall() {
           <Button variant="primary" onClick={() => void run("checkout")} disabled={busy !== null}>
             {busy === "checkout" ? "Opening Stripe…" : trial ? `Start ${TRIAL_DAYS}-day free trial` : `Subscribe for ${price}`}
           </Button>
+          <p className={styles.due}>{due}</p>
           <p className={styles.fine}>{fine}</p>
           {error ? (
             <p className={styles.error} role="alert">
@@ -230,6 +239,8 @@ export function Paywall() {
           ) : null}
         </div>
 
+        <FounderNote price={offer.plans.find((x) => x.id === "monthly")!.price} />
+
         {offer.pastPromos.length ? (
           <ul className={styles.past}>
             {offer.pastPromos.map((line) => (
@@ -239,5 +250,73 @@ export function Paywall() {
         ) : null}
       </main>
     </div>
+  );
+}
+
+const PREVIEW = 3;
+
+/**
+ * The account's own tasks, so the paywall shows what it keeps: the next day
+ * with tasks, a few of them, and the Brain Dump count. Nothing for an account
+ * with no tasks.
+ */
+function YourPlan() {
+  const today = useToday();
+  const tomorrow = addDays(today, 1);
+  const todays = useDayTasks(today);
+  const tomorrows = useDayTasks(tomorrow);
+  const dump = useListTasks(null);
+  const [word, tasks]: [string, Task[]] = todays.length ? ["today", todays] : ["tomorrow", tomorrows];
+  if (!tasks.length && !dump.length) return null;
+  const more = tasks.length - PREVIEW;
+  return (
+    <section className={styles.plan} aria-label="Your plan">
+      <h2 className={styles.planTitle}>
+        {tasks.length ? `Saved for ${word}` : "Saved in your Brain Dump"}
+        <span className={styles.planCount}>{tasks.length || dump.length}</span>
+      </h2>
+      {tasks.length ? (
+        <ul className={styles.planTasks}>
+          {tasks.slice(0, PREVIEW).map((task) => (
+            <li key={task.id} className={styles.planTask}>
+              <BeanMark done={task.done} className={styles.planBean} />
+              <span className={styles.planText}>{task.title}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {more > 0 || (tasks.length && dump.length) ? (
+        <p className={styles.planMore}>
+          {[more > 0 ? `${more} more for ${word}` : null, tasks.length && dump.length ? `${dump.length} in your Brain Dump` : null].filter(Boolean).join(" · ")}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+/** Why Beans costs what it does, in DQ's words. Closed until asked. */
+function FounderNote({ price }: { price: string }) {
+  return (
+    <details className={styles.note}>
+      <summary className={styles.noteSummary}>
+        {/* A small static photo; next/image would add nothing at 40px. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/people/dq.webp" alt="" width={40} height={40} className={styles.notePhoto} />
+        <span className={styles.noteLabel}>{`Why Beans costs ${price}`}</span>
+        <CaretRight size={16} className={styles.noteCaret} aria-hidden />
+      </summary>
+      <div className={styles.noteBody}>
+        <p>
+          Hi, I&apos;m DaQuan. I built Beans because I&apos;m terrible at managing my time. I wanted an easier way to stay on track with the things I need to do,
+          whether that&apos;s growing my business, getting to work on time, or staying in touch with family and friends.
+        </p>
+        <p>There are a lot of daily planners out there, but I wanted one with the features I value at a price that&apos;s fair.</p>
+        <p>
+          What you pay keeps the servers running and your planner stored securely. It also means I can afford to keep looking after Beans and keep shipping updates.
+          I don&apos;t sell your information or use it for advertising.
+        </p>
+        <p className={styles.noteSign}>DaQuan Louden, who makes Beans</p>
+      </div>
+    </details>
   );
 }

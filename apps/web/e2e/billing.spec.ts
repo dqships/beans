@@ -71,6 +71,8 @@ test.describe("with Stripe test mode", () => {
     // First-run setup comes before the paywall.
     await page.getByRole("button", { name: "Skip setup" }).click({ timeout: 20_000 });
     await expect(page.getByRole("heading", { name: "Try Beans free for 7 days" })).toBeVisible({ timeout: 20_000 });
+    // Monthly leads while a launch code runs, yearly otherwise; this test buys monthly either way.
+    await page.getByRole("radio", { name: /Monthly/ }).click();
     await expect(page.getByRole("radio", { name: /Monthly/ })).toHaveAttribute("aria-checked", "true");
     await page.getByRole("button", { name: "Start 7-day free trial" }).click();
 
