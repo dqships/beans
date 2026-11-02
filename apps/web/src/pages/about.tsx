@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- no client runtime here, so links are plain anchors. */
 import type { PageConfig } from "next";
+import { operator, supportEmail } from "@/marketing/legal";
 import { publicPages } from "@/marketing/pages";
 import { ProsePage } from "@/marketing/prose";
 
@@ -18,8 +19,12 @@ export default function About() {
         sprout. The feature names stay plain, so you always know what a thing does.
       </p>
       <p>
-        Beans runs in the browser on a computer, with a phone layout too. Your account is handled by Clerk and your planner data is
-        stored with Convex. The <a href="/privacy">privacy page</a> has the details.
+        Beans runs in the browser on a computer, with a phone layout too. Your tasks sync between your devices as you work. The{" "}
+        <a href="/privacy">privacy policy</a> says what Beans stores and who handles it.
+      </p>
+      <p>
+        Beans is made by {operator}, a small software company in Michigan, USA. Questions, bugs and billing go to{" "}
+        <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
       <p>
         <a href="/sign-up">Start planning</a>

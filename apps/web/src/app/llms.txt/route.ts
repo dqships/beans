@@ -5,9 +5,9 @@ export const dynamic = "force-static";
 
 const links = [
   ["About", publicPages.about.path, "What Beans is and how it works"],
-  ["Contact", publicPages.contact.path, "How to reach the people behind Beans"],
-  ["Privacy (draft)", publicPages.privacy.path, "What Beans stores, waiting on legal review"],
-  ["Terms (draft)", publicPages.terms.path, "An outline of the terms, waiting on legal review"],
+  ["Contact", publicPages.contact.path, "Support email for help, billing, refunds and account requests"],
+  ["Privacy", publicPages.privacy.path, "What Beans collects, why, and who handles it"],
+  ["Terms", publicPages.terms.path, "Accounts, the free trial, billing, cancelling and refunds"],
 ] as const;
 
 const body = `# Beans

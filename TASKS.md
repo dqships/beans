@@ -6,6 +6,17 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 
 The Launch phase went to `main` with PR #5. What's left is listed under Launch. See `docs/launch/PLAN.md`.
 
+Billing and legal phase: integration branch `claude/billing-and-legal` takes the feature PRs, and only it goes to `main`. Legal pages are on `claude/legal-pages`. Stripe billing runs in its own session on its own branch.
+
+### Billing and legal
+
+- [x] Terms, privacy, contact and about written for the 7-day trial, Stripe subscriptions, 14-day refunds, discount codes and Vercel Analytics
+- [ ] Stripe products, checkout, customer portal, pricing page and launch codes (Stripe session)
+- [ ] Match the terms to the final Stripe setup: card up front for the trial or not, and the name of the Settings button that opens the portal
+- [ ] Add PostHog to the privacy policy the day it goes live (the paragraph is ready in `apps/web/src/marketing/legal.ts`)
+- [ ] Link the pricing page from the terms and About once it exists
+- [ ] In-app account deletion and data export. Today both are by email to support
+
 - [x] Review `DESIGN.md` and the mascot
 - [x] Answer the open decisions below
 - [x] Set up pnpm workspaces, Next.js in `apps/web`, and `packages/tokens`
@@ -87,6 +98,8 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Wrote the terms of service, privacy policy and contact page, and added who makes Beans to About. Removed the draft banners. 38 of 38 public-page tests pass on a production build, axe included, and the pages were checked at 1440 and 390 in light and dark with no overflow.
+
 - 2026-11-02: PR #5 merged `claude/beans-v1` into `main` once CI and GitGuardian passed (DQ). The `claude/beans-v1` branch is deleted on GitHub and locally.
 - 2026-11-02: Demo audio rebalanced (DQ): voice −23 LUFS and music −22 before ducking, and the music skips its quiet opening notes to start on its first full beat at 2.45 s. Settings live at the top of `scripts/mix-video-audio.mjs`.
 - 2026-11-02: Re-rendered the demo video, its three cuts and posters, then re-mixed the approved voice and music (`pnpm video:render`, `pnpm video:mix`). They show the bean now marker and the 60px top bar. The film had been showing first-run onboarding since onboarding landed, so its sample account is now marked onboarded, and its pointer geometry follows the taller top bar. Web cuts stay under 6 MB.
@@ -125,6 +138,13 @@ Left to do on the launch:
 - 2026-10-31: Added the README and published to a private GitHub repo
 
 ## Decisions
+
+- 2026-11-02: Legal pages name FollowUs AI LLC as the operator, with support@followusai.com for all contact (DQ).
+- 2026-11-02: Michigan law, courts in Genesee County, small claims allowed, no arbitration clause (DQ).
+- 2026-11-02: Refunds: cancel any time and keep access to the end of the period; a full refund on request within 14 days of a charge (DQ).
+- 2026-11-02: The privacy policy names only services that are running. PostHog goes in the day it ships; Vercel Analytics is named now (DQ).
+- 2026-11-02: Minimum age 13. Account deletion and data copies are by email until the app has buttons for them.
+- 2026-11-02: Contact, Privacy and Terms copy lives once in `apps/web/src/marketing/legal.ts`, and both the HTML pages and their markdown versions read it.
 
 - 2026-11-02: The landing bean timeline follows the approved preview (https://claude.ai/artifact/SXrHyqLcwHN1Juh5eQXsT5), and the app's now marker uses the same bean (DQ).
 - 2026-10-31: The app is called Beans and lives in the `beans` folder, not `daily-planner`.
@@ -210,7 +230,6 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 - The workflow and "How a day goes" are one timeline, not two sections.
 - There's empty space under the hero's task columns, next to the taller Timebox.
 - The video poster on phones is a busy mid-film frame, and the player controls cover its caption.
-- `/contact` has about 350 characters of content, under the checklist's 500, until it has a real address.
 - The video starts on click only, with no autoplay when it comes into view.
 
 **Mascot art**
@@ -241,11 +260,11 @@ Steps only DQ can do. Filled in as phases finish.
 2. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.
 3. **Create the Vercel project** from the GitHub repo with Root Directory `apps/web`, keep "Include files outside the root directory" on, and add the environment variables listed in `docs/DEPLOY.md`. Then deploy.
 4. **Set up the production Clerk instance**: domain, DNS records and Google OAuth credentials.
-5. **Add a contact address** for `/contact` and `/privacy`, and optional real Organization details for JSON-LD.
+5. **Optional:** real Organization details for JSON-LD. The contact address is support@followusai.com.
 6. **Decide pricing.** The pricing page stays out until then.
 7. **Set `NEXT_PUBLIC_SITE_URL`** to the production domain on Vercel, then check HTTPS on the live domain.
 8. **Upload the brand logos**: `assets/brand/clerk-logo.png` to the Clerk application, `assets/brand/google-oauth-logo.png` to the Google consent screen, and `assets/brand/github-social-preview.png` to GitHub (repo settings, Social preview).
-9. **Legal review** before public release: privacy policy, terms, and what Clerk and Convex store.
+9. **Read the terms and privacy policy** (`/terms`, `/privacy`) before public release. They're written but not reviewed by a lawyer. Choices made for you: Beans refunds the unused time if it ever shuts down, gives 30 days' notice of price changes and 14 days' notice of term changes, caps liability at the greater of 12 months' fees and $50, and aims to answer email within one business day.
 10. **Try onboarding with a real sign-up.** Agents can't create Clerk accounts, so `e2e:clerk` hasn't been run since onboarding landed. Its sign-up test now skips onboarding. Run `pnpm --filter @beans/web e2e:clerk`, then sign up once by hand and walk the five steps.
 11. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
 12. **Try Manage account with a real sign-in.** Agents can't sign in to Clerk. Open Settings, Account, press Manage account, change the name and photo, and check the top bar avatar updates.

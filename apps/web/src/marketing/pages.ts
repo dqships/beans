@@ -19,28 +19,28 @@ export const publicPages = {
     title: "About Beans, a daily planner for your whole to-do list",
     description:
       "Beans is a daily planner. It keeps your to-do list, your week and your schedule for the day together, in the browser on a computer or a phone.",
-    lastModified: "2026-10-31",
+    lastModified: "2026-11-02",
   },
   contact: {
     path: "/contact",
-    title: "Contact Beans: how to reach the daily planner",
+    title: "Contact Beans: email support for help and billing",
     description:
-      "How to reach the people behind Beans, the daily planner. There is no public address yet, and this page is where it will go as soon as it is set up.",
-    lastModified: "2026-10-31",
+      "Email support@followusai.com for help with Beans: the planner, billing, refunds, cancelling, deleting your account or getting a copy of your data.",
+    lastModified: "2026-11-02",
   },
   privacy: {
     path: "/privacy",
-    title: "Privacy at Beans: what the planner stores (draft)",
+    title: "Beans privacy policy: what the planner stores and why",
     description:
-      "A draft of the Beans privacy page, waiting on legal review. It says what is stored: account details with Clerk, and your planner data with Convex.",
-    lastModified: "2026-10-31",
+      "What Beans collects, why, and who handles it: Clerk for sign-in, Convex for your planner, Stripe for payments and Vercel for hosting and analytics.",
+    lastModified: "2026-11-02",
   },
   terms: {
     path: "/terms",
-    title: "Terms for using the Beans daily planner (draft)",
+    title: "Beans terms of service: trial, billing and refunds",
     description:
-      "A draft of the Beans terms of use, waiting on legal review. Read it as a plain outline of how Beans works, and not yet as a final agreement between us.",
-    lastModified: "2026-10-31",
+      "The terms for using Beans: accounts, the 7-day free trial, subscriptions, cancelling, 14-day refunds, discount codes and what you can expect from us.",
+    lastModified: "2026-11-02",
   },
 } satisfies Record<string, PublicPage>;
 

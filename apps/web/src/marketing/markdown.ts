@@ -1,4 +1,5 @@
 import { absoluteUrl } from "../lib/site";
+import { contactBody, legalUpdated, operator, privacyBody, supportEmail, termsBody } from "./legal";
 
 /**
  * Markdown versions of the public pages, served by `proxy.ts` at the same URLs
@@ -52,8 +53,8 @@ At midnight, anything you didn't finish moves to the new day on its own, marked 
 
 - [About](${absoluteUrl("/about")})
 - [Contact](${absoluteUrl("/contact")})
-- [Privacy (draft)](${absoluteUrl("/privacy")})
-- [Terms (draft)](${absoluteUrl("/terms")})
+- [Privacy](${absoluteUrl("/privacy")})
+- [Terms](${absoluteUrl("/terms")})
 `;
 
 const about = `# About Beans
@@ -64,60 +65,21 @@ It works in three steps: write down everything you need to do, decide which day 
 
 Beans looks a bit like a small garden: your days are rows, your hours run up a beanstalk, and a finished task grows a sprout. The feature names stay plain, so you always know what a thing does.
 
-Beans runs in the browser on a computer, with a phone layout too. Your account is handled by Clerk and your planner data is stored with Convex. The [privacy page](${absoluteUrl("/privacy")}) has the details.
+Beans runs in the browser on a computer, with a phone layout too. Your tasks sync between your devices as you work. The [privacy policy](${absoluteUrl("/privacy")}) says what Beans stores and who handles it.
+
+Beans is made by ${operator}, a small software company in Michigan, USA. Questions, bugs and billing go to [${supportEmail}](mailto:${supportEmail}).
 
 [Start planning](${absoluteUrl("/sign-up")})
 `;
 
-const contact = `# Contact
+/** Turns the shared copy's site-relative links into absolute ones. */
+const absolute = (body: string) => body.replace(/\]\((\/[^)]*)\)/g, (_, path: string) => `](${absoluteUrl(path)})`);
 
-Beans doesn't have a public contact address yet. When it does, it will be on this page.
+const contact = `# Contact\n\n${absolute(contactBody)}\n`;
 
-For now, these pages answer the common questions:
+const privacy = `# Privacy policy\n\nLast updated ${legalUpdated}\n\n${absolute(privacyBody)}\n`;
 
-- [About Beans](${absoluteUrl("/about")})
-- [Privacy (draft)](${absoluteUrl("/privacy")})
-- [Terms (draft)](${absoluteUrl("/terms")})
-`;
-
-const privacy = `# Privacy
-
-**Draft.** This page is a placeholder waiting on legal review. It isn't a final privacy policy.
-
-## What Beans stores
-
-- **Your account.** Sign-in is handled by Clerk, which holds your account details, such as your email address and how you sign in.
-- **Your planner.** Tasks, lists, labels, notes, times and settings are stored with Convex, so they can sync between your windows.
-
-## This website
-
-The public pages of this site load no third-party scripts and set no cookies of their own. Clerk sets the cookies that keep you signed in, on the sign-in pages and in the planner.
-
-## Deleted tasks
-
-Tasks you delete stay in Trash for 30 days, so you can undo.
-
-## Questions
-
-There's no contact address yet. It will go on the [contact page](${absoluteUrl("/contact")}).
-`;
-
-const terms = `# Terms
-
-**Draft.** This page is a placeholder waiting on legal review. It isn't a final agreement.
-
-## What Beans is
-
-Beans is a daily planner that runs in the browser. You need an account to use the planner, and sign-in is handled by Clerk.
-
-## Your tasks
-
-Your tasks are stored with Convex so the planner can show them to you and sync them between windows. The [privacy page](${absoluteUrl("/privacy")}) says more.
-
-## What's still open
-
-The full terms aren't written yet. They'll appear on this page after review.
-`;
+const terms = `# Terms of service\n\nLast updated ${legalUpdated}\n\n${absolute(termsBody)}\n`;
 
 const bodies: Record<string, string> = {
   "/": home,
@@ -134,8 +96,8 @@ There's no page at this address. Try one of these instead:
 - [Home](${absoluteUrl("/")})
 - [About](${absoluteUrl("/about")})
 - [Contact](${absoluteUrl("/contact")})
-- [Privacy (draft)](${absoluteUrl("/privacy")})
-- [Terms (draft)](${absoluteUrl("/terms")})
+- [Privacy](${absoluteUrl("/privacy")})
+- [Terms](${absoluteUrl("/terms")})
 - [Sign in](${absoluteUrl("/sign-in")})
 `;
 

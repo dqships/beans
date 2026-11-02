@@ -23,11 +23,10 @@
   font-weight: var(--text-title-weight);
 }
 
-.draft {
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-surface-2);
-  border-left: var(--space-1) solid var(--color-warning);
-  border-radius: var(--radius-sm);
+.updated {
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  color: var(--color-text-muted);
 }
 
 .prose {
