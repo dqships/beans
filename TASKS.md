@@ -99,6 +99,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Google Cloud project "Beans" (`beans-513522`) with its OAuth app (External, app name Beans) for Clerk production's Google sign-in. The Web client "Clerk production" redirects to `https://clerk.followusai.com/v1/oauth_callback`.
 - 2026-11-02: Live webhook endpoint `we_1UXTZRDyfH6JDnExkg7amGZv` ("Beans production") sends the six Beans events to the production Convex deployment `avid-mole-890`. DQ deleted the old, unused followusai.com endpoint.
 - 2026-11-02: Live Beans portal configuration `bpc_1UXSNWDyfH6JDnExI20FeQYC` made with `scripts/stripe-portal-config.mjs` (DQ ran it) and set in `STRIPE_IDS.live`. Live plan switches now offer only the two Beans plans.
 - 2026-11-02: Merged PR #13 (Stripe) and PR #12 (legal) into `claude/billing-and-legal` (DQ). Together they pass typecheck, lint, 135 unit tests, the production build and 42 public-page tests.
@@ -145,6 +146,7 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-02: Beans' Google sign-in uses its own Google Cloud project, not Guppy's, so the consent screen says Beans. Support email `dclouwork@gmail.com`, because this Google account has no organization or group for support@followusai.com; developer contacts dq@followusai.com and dclouwork@gmail.com, as for Guppy (DQ).
 - 2026-11-02: Beans costs $6 a month or $48 a year, with a 7-day free trial that needs a card, once per account. After the trial or subscription ends the planner locks to the plans screen and keeps every task. (DQ)
 - 2026-11-02: Launch codes BEANS100, BEANS50, BEANS25 (100%, 50%, 25% off the first 3 months; 100, 250, 500 codes; 4, 2, 2 weeks) apply to the monthly plan only, and only to a first subscription. Not LAUNCH100: Vidzilla uses those names on the same Stripe account. (DQ)
 - 2026-11-02: The paywall comes right after sign-up, before first-run setup, because the trial needs a card. It isn't an onboarding step.
