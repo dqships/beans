@@ -26,7 +26,7 @@ export const contactBody = `Email ${mail} for anything about Beans: help with th
 
 ## Common requests
 
-- **Cancel your subscription.** In the planner, open Settings, then Billing, and choose Manage subscription. Cancelling takes effect at the end of your trial or the period you've paid for, and you keep access until then. Cancel during the trial and you aren't charged.
+- **Cancel your subscription.** In the planner, open Settings, then Subscription, and choose Manage subscription. Cancelling takes effect at the end of your trial or the period you've paid for, and you keep access until then. Cancel during the trial and you aren't charged.
 - **Change your plan, card or billing email.** Use Manage subscription too. It also has your invoices.
 - **Get a refund.** Email us within 14 days of a charge and we'll refund it in full. The [terms](/terms) have the details.
 - **Delete your account.** Email us from your account's email address and we'll cancel your subscription, then delete your account and your tasks.
@@ -91,7 +91,7 @@ These providers store data in the United States. When information moves from the
 ## Your choices and rights
 
 - Change your name, email address, photo or password in Settings, under Manage account.
-- Cancel your subscription, switch plans, or update your card or billing email in Settings, under Billing, then Manage subscription.
+- Cancel your subscription, switch plans, or update your card or billing email in Settings, under Subscription, then Manage subscription.
 - Ask for a copy of your data, or to delete your account, by emailing ${mail} from your account's email address. When we delete your account at your request, we cancel your subscription too.
 
 Depending on where you live, you may have the right to access, correct, delete or export your information, to object to or limit how we use it, and to withdraw consent. We'll answer requests within 30 days. If you're in the EEA or the UK, you can also complain to your data protection authority.
@@ -132,7 +132,7 @@ Each account can have one 7-day free trial. You need a card to start it. When th
 
 ## Subscriptions and billing
 
-- Beans is a paid subscription. The price and billing period are shown on the pricing page and at checkout before you pay. Any sales tax or VAT is shown at checkout.
+- Beans is a paid subscription. Plans and prices are shown on the [pricing page](/pricing) and at checkout before you pay. Any sales tax or VAT is shown at checkout.
 - Stripe processes payments. By subscribing, you allow us to charge your payment method through Stripe at the start of each billing period until you cancel.
 - Your subscription renews automatically at the end of each billing period until you cancel.
 - You can switch between monthly and yearly in Manage subscription. Moving to yearly happens right away, with credit for the unused part of your month. Moving to monthly takes effect when your paid year ends.
@@ -142,13 +142,13 @@ Each account can have one 7-day free trial. You need a card to start it. When th
 
 ## Cancelling and refunds
 
-- Cancel any time in Settings, under Billing, then Manage subscription, or by emailing us. Cancelling takes effect at the end of your trial or the period you've paid for, and you keep access until then.
+- Cancel any time in Settings, under Subscription, then Manage subscription, or by emailing us. Cancelling takes effect at the end of your trial or the period you've paid for, and you keep access until then.
 - If you're charged and change your mind, email ${mail} within 14 days of that charge and we'll refund it in full.
 - After 14 days, charges aren't refunded, except where the law requires it.
 
 ## Discount codes
 
-We sometimes offer discount codes, such as at launch. Each code has its own discount, how long it lasts (such as your first 3 months), a limit on how many people can use it, and an end date, all shown with the offer and at checkout. A code works only for a new subscription, can't be combined with another code and has no cash value. When the discount ends, your subscription renews at the regular price shown at checkout.
+We sometimes offer discount codes, such as at launch. Each code has its own discount, how long it lasts (such as your first 3 months), a limit on how many people can use it, and an end date, all shown with the offer and at checkout. A code works only for a new subscription and only on the plans named with the offer. It can't be combined with another code and has no cash value. When the discount ends, your subscription renews at the regular price shown at checkout.
 
 ## Your tasks
 

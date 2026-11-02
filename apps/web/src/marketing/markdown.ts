@@ -67,6 +67,8 @@ Beans looks a bit like a small garden: your days are rows, your hours run up a b
 
 Beans runs in the browser on a computer, with a phone layout too. Your tasks sync between your devices as you work. The [privacy policy](${absoluteUrl("/privacy")}) says what Beans stores and who handles it.
 
+Every account starts with a 7-day free trial, then you choose a monthly or yearly plan. The [pricing page](${absoluteUrl("/pricing")}) has the details.
+
 Beans is made by ${operator}, a small software company in Michigan, USA. Questions, bugs and billing go to [${supportEmail}](mailto:${supportEmail}).
 
 [Start planning](${absoluteUrl("/sign-up")})

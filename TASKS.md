@@ -12,9 +12,9 @@ Billing and legal phase: integration branch `claude/billing-and-legal` takes the
 
 - [x] Terms, privacy, contact and about written for the 7-day trial, Stripe subscriptions, 14-day refunds, discount codes and Vercel Analytics
 - [ ] Stripe products, checkout, customer portal, pricing page and launch codes (Stripe session)
-- [x] Match the terms to the final Stripe setup: card required for the one 7-day trial, Settings > Billing > Manage subscription, plan switching, failed payments, and the planner locking (data kept) when a subscription ends
+- [x] Match the terms to the final Stripe setup: card required for the one 7-day trial, Settings > Subscription > Manage subscription, plan switching, failed payments, and the planner locking (data kept) when a subscription ends
 - [ ] Add PostHog to the privacy policy the day it goes live (the paragraph is ready in `apps/web/src/marketing/legal.ts`)
-- [ ] Link the pricing page from the terms and About once it exists
+- [x] Link `/pricing` from the terms and About (the page itself arrives with the Stripe PR)
 - [ ] In-app account deletion and data export. Today both are by email to support
 
 - [x] Review `DESIGN.md` and the mascot

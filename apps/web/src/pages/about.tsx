@@ -23,6 +23,10 @@ export default function About() {
         <a href="/privacy">privacy policy</a> says what Beans stores and who handles it.
       </p>
       <p>
+        Every account starts with a 7-day free trial, then you choose a monthly or yearly plan. The{" "}
+        <a href="/pricing">pricing page</a> has the details.
+      </p>
+      <p>
         Beans is made by {operator}, a small software company in Michigan, USA. Questions, bugs and billing go to{" "}
         <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
