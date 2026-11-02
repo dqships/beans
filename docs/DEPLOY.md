@@ -76,7 +76,7 @@ Full detail in `docs/BILLING.md`. Stripe secrets go on the Convex deployments on
    npx convex env set STRIPE_WEBHOOK_SECRET 'whsec_…'
    ```
 
-3. Production deployment (live mode): add a webhook endpoint to `https://<production deployment>.convex.site/stripe/webhook`, API version `2024-06-20`, with the events listed in `docs/BILLING.md`. Then:
+3. Production deployment (live mode): the live endpoint `we_1UXTZRDyfH6JDnExkg7amGZv` ("Beans production") already sends the events listed in `docs/BILLING.md` to `https://avid-mole-890.convex.site/stripe/webhook`. Reveal its signing secret (Workbench, Webhooks, Beans production), then:
 
    ```bash
    npx convex env set --prod STRIPE_SECRET_KEY 'rk_live_…'

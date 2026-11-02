@@ -99,6 +99,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Live webhook endpoint `we_1UXTZRDyfH6JDnExkg7amGZv` ("Beans production") sends the six Beans events to the production Convex deployment `avid-mole-890`. DQ deleted the old, unused followusai.com endpoint.
 - 2026-11-02: Live Beans portal configuration `bpc_1UXSNWDyfH6JDnExI20FeQYC` made with `scripts/stripe-portal-config.mjs` (DQ ran it) and set in `STRIPE_IDS.live`. Live plan switches now offer only the two Beans plans.
 - 2026-11-02: Merged PR #13 (Stripe) and PR #12 (legal) into `claude/billing-and-legal` (DQ). Together they pass typecheck, lint, 135 unit tests, the production build and 42 public-page tests.
 - 2026-11-02: Stripe subscriptions on `claude/stripe-billing-27f5b5` (PR into `claude/billing-and-legal`). Paywall before first-run setup, `/pricing`, Settings, Subscription with the Stripe portal, a verified webhook into Convex, launch codes, `docs/BILLING.md`. Test mode is set up in the FollowUs AI account; three sandbox purchases passed (monthly with BEANS100 and a trial, then portal cancel and end, then yearly with a declined card first). 34 Convex, 81 core and 105 browser tests pass.
@@ -268,7 +269,8 @@ None right now.
 
 Steps only DQ can do. Filled in as phases finish.
 
-- **Stripe keys and webhooks**: make restricted keys and set `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` on the Convex dev and production deployments, as `docs/BILLING.md` lists. Enable the test webhook endpoint once the code is on the dev deployment.
+- **Live webhook secret**: reveal the signing secret of "Beans production" in Stripe (Workbench, Webhooks) and set it with `npx convex env set --prod STRIPE_WEBHOOK_SECRET 'whsec_…'`. The live key is already set on production.
+- **Dev Stripe (test mode)**: set a `rk_test_…` key on the dev deployment, enable the test webhook endpoint `we_1UXOyBDyfH6JDnExIerJxiQb` and set its secret, as `docs/BILLING.md` lists.
 - **Live launch code**: on launch day, add promotion code `BEANS100` to the live "Launch offer" coupon with 100 uses and a 4-week end date (`docs/BILLING.md`, Start a round).
 - **Comp your own account**: setting the Stripe key turns the paywall on for existing accounts too.
 1. **Clerk sign-up asks for a password as well as an email code.** That differs from `docs/DEPLOY.md`, which says email codes and Google. Keep it, or turn off the password in the Clerk dashboard.
