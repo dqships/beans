@@ -12,7 +12,7 @@ Billing and legal phase: integration branch `claude/billing-and-legal` takes the
 
 - [x] Terms, privacy, contact and about written for the 7-day trial, Stripe subscriptions, 14-day refunds, discount codes and Vercel Analytics
 - [ ] Stripe products, checkout, customer portal, pricing page and launch codes (Stripe session)
-- [ ] Match the terms to the final Stripe setup: card up front for the trial or not, and the name of the Settings button that opens the portal
+- [x] Match the terms to the final Stripe setup: card required for the one 7-day trial, Settings > Billing > Manage subscription, plan switching, failed payments, and the planner locking (data kept) when a subscription ends
 - [ ] Add PostHog to the privacy policy the day it goes live (the paragraph is ready in `apps/web/src/marketing/legal.ts`)
 - [ ] Link the pricing page from the terms and About once it exists
 - [ ] In-app account deletion and data export. Today both are by email to support
@@ -98,6 +98,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Matched the terms, privacy and contact pages to the final billing setup from the Stripe session.
 - 2026-11-02: Wrote the terms of service, privacy policy and contact page, and added who makes Beans to About. Removed the draft banners. 38 of 38 public-page tests pass on a production build, axe included, and the pages were checked at 1440 and 390 in light and dark with no overflow.
 
 - 2026-11-02: PR #5 merged `claude/beans-v1` into `main` once CI and GitGuardian passed (DQ). The `claude/beans-v1` branch is deleted on GitHub and locally.

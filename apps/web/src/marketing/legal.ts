@@ -26,9 +26,10 @@ export const contactBody = `Email ${mail} for anything about Beans: help with th
 
 ## Common requests
 
-- **Cancel your subscription.** Open Settings in the planner and choose Manage subscription. You keep access until the end of the period you paid for.
+- **Cancel your subscription.** In the planner, open Settings, then Billing, and choose Manage subscription. Cancelling takes effect at the end of your trial or the period you've paid for, and you keep access until then. Cancel during the trial and you aren't charged.
+- **Change your plan, card or billing email.** Use Manage subscription too. It also has your invoices.
 - **Get a refund.** Email us within 14 days of a charge and we'll refund it in full. The [terms](/terms) have the details.
-- **Delete your account.** Email us from your account's email address and we'll delete your account and your tasks, and cancel any subscription.
+- **Delete your account.** Email us from your account's email address and we'll cancel your subscription, then delete your account and your tasks.
 - **Get a copy of your data.** Email us from your account's email address and we'll send it.
 
 ## Who makes Beans
@@ -47,7 +48,7 @@ export const privacyBody = `Beans is a daily planner run by ${operator} ("we"). 
 
 - **Your account.** Your name, email address, profile photo and how you sign in. If you sign in with another account, such as Google, we receive your name, email address and photo from it.
 - **Your planner.** Tasks, notes, subtasks, lists, labels, estimates, timer history, repeats, templates and settings, including your time zone, so unfinished tasks can move to the next day at your midnight.
-- **Billing.** When you subscribe, Stripe collects your payment details. We never see your full card number. Stripe tells us your plan, trial and subscription status, billing country, card brand and last four digits, and your invoices.
+- **Billing.** When you start a trial, Stripe collects your name, email address, card and billing details. We never see your full card number. We send Stripe your Beans account ID so it can link payments to your account, and we store your Stripe customer ID, plan, subscription status and the date your current period ends. In Stripe we can also see your payment history, invoices, billing country, and your card's brand and last four digits.
 - **How the site is used.** Vercel Web Analytics counts page views, with the referring site, country, browser, operating system and device type. It uses no cookies and doesn't identify you across days. Our hosting also logs requests, including IP addresses, to keep the service running and secure.
 - **Messages to us.** If you email us, we keep the message and anything you attach.
 
@@ -90,8 +91,8 @@ These providers store data in the United States. When information moves from the
 ## Your choices and rights
 
 - Change your name, email address, photo or password in Settings, under Manage account.
-- Cancel your subscription in Settings, under Manage subscription.
-- Ask for a copy of your data, or to delete your account, by emailing ${mail} from your account's email address. Deleting your account also cancels your subscription.
+- Cancel your subscription, switch plans, or update your card or billing email in Settings, under Billing, then Manage subscription.
+- Ask for a copy of your data, or to delete your account, by emailing ${mail} from your account's email address. When we delete your account at your request, we cancel your subscription too.
 
 Depending on where you live, you may have the right to access, correct, delete or export your information, to object to or limit how we use it, and to withdraw consent. We'll answer requests within 30 days. If you're in the EEA or the UK, you can also complain to your data protection authority.
 
@@ -127,26 +128,27 @@ Beans is a daily planner that runs in your browser. You write down tasks, plan t
 
 ## Free trial
 
-New accounts get a 7-day free trial. Checkout shows what you'll pay when the trial ends and whether a payment method is needed to start. If you start a trial with a payment method, your subscription begins when the trial ends and you're charged then, unless you cancel before it ends.
+Each account can have one 7-day free trial. You need a card to start it. When the trial ends, your subscription begins and your card is charged, unless you cancel before then. If you cancel during the trial, you aren't charged.
 
 ## Subscriptions and billing
 
 - Beans is a paid subscription. The price and billing period are shown on the pricing page and at checkout before you pay. Any sales tax or VAT is shown at checkout.
 - Stripe processes payments. By subscribing, you allow us to charge your payment method through Stripe at the start of each billing period until you cancel.
-- Your subscription renews automatically at the end of each billing period.
-- If a payment fails, Stripe tries again. If it still can't be collected, your subscription may end. Your account and tasks stay saved.
+- Your subscription renews automatically at the end of each billing period until you cancel.
+- You can switch between monthly and yearly in Manage subscription. Moving to yearly happens right away, with credit for the unused part of your month. Moving to monthly takes effect when your paid year ends.
+- If a payment fails, Stripe tries again and you keep access meanwhile. If it still can't be collected, your subscription ends.
+- When your trial or subscription ends, the planner locks until you subscribe again. Your tasks and settings stay saved, and subscribing again brings them back.
 - If we change the price, we'll tell you at least 30 days before your subscription renews at the new price, and you can cancel before then.
 
 ## Cancelling and refunds
 
-- Cancel any time in Settings, under Manage subscription, or by emailing us. Cancelling stops the next renewal, and you keep access until the end of the period you've paid for.
+- Cancel any time in Settings, under Billing, then Manage subscription, or by emailing us. Cancelling takes effect at the end of your trial or the period you've paid for, and you keep access until then.
 - If you're charged and change your mind, email ${mail} within 14 days of that charge and we'll refund it in full.
 - After 14 days, charges aren't refunded, except where the law requires it.
-- Ending a subscription doesn't delete your account or your tasks.
 
 ## Discount codes
 
-We sometimes offer discount codes, such as at launch. Each code has its own discount, length, limit on how many people can use it, and end date, shown with the offer and at checkout. A code works only for a new subscription, can't be combined with another code and has no cash value. When the discount ends, your subscription renews at the regular price shown at checkout.
+We sometimes offer discount codes, such as at launch. Each code has its own discount, how long it lasts (such as your first 3 months), a limit on how many people can use it, and an end date, all shown with the offer and at checkout. A code works only for a new subscription, can't be combined with another code and has no cash value. When the discount ends, your subscription renews at the regular price shown at checkout.
 
 ## Your tasks
 
@@ -162,7 +164,7 @@ We keep improving Beans, so features may change. We work to keep it running, but
 
 ## Ending your account
 
-You can stop using Beans and ask us to delete your account at any time by emailing ${mail}. We may suspend or close an account that breaks these terms or puts Beans or other people at risk. Where we can, we'll tell you first and give you a chance to get a copy of your data.
+You can stop using Beans and ask us to delete your account at any time by emailing ${mail}. Deleting an account doesn't by itself cancel a subscription, so when you ask us to delete yours, we cancel your subscription first. We may suspend or close an account that breaks these terms or puts Beans or other people at risk. Where we can, we'll tell you first and give you a chance to get a copy of your data.
 
 ## Disclaimer
 
