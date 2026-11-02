@@ -26,8 +26,8 @@ const leadIn = 0.18; // Seconds between a caption appearing and its line startin
 const gap = 0.22; // Seconds of air between two lines.
 const fadeIn = 0.1;
 const fadeOut = 2.5;
-const target = -21; // LUFS, for the music.
-const voiceTarget = -23; // LUFS. Two dB under the music's level, so the voice sits in the mix instead of on top of it.
+const target = -22; // LUFS, for the music.
+const voiceTarget = -23; // LUFS. One dB under the music's level, so the voice sits in the mix instead of on top of it.
 // Seconds of the track's quiet opening notes to skip, so the music starts on its first full beat.
 const musicStart = 2.45;
 const webLimit = 6_000_000; // Bytes, the landing page's budget for each video file.
