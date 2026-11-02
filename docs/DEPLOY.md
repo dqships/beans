@@ -1,6 +1,6 @@
 # Deploying Beans
 
-Beans runs on Vercel (the Next.js app), Convex (data and the rollover job) and Clerk (sign-in). Everything below that creates a service, changes billing or touches a domain is for DQ to do. The repo already holds the config.
+Beans runs on Vercel (the Next.js app), Convex (data, the rollover job and the Stripe webhook), Clerk (sign-in) and Stripe (subscriptions, see `docs/BILLING.md`). Everything below that creates a service, changes billing or touches a domain is for DQ to do. The repo already holds the config.
 
 ## What's in the repo
 
@@ -10,6 +10,7 @@ Beans runs on Vercel (the Next.js app), Convex (data and the rollover job) and C
 | `apps/web/scripts/vercel-ignore-build.mjs` | Skips builds when nothing the web app uses changed, and always for `claude/` and `codex/` branches |
 | `convex/auth.config.ts` | Trusts Clerk tokens once `CLERK_JWT_ISSUER_DOMAIN` is set |
 | `convex/crons.ts` | Rollover and Trash cleanup every 15 minutes |
+| `convex/http.ts` | The Stripe webhook, at `https://<deployment>.convex.site/stripe/webhook` |
 | `apps/web/.env.example`, `.env.example` | Variable names, no values |
 
 The Vercel build command runs from the repo root:
@@ -63,7 +64,29 @@ It pushes the Convex functions, then builds the web app with the matching `NEXT_
 
 `apps/web/src/lib/csp.ts` builds the Content-Security-Policy once, at build time. It reads the Clerk host from `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and the Convex host from `NEXT_PUBLIC_CONVEX_URL`, so a production Clerk domain needs no edit, but both must be set at build, and a Clerk key change needs a rebuild. The policy doesn't allow Vercel's preview toolbar. `Strict-Transport-Security` uses `includeSubDomains`, so every subdomain must serve HTTPS.
 
-### 4. Before a public launch
+### 4. Stripe
+
+Full detail in `docs/BILLING.md`. Stripe secrets go on the Convex deployments only; Vercel needs no Stripe variables.
+
+1. In the FollowUs AI Stripe account, make a restricted key per mode with the permissions listed in `docs/BILLING.md`.
+2. Dev deployment (test mode): enable the test webhook endpoint `we_1UXOyBDyfH6JDnExIerJxiQb` (Workbench, Webhooks) once the billing code is deployed there, reveal its signing secret, then:
+
+   ```bash
+   npx convex env set STRIPE_SECRET_KEY 'rk_test_…'
+   npx convex env set STRIPE_WEBHOOK_SECRET 'whsec_…'
+   ```
+
+3. Production deployment (live mode): add a webhook endpoint to `https://<production deployment>.convex.site/stripe/webhook`, API version `2024-06-20`, with the events listed in `docs/BILLING.md`. Then:
+
+   ```bash
+   npx convex env set --prod STRIPE_SECRET_KEY 'rk_live_…'
+   npx convex env set --prod STRIPE_WEBHOOK_SECRET 'whsec_…'
+   ```
+
+4. The live Beans portal configuration exists. If the domain changes, run `scripts/stripe-portal-config.mjs --site https://<new domain>` again to update its legal links (`docs/BILLING.md`, Stripe objects).
+5. Setting `STRIPE_SECRET_KEY` turns the paywall on for that deployment. Accounts made before then (DQ's own) see it too: give yourself a 100% forever coupon in the Stripe dashboard if you want free access.
+
+### 5. Before a public launch
 
 - Legal review: privacy policy, terms, and what sign-in data Clerk and Convex store.
 

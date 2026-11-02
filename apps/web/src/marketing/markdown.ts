@@ -1,4 +1,5 @@
 import { absoluteUrl } from "../lib/site";
+import { contactBody, legalUpdated, operator, privacyBody, supportEmail, termsBody } from "./legal";
 
 /**
  * Markdown versions of the public pages, served by `proxy.ts` at the same URLs
@@ -52,8 +53,8 @@ At midnight, anything you didn't finish moves to the new day on its own, marked 
 
 - [About](${absoluteUrl("/about")})
 - [Contact](${absoluteUrl("/contact")})
-- [Privacy (draft)](${absoluteUrl("/privacy")})
-- [Terms (draft)](${absoluteUrl("/terms")})
+- [Privacy](${absoluteUrl("/privacy")})
+- [Terms](${absoluteUrl("/terms")})
 `;
 
 const about = `# About Beans
@@ -64,63 +65,54 @@ It works in three steps: write down everything you need to do, decide which day 
 
 Beans looks a bit like a small garden: your days are rows, your hours run up a beanstalk, and a finished task grows a sprout. The feature names stay plain, so you always know what a thing does.
 
-Beans runs in the browser on a computer, with a phone layout too. Your account is handled by Clerk and your planner data is stored with Convex. The [privacy page](${absoluteUrl("/privacy")}) has the details.
+Beans runs in the browser on a computer, with a phone layout too. Your tasks sync between your devices as you work. The [privacy policy](${absoluteUrl("/privacy")}) says what Beans stores and who handles it.
+
+Every account starts with a 7-day free trial, then you choose a monthly or yearly plan. The [pricing page](${absoluteUrl("/pricing")}) has the details.
+
+Beans is made by ${operator}, a small software company in Michigan, USA. Questions, bugs and billing go to [${supportEmail}](mailto:${supportEmail}).
 
 [Start planning](${absoluteUrl("/sign-up")})
 `;
 
-const contact = `# Contact
+/** Turns the shared copy's site-relative links into absolute ones. */
+const absolute = (body: string) => body.replace(/\]\((\/[^)]*)\)/g, (_, path: string) => `](${absoluteUrl(path)})`);
 
-Beans doesn't have a public contact address yet. When it does, it will be on this page.
+const contact = `# Contact\n\n${absolute(contactBody)}\n`;
 
-For now, these pages answer the common questions:
+const privacy = `# Privacy policy\n\nLast updated ${legalUpdated}\n\n${absolute(privacyBody)}\n`;
 
-- [About Beans](${absoluteUrl("/about")})
-- [Privacy (draft)](${absoluteUrl("/privacy")})
-- [Terms (draft)](${absoluteUrl("/terms")})
-`;
+const terms = `# Terms of service\n\nLast updated ${legalUpdated}\n\n${absolute(termsBody)}\n`;
 
-const privacy = `# Privacy
+const pricing = `# Try Beans free for 7 days
 
-**Draft.** This page is a placeholder waiting on legal review. It isn't a final privacy policy.
+Then $6 a month, or $48 a year. Every part of the planner is included, and you can cancel any time.
 
-## What Beans stores
+- [Start your free trial](${absoluteUrl("/sign-up")})
 
-- **Your account.** Sign-in is handled by Clerk, which holds your account details, such as your email address and how you sign in.
-- **Your planner.** Tasks, lists, labels, notes, times and settings are stored with Convex, so they can sync between your windows.
+## Plans
 
-## This website
+- **Monthly:** $6 a month, after 7 days free.
+- **Yearly:** $48 a year, after 7 days free. That's 33% less than paying monthly.
 
-The public pages of this site load no third-party scripts and set no cookies of their own. Clerk sets the cookies that keep you signed in, on the sign-in pages and in the planner.
+When a launch offer is running, the [pricing page](${absoluteUrl("/pricing")}) shows its code, how many are left and when it ends. Checkout applies it for you.
 
-## Deleted tasks
+## How the free trial works
 
-Tasks you delete stay in Trash for 30 days, so you can undo.
+1. Sign up and pick a plan. Stripe, our payment provider, asks for your card. Nothing is charged yet.
+2. Plan your days for 7 days with everything in Beans.
+3. Your plan starts on day 8, unless you cancel in Settings before then. Cancel during the trial and you're never charged.
 
 ## Questions
 
-There's no contact address yet. It will go on the [contact page](${absoluteUrl("/contact")}).
-`;
-
-const terms = `# Terms
-
-**Draft.** This page is a placeholder waiting on legal review. It isn't a final agreement.
-
-## What Beans is
-
-Beans is a daily planner that runs in the browser. You need an account to use the planner, and sign-in is handled by Clerk.
-
-## Your tasks
-
-Your tasks are stored with Convex so the planner can show them to you and sync them between windows. The [privacy page](${absoluteUrl("/privacy")}) says more.
-
-## What's still open
-
-The full terms aren't written yet. They'll appear on this page after review.
+- **How do I cancel?** In Beans, open Settings, then Subscription, and press Manage subscription. Beans stays open until the end of the time you paid for.
+- **Can I switch between monthly and yearly?** Yes, in the same place. Moving to yearly starts right away, with credit for unused time. Moving to monthly starts when your year ends.
+- **What happens to my tasks if I stop paying?** They stay saved. The planner locks until you choose a plan again.
+- **Can I get a refund?** Yes. Email support@followusai.com within 14 days of a charge and we'll refund it in full.
 `;
 
 const bodies: Record<string, string> = {
   "/": home,
+  "/pricing": pricing,
   "/about": about,
   "/contact": contact,
   "/privacy": privacy,
@@ -132,10 +124,11 @@ export const notFoundMarkdown = `# Page not found
 There's no page at this address. Try one of these instead:
 
 - [Home](${absoluteUrl("/")})
+- [Pricing](${absoluteUrl("/pricing")})
 - [About](${absoluteUrl("/about")})
 - [Contact](${absoluteUrl("/contact")})
-- [Privacy (draft)](${absoluteUrl("/privacy")})
-- [Terms (draft)](${absoluteUrl("/terms")})
+- [Privacy](${absoluteUrl("/privacy")})
+- [Terms](${absoluteUrl("/terms")})
 - [Sign in](${absoluteUrl("/sign-in")})
 `;
 

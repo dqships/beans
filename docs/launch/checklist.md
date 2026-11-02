@@ -8,7 +8,7 @@ Copied from DQ's new site launch checklist. An item is either met, with where it
 
 Shared tags live in `apps/web/src/marketing/head.tsx`. Titles and descriptions live in `apps/web/src/marketing/pages.ts`.
 
-- [x] Title, 30 to 60 characters. Unit test and e2e, on all five public pages.
+- [x] Title, 30 to 60 characters. Unit test and e2e, on all six public pages.
 - [x] Meta description, 120 to 160 characters. Unit test and e2e.
 - [x] `<meta name="viewport" content="width=device-width, initial-scale=1">`, with no `user-scalable=no`. e2e.
 - [x] Canonical URL, from `siteUrl`. e2e. Production needs `NEXT_PUBLIC_SITE_URL` or Vercel's production URL.
@@ -42,8 +42,8 @@ Shared tags live in `apps/web/src/marketing/head.tsx`. Titles and descriptions l
 - [x] Doesn't block ChatGPT-User, OAI-SearchBot, Claude-User or PerplexityBot in robots.txt. e2e. Cloudflare isn't in front of the site.
 - [x] `sitemap.xml` with `lastmod`. e2e.
 - [x] `llms.txt` with markdown links that all resolve. e2e follows each link.
-- [x] About, Contact and Privacy pages. The contact page has no address until DQ supplies one.
-- [ ] Public pricing page: not applicable until DQ decides pricing. No price is stated anywhere.
+- [x] About, Contact, Privacy and Terms pages. Contact gives support@followusai.com.
+- [x] Public pricing page at `/pricing`: plans, the trial, how to cancel and refunds, and the live launch offer. Static, rebuilt at most once a minute. In the header and footer, sitemap, `llms.txt` and the markdown versions. e2e.
 
 ## 4. Server and HTTP behavior
 

@@ -2,9 +2,21 @@
 
 ## Now
 
-Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done. Phase 4 (planner behavior) is done. Phase 5 launch prep is done on the repo side; creating services and deploying is for DQ, listed under Needs DQ. The PR from `claude/beans-v1` into `main` is ready for review.
+Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (accounts and data) is done. Phase 4 (planner behavior) is done. Phase 5 launch prep is done on the repo side; creating services and deploying is for DQ, listed under Needs DQ. Everything is on `main`: PR #5 merged `claude/beans-v1` on 2026-11-02.
 
-The Launch phase is merged into `claude/beans-v1`, so PR #5 now carries it too. What's left is listed under Launch. See `docs/launch/PLAN.md`.
+The Launch phase went to `main` with PR #5. What's left is listed under Launch. See `docs/launch/PLAN.md`.
+
+Billing and legal phase: integration branch `claude/billing-and-legal` takes the feature PRs, and only it goes to `main`. PR #13 (Stripe billing) and PR #12 (legal pages) are merged into it on 2026-11-02, and its PR into `main` waits for DQ's review.
+
+### Billing and legal
+
+- [x] Terms, privacy, contact and about written for the 7-day trial, Stripe subscriptions, 14-day refunds, discount codes and Vercel Analytics
+- [x] Stripe products, checkout, customer portal, pricing page and launch codes (PR #13)
+- [ ] DQ reviews the `claude/billing-and-legal` PR into `main`
+- [x] Match the terms to the final Stripe setup: card required for the one 7-day trial, Settings > Subscription > Manage subscription, plan switching, failed payments, and the planner locking (data kept) when a subscription ends
+- [ ] Add PostHog to the privacy policy the day it goes live (the paragraph is ready in `apps/web/src/marketing/legal.ts`)
+- [x] Link `/pricing` from the terms and About (the page itself arrives with the Stripe PR)
+- [ ] In-app account deletion and data export. Today both are by email to support
 
 - [x] Review `DESIGN.md` and the mascot
 - [x] Answer the open decisions below
@@ -87,6 +99,13 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Live Beans portal configuration `bpc_1UXSNWDyfH6JDnExI20FeQYC` made with `scripts/stripe-portal-config.mjs` (DQ ran it) and set in `STRIPE_IDS.live`. Live plan switches now offer only the two Beans plans.
+- 2026-11-02: Merged PR #13 (Stripe) and PR #12 (legal) into `claude/billing-and-legal` (DQ). Together they pass typecheck, lint, 135 unit tests, the production build and 42 public-page tests.
+- 2026-11-02: Stripe subscriptions on `claude/stripe-billing-27f5b5` (PR into `claude/billing-and-legal`). Paywall before first-run setup, `/pricing`, Settings, Subscription with the Stripe portal, a verified webhook into Convex, launch codes, `docs/BILLING.md`. Test mode is set up in the FollowUs AI account; three sandbox purchases passed (monthly with BEANS100 and a trial, then portal cancel and end, then yearly with a declined card first). 34 Convex, 81 core and 105 browser tests pass.
+- 2026-11-02: Matched the terms, privacy and contact pages to the final billing setup from the Stripe session.
+- 2026-11-02: Wrote the terms of service, privacy policy and contact page, and added who makes Beans to About. Removed the draft banners. 38 of 38 public-page tests pass on a production build, axe included, and the pages were checked at 1440 and 390 in light and dark with no overflow.
+
+- 2026-11-02: PR #5 merged `claude/beans-v1` into `main` once CI and GitGuardian passed (DQ). The `claude/beans-v1` branch is deleted on GitHub and locally.
 - 2026-11-02: Demo audio rebalanced (DQ): voice −23 LUFS and music −22 before ducking, and the music skips its quiet opening notes to start on its first full beat at 2.45 s. Settings live at the top of `scripts/mix-video-audio.mjs`.
 - 2026-11-02: Re-rendered the demo video, its three cuts and posters, then re-mixed the approved voice and music (`pnpm video:render`, `pnpm video:mix`). They show the bean now marker and the 60px top bar. The film had been showing first-run onboarding since onboarding landed, so its sample account is now marked onboarded, and its pointer geometry follows the taller top bar. Web cuts stay under 6 MB.
 - 2026-11-02: At the foot of the landing page the bean lands on the vine's root (the closing art's soil line on desktop, the vine's tip on phones). The landing page loads `landing.js` on the dev server too, after hydration, so localhost matches production. Fixed a class clash: the bean's wrapper and the analytics chart's bars both used `.stalk`. Landing copy now says a bean marks the current time.
@@ -124,6 +143,20 @@ Left to do on the launch:
 - 2026-10-31: Added the README and published to a private GitHub repo
 
 ## Decisions
+
+- 2026-11-02: Beans costs $6 a month or $48 a year, with a 7-day free trial that needs a card, once per account. After the trial or subscription ends the planner locks to the plans screen and keeps every task. (DQ)
+- 2026-11-02: Launch codes BEANS100, BEANS50, BEANS25 (100%, 50%, 25% off the first 3 months; 100, 250, 500 codes; 4, 2, 2 weeks) apply to the monthly plan only, and only to a first subscription. Not LAUNCH100: Vidzilla uses those names on the same Stripe account. (DQ)
+- 2026-11-02: The paywall comes right after sign-up, before first-run setup, because the trial needs a card. It isn't an onboarding step.
+- 2026-11-02: Monthly and yearly are separate Stripe products so the coupons can't touch yearly, even through a plan switch in the portal.
+- 2026-11-02: Refunds are by hand: a full refund within 14 days of a charge, by email to support@followusai.com (DQ, in the terms).
+- 2026-11-02: Beans gets its own Stripe portal configuration in live mode instead of sharing Vidzilla's default, so neither app's subscribers see the other's plans when switching. (DQ)
+- 2026-11-02: Stripe secrets live only on the Convex deployments. Billing is enforced only where `STRIPE_SECRET_KEY` is set.
+- 2026-11-02: Legal pages name FollowUs AI LLC as the operator, with support@followusai.com for all contact (DQ).
+- 2026-11-02: Michigan law, courts in Genesee County, small claims allowed, no arbitration clause (DQ).
+- 2026-11-02: Refunds: cancel any time and keep access to the end of the period; a full refund on request within 14 days of a charge (DQ).
+- 2026-11-02: The privacy policy names only services that are running. PostHog goes in the day it ships; Vercel Analytics is named now (DQ).
+- 2026-11-02: Minimum age 13. Account deletion and data copies are by email until the app has buttons for them.
+- 2026-11-02: Contact, Privacy and Terms copy lives once in `apps/web/src/marketing/legal.ts`, and both the HTML pages and their markdown versions read it.
 
 - 2026-11-02: The landing bean timeline follows the approved preview (https://claude.ai/artifact/SXrHyqLcwHN1Juh5eQXsT5), and the app's now marker uses the same bean (DQ).
 - 2026-10-31: The app is called Beans and lives in the `beans` folder, not `daily-planner`.
@@ -209,7 +242,6 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 - The workflow and "How a day goes" are one timeline, not two sections.
 - There's empty space under the hero's task columns, next to the taller Timebox.
 - The video poster on phones is a busy mid-film frame, and the player controls cover its caption.
-- `/contact` has about 350 characters of content, under the checklist's 500, until it has a real address.
 - The video starts on click only, with no autoplay when it comes into view.
 
 **Mascot art**
@@ -236,16 +268,18 @@ None right now.
 
 Steps only DQ can do. Filled in as phases finish.
 
+- **Stripe keys and webhooks**: make restricted keys and set `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` on the Convex dev and production deployments, as `docs/BILLING.md` lists. Enable the test webhook endpoint once the code is on the dev deployment.
+- **Live launch code**: on launch day, add promotion code `BEANS100` to the live "Launch offer" coupon with 100 uses and a 4-week end date (`docs/BILLING.md`, Start a round).
+- **Comp your own account**: setting the Stripe key turns the paywall on for existing accounts too.
 1. **Clerk sign-up asks for a password as well as an email code.** That differs from `docs/DEPLOY.md`, which says email codes and Google. Keep it, or turn off the password in the Clerk dashboard.
 2. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.
 3. **Create the Vercel project** from the GitHub repo with Root Directory `apps/web`, keep "Include files outside the root directory" on, and add the environment variables listed in `docs/DEPLOY.md`. Then deploy.
 4. **Set up the production Clerk instance**: domain, DNS records and Google OAuth credentials.
-5. **Add a contact address** for `/contact` and `/privacy`, and optional real Organization details for JSON-LD.
+5. **Optional:** real Organization details for JSON-LD. The contact address is support@followusai.com.
 6. **Decide pricing.** The pricing page stays out until then.
 7. **Set `NEXT_PUBLIC_SITE_URL`** to the production domain on Vercel, then check HTTPS on the live domain.
 8. **Upload the brand logos**: `assets/brand/clerk-logo.png` to the Clerk application, `assets/brand/google-oauth-logo.png` to the Google consent screen, and `assets/brand/github-social-preview.png` to GitHub (repo settings, Social preview).
-9. **Legal review** before public release: privacy policy, terms, and what Clerk and Convex store.
-10. **Review and merge the PR** from `claude/beans-v1` into `main`.
-11. **Try onboarding with a real sign-up.** Agents can't create Clerk accounts, so `e2e:clerk` hasn't been run since onboarding landed. Its sign-up test now skips onboarding. Run `pnpm --filter @beans/web e2e:clerk`, then sign up once by hand and walk the five steps.
-12. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
-13. **Try Manage account with a real sign-in.** Agents can't sign in to Clerk. Open Settings, Account, press Manage account, change the name and photo, and check the top bar avatar updates.
+9. **Read the terms and privacy policy** (`/terms`, `/privacy`) before public release. They're written but not reviewed by a lawyer. Choices made for you: Beans refunds the unused time if it ever shuts down, gives 30 days' notice of price changes and 14 days' notice of term changes, caps liability at the greater of 12 months' fees and $50, and aims to answer email within one business day.
+10. **Try onboarding with a real sign-up.** Agents can't create Clerk accounts, so `e2e:clerk` hasn't been run since onboarding landed. Its sign-up test now skips onboarding. Run `pnpm --filter @beans/web e2e:clerk`, then sign up once by hand and walk the five steps.
+11. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
+12. **Try Manage account with a real sign-in.** Agents can't sign in to Clerk. Open Settings, Account, press Manage account, change the name and photo, and check the top bar avatar updates.

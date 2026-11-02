@@ -8,12 +8,13 @@ import styles from "./prose.module.css";
 export function ProsePage({
   page,
   title,
-  draft,
+  updated,
   children,
 }: {
   page: PublicPage;
   title: string;
-  draft?: boolean;
+  /** Shown under the title, for pages with a "last updated" date. */
+  updated?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -23,11 +24,7 @@ export function ProsePage({
       <main className={styles.main}>
         <h1 className={styles.h1}>{title}</h1>
         <SoilLine />
-        {draft ? (
-          <p className={styles.draft}>
-            <strong>Draft.</strong> This page is a placeholder waiting on legal review. It isn&apos;t final, and it may change.
-          </p>
-        ) : null}
+        {updated ? <p className={styles.updated}>Last updated {updated}</p> : null}
         <div className={styles.prose}>{children}</div>
       </main>
       <SiteFooter />

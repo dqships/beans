@@ -33,7 +33,7 @@ export function toSettings(doc: Doc<"userSettings">): Settings {
 }
 
 export async function findByClientId(ctx: QueryCtx | MutationCtx, table: ClientTable, userId: string, clientId: string) {
-  const name = DB_TABLE[table] as Exclude<TableNames, "userSettings">;
+  const name = DB_TABLE[table] as Exclude<TableNames, "userSettings" | "billing">;
   return await ctx.db
     .query(name)
     .withIndex("by_user_client", (q) => q.eq("userId", userId).eq("clientId", clientId))

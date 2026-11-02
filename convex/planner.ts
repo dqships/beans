@@ -6,6 +6,7 @@ import { ensureInstances as coreEnsureInstances } from "../packages/core/src/rep
 import type { Op } from "../packages/core/src/ops";
 import { defaultSettings } from "../packages/core/src/settings";
 import type { RecordOf, TableName } from "../packages/core/src/model";
+import { requireAccess } from "./billing";
 import { findByClientId, getSettings, requireUser, stateWith, toRecord, toSettings } from "./lib";
 import { DB_TABLE, opValidator, settingsFields, type ClientTable, type OpInput } from "./validators";
 
@@ -101,6 +102,7 @@ export const apply = mutation({
   handler: async (ctx, { ops }) => {
     const userId = await requireUser(ctx);
     if (ops.length > 500) throw new Error("Too many changes at once");
+    await requireAccess(ctx, userId);
     const now = Date.now();
     for (const op of ops) await applyOne(ctx, userId, op, now);
   },
