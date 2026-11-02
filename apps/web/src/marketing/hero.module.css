@@ -234,11 +234,11 @@
   transform: scale(1);
 }
 
-/* The Timebox. Its hour gutter sits left of the page's vine. */
+/* The Timebox. Its hour gutter sits left of the page's vine, and its border sits left of that, so its vine is the page's vine. */
 .timebox {
   display: flex;
   flex-direction: column;
-  margin-left: calc(var(--vine-gutter) * -1);
+  margin-left: calc(var(--vine-gutter) * -1 - var(--border-width));
   background: var(--color-surface);
   border-top: var(--border-width) solid var(--color-border);
   border-left: var(--border-width) solid var(--color-border);
@@ -383,11 +383,18 @@
   background: var(--color-accent);
 }
 
-.nowLeaf {
+.nowBean {
   position: absolute;
   left: 0;
   top: 50%;
+  width: var(--bean-traveler);
+  height: var(--bean-traveler);
   translate: -50% -50%;
+  rotate: -12deg;
+}
+
+[data-bean] .nowBean {
+  visibility: hidden;
 }
 
 .rain {

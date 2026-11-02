@@ -58,10 +58,15 @@ function SignedInGate({ children, loading }: { children: ReactNode; loading: Rea
 function ClerkAccount({ children }: { children: ReactNode }) {
   const { user } = useUser();
   const clerk = useClerk();
-  const name = user?.fullName || user?.primaryEmailAddress?.emailAddress || null;
+  const email = user?.primaryEmailAddress?.emailAddress ?? null;
+  const name = user?.fullName || email;
   const account: Account = {
     name,
+    email,
     initial: (name ?? "B").trim().charAt(0).toUpperCase(),
+    // Clerk gives everyone a generated picture; only show one they chose.
+    imageUrl: user?.hasImage ? user.imageUrl : null,
+    manage: () => clerk.openUserProfile(),
     signOut: () => void clerk.signOut({ redirectUrl: "/sign-in" }),
   };
   return <AccountContext.Provider value={account}>{children}</AccountContext.Provider>;
@@ -72,7 +77,10 @@ function TestAccount({ children }: { children: ReactNode }) {
   const router = useRouter();
   const account: Account = {
     name: user ? `${user} (test sign-in)` : null,
+    email: null,
     initial: (user ?? "T").charAt(0).toUpperCase(),
+    imageUrl: null,
+    manage: null,
     signOut: () => {
       setTestUser(null);
       router.replace("/sign-in");

@@ -6,6 +6,9 @@
   --vine-gutter: calc(var(--space-6) * 1.75);
   --vine-x: 50%;
   --vine-width: var(--focus-ring);
+  /* The checked-off bean that rides the vine, and the gap its outline keeps around things on the vine. */
+  --bean-traveler: calc(var(--space-6) - var(--space-1));
+  --bean-outline-gap: calc(var(--space-1) + var(--focus-ring));
   --page-pad: max(var(--space-5), calc(50vw - var(--layout-page) / 2));
 }
 

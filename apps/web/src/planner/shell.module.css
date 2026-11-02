@@ -45,11 +45,21 @@
   place-items: center;
   width: var(--control-height-sm);
   height: var(--control-height-sm);
+  padding: 0;
   border: 0;
   border-radius: var(--radius-full);
   background: var(--color-surface-2);
   color: var(--color-text);
   font-weight: var(--text-md-weight);
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Safari doesn't clip a button's image to the button's own rounding, so the photo rounds itself. */
+  border-radius: var(--radius-full);
 }
 
 .avatar:hover,

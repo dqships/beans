@@ -229,8 +229,9 @@
   z-index: var(--z-sticky);
 }
 
-.now svg {
+/* Centered on the vine (the gutter's right border) and on the line itself. */
+.nowBean {
   position: absolute;
-  left: calc(var(--space-3) * -1);
-  top: calc(var(--space-2) * -0.5 - var(--focus-ring) / 2);
+  left: calc(var(--bean-size) / -2 - var(--focus-ring) / 2);
+  top: calc(var(--bean-size) / -2 - var(--focus-ring) / 2);
 }

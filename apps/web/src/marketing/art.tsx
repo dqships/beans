@@ -1,10 +1,10 @@
 import { phoneBreakpoint } from "@beans/tokens";
 import styles from "./art.module.css";
 
-/** The task bean from the app's checkbox, with its sprout. */
-export function BeanMark() {
+/** The task bean from the app's checkbox, with its sprout. `done` draws it checked off: filled, with the sprout up. */
+export function BeanMark({ done, className }: { done?: boolean; className?: string }) {
   return (
-    <svg className={styles.bean} viewBox="0 0 20 20" aria-hidden="true">
+    <svg className={`${styles.bean} ${done ? styles.done : ""} ${className ?? ""}`} viewBox="0 0 20 20" aria-hidden="true">
       <g className={styles.sprout}>
         <path d="M10.6 3.4 C10.6 2.2 10.9 1.3 11.5 0.5" className={styles.stem} />
         <path d="M11.7 1.4 C12.6 -0.6 14.9 -1.1 16.8 -0.4 C16.3 1.7 13.9 2.6 11.7 1.4 Z" className={styles.leaf} />
@@ -14,16 +14,6 @@ export function BeanMark() {
         d="M7 4.3 C9.7 2.7 14.1 3.2 16.1 6.2 C18 9.1 17.3 13.6 14.4 15.8 C11.6 18 6.9 17.9 4.5 15.4 C3 13.8 3.3 12 4.7 11.1 C5.8 10.4 6 9.7 5.3 8.7 C4.2 7.2 5.1 5.4 7 4.3 Z"
         className={styles.body}
       />
-    </svg>
-  );
-}
-
-/** The now marker from the Timebox. */
-export function LeafMark({ className }: { className?: string }) {
-  return (
-    <svg className={`${styles.nowLeaf} ${className ?? ""}`} viewBox="0 0 24 16" aria-hidden="true">
-      <path d="M2 8 C6 1 16 0 22 8 C16 16 6 15 2 8 Z" />
-      <path d="M4 8 L18 8" className={styles.vein} />
     </svg>
   );
 }

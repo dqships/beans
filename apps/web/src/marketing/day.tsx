@@ -1,8 +1,24 @@
-import { Illustration, LeafMark, ProductShot, SoilLine, VineLeaf } from "./art";
+import { BeanMark, Illustration, ProductShot, SoilLine, VineLeaf } from "./art";
 import { Calls } from "./chrome";
 import { DemoTask } from "./hero";
 import cards from "./hero.module.css";
 import styles from "./day.module.css";
+
+/**
+ * Something that sits across the vine. The bean passes behind it, and `landing.js` draws the
+ * outline round both sides as it goes, from where the bean went in to where it comes out.
+ */
+function Crossing({ className, children }: { className?: string; children: React.ReactNode }) {
+  return (
+    <div className={`${styles.crossing} ${className ?? ""}`} data-cross>
+      {children}
+      <svg className={styles.trace} aria-hidden="true" data-trace>
+        <path pathLength={1} />
+        <path pathLength={1} />
+      </svg>
+    </div>
+  );
+}
 
 /** The short film. It only loads when someone presses play. */
 export function Film() {
@@ -14,6 +30,7 @@ export function Film() {
         </h2>
         <p className={styles.body}>A short walkthrough of one day in Beans, from writing tasks down to checking them off.</p>
       </div>
+      <Crossing className={styles.videoFrame}>
       <video
         className={styles.video}
         controls
@@ -31,6 +48,7 @@ export function Film() {
         <track kind="captions" src="/video/beans-demo.vtt" srcLang="en" label="English" />
         <a href="/video/beans-demo-web.mp4">Download the Beans demo video</a>
       </video>
+      </Crossing>
     </section>
   );
 }
@@ -41,12 +59,15 @@ function Stop({
   children,
   aside,
   layout,
+  crosses,
 }: {
   time: string;
   title: string;
   children: React.ReactNode;
   aside?: React.ReactNode;
   layout: "textLeft" | "textRight" | "wide" | "timebox";
+  /** The aside spans the vine, so the bean passes behind it. */
+  crosses?: boolean;
 }) {
   return (
     <li className={`${styles.stop} ${styles[layout]}`}>
@@ -58,8 +79,8 @@ function Stop({
         <div className={styles.body}>{children}</div>
       </div>
       {aside ? (
-        <div className={styles.stopAside} data-reveal>
-          {aside}
+        <div className={`${styles.stopAside} ${crosses ? styles.stopAsideCrossing : ""}`} data-reveal>
+          {crosses ? <Crossing>{aside}</Crossing> : aside}
         </div>
       ) : null}
     </li>
@@ -144,6 +165,7 @@ export function Day() {
           time="8:15am"
           title="Plan your week."
           layout="wide"
+          crosses
           aside={
             <ProductShot
               name="board"
@@ -164,6 +186,7 @@ export function Day() {
           time="9:00am"
           title="Block out time for each task."
           layout="timebox"
+          crosses
           aside={
             <ProductShot
               name="timebox"
@@ -314,13 +337,18 @@ export function Closing() {
   );
 }
 
-/** The vine that runs down the page, and the leaf that drifts along it as you read. */
+/**
+ * The checked-off bean that rides the vine as you read. It sets off from the now line on the
+ * hero's Timebox, so it only shows once `landing.js` has measured where that is.
+ */
 export function Vine() {
   return (
-    <span className={styles.leafTrack} aria-hidden="true">
-      <LeafMark className={styles.leaf} />
+    <span className={styles.beanTrack} aria-hidden="true" data-bean-track>
+      <BeanMark done className={styles.traveler} />
     </span>
   );
 }
 
+/** The demo and the garden share one vine, and one stacking order, so the bean can pass behind things. */
+export const stalkClass = styles.stalk;
 export const gardenClass = styles.garden;

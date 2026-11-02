@@ -19,7 +19,7 @@ import { LabelDot, Switcher, TextInput, Toggle } from "@/ui/controls";
 import { Icon } from "@/ui/Icon";
 import { Modal } from "@/ui/Modal";
 import { Popover } from "@/ui/Popover";
-import { useAccount } from "./account";
+import { AccountAvatar, useAccount } from "./account";
 import { ColorSwatches } from "./pickers";
 import { SHORTCUTS } from "./ShortcutSheet";
 import { useUi, type SettingsSection } from "./ui-state";
@@ -372,11 +372,32 @@ function Shortcuts() {
 function Account() {
   const backend = useBackend();
   const account = useAccount();
+  const ui = useUi();
+  const manage = account.manage;
   return (
     <div className={styles.group}>
-      <Row title="Signed in as">
-        <span className={styles.value}>{account.name ?? (backend === "sample" ? "Sample data" : "Your account")}</span>
-      </Row>
+      <div className={styles.profile}>
+        <span className={styles.profilePhoto}>
+          <AccountAvatar account={account} />
+        </span>
+        <div className={styles.rowText}>
+          <p className={styles.rowTitle}>{account.name ?? (backend === "sample" ? "Sample data" : "Your account")}</p>
+          {account.email && account.email !== account.name ? <p className={styles.rowHint}>{account.email}</p> : null}
+        </div>
+      </div>
+      {manage ? (
+        <Row title="Profile" hint="Change your name, photo, email address and password.">
+          <Button
+            onClick={() => {
+              // The profile opens in its own dialog, so Settings steps aside first.
+              ui.openSettings(null);
+              manage();
+            }}
+          >
+            Manage account
+          </Button>
+        </Row>
+      ) : null}
       <Row title="Where your data lives" hint={backend === "sample" ? "This is sample data in your browser tab. Nothing is saved." : "Saved to your account and synced live across your devices."}>
         <span className={styles.value}>{backend === "sample" ? "This tab only" : "Synced"}</span>
       </Row>

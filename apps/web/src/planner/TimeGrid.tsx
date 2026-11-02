@@ -19,7 +19,7 @@ import {
   type Task,
 } from "@beans/core";
 import { useActions, useClock, useLabel, useRangeTasks, useSettings, useTimeZone, useToday } from "@/data/hooks";
-import { BeanCheckbox, LeafMarker } from "@/ui/garden";
+import { BeanCheckbox, NowBean } from "@/ui/garden";
 import { Icon } from "@/ui/Icon";
 import { useDragState, useTimeboxDrop } from "./dnd";
 import { useFilteredTasks } from "./FilterMenu";
@@ -188,7 +188,7 @@ function DayGrid({
       ) : null}
       {nowMinutes !== null && nowMinutes >= offset ? (
         <div className={styles.now} style={{ top: ((nowMinutes - offset) / 60) * hourPx }} aria-label="Now">
-          <LeafMarker />
+          <NowBean className={styles.nowBean} />
         </div>
       ) : null}
     </div>

@@ -87,9 +87,24 @@ interface UiState {
 const UiContext = createContext<UiState | null>(null);
 
 export function UiProvider({ children }: { children: ReactNode }) {
-  const [view, setView] = useState<View>("tasks");
+  const [view, changeView] = useState<View>("tasks");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [timeboxOpen, setTimeboxOpen] = useState(true);
+  // The calendar needs the room, so it opens with the right panel shut. Tasks gets back whatever it had.
+  const tasksPanelOpen = useRef(true);
+  const setView = useCallback(
+    (next: View) => {
+      if (next === view) return;
+      if (next === "calendar") {
+        tasksPanelOpen.current = timeboxOpen;
+        setTimeboxOpen(false);
+      } else {
+        setTimeboxOpen(tasksPanelOpen.current);
+      }
+      changeView(next);
+    },
+    [view, timeboxOpen],
+  );
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>("lists");
   const [activeList, setActiveList] = useState<string | null | "all">(null);
   const [focusMode, setFocusMode] = useState(false);
@@ -136,7 +151,7 @@ export function UiProvider({ children }: { children: ReactNode }) {
       toast, dismissToast,
     }),
     [
-      view, sidebarOpen, timeboxOpen, sidebarTab, activeList, focusMode, registerBoard, board,
+      view, setView, sidebarOpen, timeboxOpen, sidebarTab, activeList, focusMode, registerBoard, board,
       calendarRange, calendarDate, timeboxDate, openTaskId, draft, filter, selection, toggleSelected,
       focusedTaskId, dialog, settingsSection, phoneTab, toasts, toast, dismissToast,
     ],

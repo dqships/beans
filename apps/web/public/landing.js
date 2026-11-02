@@ -20,6 +20,81 @@
     });
   }
 
+  // The bean on the vine. It sets off from the hero's now line, rides down the page, and passes
+  // behind anything on the vine while an outline draws round that thing from where it went in.
+  var stalk = document.querySelector("[data-stalk]");
+  var now = stalk && stalk.querySelector("[data-now]");
+  var track = stalk && stalk.querySelector("[data-bean-track]");
+  if (now && track) {
+    var traveler = track.firstElementChild;
+    var still = matchMedia("(prefers-reduced-motion: reduce)");
+    var crossings = Array.prototype.map.call(stalk.querySelectorAll("[data-cross]"), function (el) {
+      var trace = el.querySelector("[data-trace]");
+      return { el: el, trace: trace, halves: trace.querySelectorAll("path"), key: "" };
+    });
+
+    // Both halves start where the bean goes in and meet where it comes out, so each is a share of one outline.
+    var shape = function (c, box, x) {
+      var gap = (c.trace.getBoundingClientRect().width - box.width) / 2;
+      var media = c.el.querySelector("img, video") || c.el;
+      var w = box.width + gap * 2;
+      var h = box.height + gap * 2;
+      var r = (parseFloat(getComputedStyle(media).borderTopLeftRadius) || 0) + gap;
+      x = Math.min(w - r, Math.max(r, x - box.left + gap));
+      var key = [w, h, r, x].map(Math.round).join();
+      if (key === c.key) return;
+      c.key = key;
+      c.trace.setAttribute("viewBox", "0 0 " + w + " " + h);
+      var arc = "A" + r + " " + r + " 0 0 ";
+      c.halves[0].setAttribute("d", "M" + x + " 0H" + (w - r) + arc + "1 " + w + " " + r + "V" + (h - r) + arc + "1 " + (w - r) + " " + h + "H" + x);
+      c.halves[1].setAttribute("d", "M" + x + " 0H" + r + arc + "0 0 " + r + "V" + (h - r) + arc + "0 " + r + " " + h + "H" + x);
+    };
+
+    var queued = false;
+    var trace = function () {
+      queued = false;
+      var bean = traveler.getBoundingClientRect();
+      var x = bean.left + bean.width / 2;
+      var y = bean.top + bean.height / 2;
+      crossings.forEach(function (c) {
+        var box = c.el.getBoundingClientRect();
+        if (x < box.left || x > box.right || y < box.top) {
+          c.trace.style.opacity = 0;
+          return;
+        }
+        shape(c, box, x);
+        var drawn = still.matches ? 1 : Math.min(1, (y - box.top) / box.height);
+        // Once the bean is out, the outline fades over the next stretch of vine.
+        c.trace.style.opacity = y <= box.bottom ? 1 : Math.max(0, 1 - (y - box.bottom) / box.height);
+        c.halves[0].style.strokeDashoffset = 1 - drawn;
+        c.halves[1].style.strokeDashoffset = 1 - drawn;
+      });
+    };
+    var queue = function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(trace);
+    };
+
+    var place = function () {
+      var line = now.getBoundingClientRect();
+      var lineY = line.top + line.height / 2;
+      stalk.style.setProperty("--bean-start", lineY - stalk.getBoundingClientRect().top + "px");
+      // Hold halfway down the screen, unless the now line starts higher than that.
+      stalk.style.setProperty("--bean-stick", Math.min(innerHeight / 2, lineY + scrollY) + "px");
+      stalk.dataset.bean = "";
+      crossings.forEach(function (c) {
+        c.key = "";
+      });
+      queue();
+    };
+
+    place();
+    addEventListener("scroll", queue, { passive: true });
+    addEventListener("resize", place);
+    addEventListener("load", place);
+  }
+
   // Phones play the square cut, so they get its poster too.
   var film = document.querySelector("video");
   if (film && matchMedia("(max-width: 720px)").matches) film.poster = "/video/beans-demo-poster-square.avif";

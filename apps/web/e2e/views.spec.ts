@@ -24,8 +24,18 @@ test("calendar view: week, day, month and click to create", async ({ page }) => 
   await expect(page.getByRole("button", { name: /Early check, 2:00am to 2:15am/ })).toBeVisible();
 });
 
+test("calendar view closes the right panel, and Tasks gets it back", async ({ page }) => {
+  await expect(page.getByRole("button", { name: "Hide right panel" })).toBeVisible();
+  await page.getByRole("radio", { name: "Calendar" }).click();
+  await expect(page.getByRole("complementary", { name: "Tasks for the day" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Show right panel" })).toBeVisible();
+  await page.getByRole("radio", { name: "Tasks" }).click();
+  await expect(page.getByRole("button", { name: "Hide right panel" })).toBeVisible();
+});
+
 test("calendar view: drag from the side list onto a day", async ({ page }) => {
   await page.getByRole("radio", { name: "Calendar" }).click();
+  await page.getByRole("button", { name: "Show right panel" }).click();
   await page.keyboard.press("d");
   const grid = page.locator(`[data-timebox="${todayKey()}"]`);
   await grid.evaluate((el) => el.closest("[class*=scroll]")?.scrollTo(0, 0));
@@ -36,6 +46,7 @@ test("calendar view: drag from the side list onto a day", async ({ page }) => {
 
 test("month view: drag a task onto another day", async ({ page }) => {
   await page.getByRole("radio", { name: "Calendar" }).click();
+  await page.getByRole("button", { name: "Show right panel" }).click();
   await page.keyboard.press("m");
   const panel = page.getByRole("complementary", { name: "Tasks for the day" });
   const target = page.getByRole("button", { name: `Open ${addDaysKey(todayKey(), 1)}` }).locator("..");

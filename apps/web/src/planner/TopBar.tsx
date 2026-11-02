@@ -27,7 +27,7 @@ import { Popover } from "@/ui/Popover";
 import { FilterMenu } from "./FilterMenu";
 import { TimerPill } from "./TimerPill";
 import { useUi } from "./ui-state";
-import { useAccount } from "./account";
+import { AccountAvatar, useAccount } from "./account";
 import { useIsPhone } from "@/ui/useMedia";
 import styles from "./shell.module.css";
 
@@ -114,13 +114,15 @@ export function TopBar() {
           />
         </div>
         <AccountMenu planning={settings?.features.dailyPlanning ?? false} analytics={settings?.features.analytics ?? false} />
-        <IconButton
-          icon={SidebarSimple}
-          label={ui.timeboxOpen ? "Hide right panel" : "Show right panel"}
-          aria-pressed={ui.timeboxOpen}
-          onClick={() => ui.setTimeboxOpen(!ui.timeboxOpen)}
-          className={`${styles.desktopOnly} ${styles.mirrored}`}
-        />
+        <div className={styles.desktopOnly}>
+          <IconButton
+            icon={SidebarSimple}
+            label={ui.timeboxOpen ? "Hide right panel" : "Show right panel"}
+            aria-pressed={ui.timeboxOpen}
+            onClick={() => ui.setTimeboxOpen(!ui.timeboxOpen)}
+            className={styles.mirrored}
+          />
+        </div>
       </div>
     </header>
   );
@@ -150,7 +152,7 @@ function AccountMenu({ planning, analytics }: { planning: boolean; analytics: bo
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        {account.initial}
+        <AccountAvatar account={account} />
       </button>
       <Popover open={open} onClose={() => setOpen(false)} anchor={ref} placement="bottom-end" label="Account">
         <Menu label="Account">

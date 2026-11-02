@@ -95,6 +95,41 @@
   min-width: 0;
 }
 
+.profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0 var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.profile p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.profilePhoto {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(var(--control-height) + var(--space-3));
+  height: calc(var(--control-height) + var(--space-3));
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  font-size: var(--text-lg-size);
+  line-height: var(--text-lg-line);
+  font-weight: var(--text-lg-weight);
+}
+
+.profilePhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Safari doesn't clip a button's image to the button's own rounding, so the photo rounds itself. */
+  border-radius: var(--radius-full);
+}
+
 .rowTitle {
   font-weight: var(--text-md-weight);
 }

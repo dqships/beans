@@ -67,20 +67,6 @@
   fill: var(--color-primary);
 }
 
-.leafMarker {
-  width: calc(var(--space-3) + var(--space-1));
-  height: var(--space-3);
-  fill: var(--color-accent);
-  overflow: visible;
-}
-
-.leafVein {
-  fill: none;
-  stroke: var(--color-surface);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-}
-
 .ring {
   width: var(--control-height-sm);
   height: var(--control-height-sm);

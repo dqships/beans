@@ -1,5 +1,5 @@
 import { ClockCounterClockwise } from "@phosphor-icons/react/dist/ssr/ClockCounterClockwise";
-import { BeanMark, LeafMark } from "./art";
+import { BeanMark } from "./art";
 import { Calls } from "./chrome";
 import styles from "./hero.module.css";
 
@@ -101,8 +101,9 @@ function Timebox() {
             <span className={styles.blockTime} />
           </div>
         </div>
-        <div className={styles.nowLine} aria-hidden="true">
-          <LeafMark className={styles.nowLeaf} />
+        <div className={styles.nowLine} aria-hidden="true" data-now>
+          {/* Stands in for the traveling bean until `landing.js` places that one right here. */}
+          <BeanMark done className={styles.nowBean} />
         </div>
       </div>
     </div>

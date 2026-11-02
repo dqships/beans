@@ -59,14 +59,9 @@ export function BeanCheckbox({
   );
 }
 
-/** Now marker for the Timebox: a leaf on the vine line. */
-export function LeafMarker() {
-  return (
-    <svg className={styles.leafMarker} viewBox="0 0 24 16" aria-hidden="true">
-      <path d="M2 8 C6 1 16 0 22 8 C16 16 6 15 2 8 Z" />
-      <path d="M4 8 L18 8" className={styles.leafVein} />
-    </svg>
-  );
+/** Now marker for the Timebox: a checked-off bean, sprout and all, sitting on the vine. */
+export function NowBean({ className }: { className?: string }) {
+  return <BeanMark done className={className} />;
 }
 
 /** Timer ring: a track with progress and a leaf that grows as time passes. */

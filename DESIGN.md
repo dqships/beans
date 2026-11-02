@@ -10,11 +10,12 @@ Beans is a small garden you tend each day. Its materials come from one place: se
 |---|---|
 | App background | Warm seed-packet paper |
 | Day columns | Garden rows, each sitting on a thin soil line |
-| Timebox | A beanstalk: the hour line is a vine, and the now marker is a leaf |
+| Timebox | A beanstalk: the hour line is a vine, and the now marker is a checked-off bean with its sprout |
 | Task checkbox | A small bean outline that fills in when done |
 | Completing a task | The bean gets a tiny sprout |
 | Timer ring | A leaf that grows as time passes |
 | Empty states | The bean mascot doing something in the garden |
+| Landing page | The hero Timebox's now bean rides the page's vine as you scroll, passing behind anything on the vine while an outline draws round it |
 | Analytics bars | Rounded stalks |
 | First-run setup | Seed packets become labels, real tasks land on soil lines, and a vine grows a leaf per step |
 
@@ -80,7 +81,7 @@ Layout steps:
 
 | Token | Value | Use |
 |---|---|---|
-| `--layout-topbar` | 52 | Top bar height |
+| `--layout-topbar` | 60 | Top bar height |
 | `--layout-sidebar` | 272 | Left sidebar |
 | `--layout-column` | 272 | Day column |
 | `--layout-timebox` | 280 | Timebox panel |
@@ -123,7 +124,7 @@ Dark mode uses the same shadows with `rgb(0 0 0)` at double opacity.
 
 Beans runs in the browser, so SF Symbols can't be used. Use **Phosphor Icons, Regular weight**, at 16 and 20, for everything. It's drawn close to SF Symbols' weight and metrics. Don't mix in another set, and never use a sparkles icon.
 
-Custom drawn exceptions, made from the mascot: the bean checkbox, leaf now marker, and leaf timer ring.
+Custom drawn exceptions, made from the mascot: the bean checkbox, the bean now marker (the checkbox bean, checked off), and leaf timer ring.
 
 ## Motion
 

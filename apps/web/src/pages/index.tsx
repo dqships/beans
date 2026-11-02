@@ -1,6 +1,6 @@
 import type { PageConfig } from "next";
 import { SiteFooter, SiteHeader } from "@/marketing/chrome";
-import { Closing, Day, Film, Midnight, Packet, Vine, gardenClass } from "@/marketing/day";
+import { Closing, Day, Film, Midnight, Packet, Vine, gardenClass, stalkClass } from "@/marketing/day";
 import { Demo, Hero } from "@/marketing/hero";
 import { PageHead } from "@/marketing/head";
 import { publicPages } from "@/marketing/pages";
@@ -14,14 +14,17 @@ export default function Landing() {
       <SiteHeader />
       <main>
         <Hero />
-        <Demo />
-        <div className={gardenClass}>
+        <div className={stalkClass} data-stalk>
+          <Demo />
+          {/* Between the two on purpose: the bean paints over the demo and under what's on the vine below. */}
           <Vine />
-          <Film />
-          <Day />
-          <Midnight />
-          <Packet />
-          <Closing />
+          <div className={gardenClass}>
+            <Film />
+            <Day />
+            <Midnight />
+            <Packet />
+            <Closing />
+          </div>
         </div>
       </main>
       <SiteFooter />

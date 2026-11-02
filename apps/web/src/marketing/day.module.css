@@ -1,7 +1,11 @@
-/* Everything below the hero hangs off one vine. */
-.garden {
+/* The demo and everything below it hang off one vine. One stacking context, so things on the vine can sit above the bean. */
+.stalk {
   position: relative;
   isolation: isolate;
+}
+
+.garden {
+  position: relative;
 }
 
 /* The vine's root sits in the closing art's soil line. */
@@ -16,10 +20,13 @@
   background: var(--mascot-leaf-2);
 }
 
-/* Sticky, so the leaf rides the vine as the page scrolls, with no script and no scroll events. */
-.leafTrack {
+/*
+ * Sticky, so the bean rides the vine as the page scrolls. `landing.js` sets where it starts (the
+ * hero's now line) and where it holds on screen: halfway down, or higher if the now line starts higher.
+ */
+.beanTrack {
   position: absolute;
-  top: 0;
+  top: var(--bean-start, 0);
   bottom: var(--layout-section);
   left: var(--vine-x);
   z-index: 1;
@@ -27,11 +34,51 @@
   pointer-events: none;
 }
 
-.leaf {
+.stalk:not([data-bean]) .beanTrack {
+  display: none;
+}
+
+.traveler {
   position: sticky;
-  top: 50vh;
-  translate: -50% 0;
-  rotate: -8deg;
+  top: var(--bean-stick, 50vh);
+  width: var(--bean-traveler);
+  height: var(--bean-traveler);
+  translate: -50% -50%;
+  rotate: -12deg;
+}
+
+/*
+ * Things on the vine sit above the bean, which passes behind them. They share its layer and come
+ * after it in the page, which is what puts them on top. The hero's now line comes before, so it sits under the bean.
+ */
+.crossing {
+  position: relative;
+  z-index: 1;
+}
+
+.stopAsideCrossing {
+  z-index: 1;
+}
+
+/* Drawn round both sides by `landing.js` while the bean is behind, then faded once it's past. */
+.trace {
+  position: absolute;
+  top: calc(var(--bean-outline-gap) * -1);
+  left: calc(var(--bean-outline-gap) * -1);
+  width: calc(100% + var(--bean-outline-gap) * 2);
+  height: calc(100% + var(--bean-outline-gap) * 2);
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.trace path {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: var(--focus-ring);
+  stroke-linecap: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1;
 }
 
 .h2 {
@@ -101,7 +148,12 @@
   padding-bottom: var(--space-4);
 }
 
+.videoFrame {
+  min-width: 0;
+}
+
 .video {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
   background: var(--color-surface-2);
@@ -486,7 +538,7 @@
     line-height: var(--text-md-line);
   }
 
-  .leafTrack {
+  .beanTrack {
     bottom: var(--layout-section-sm);
   }
 

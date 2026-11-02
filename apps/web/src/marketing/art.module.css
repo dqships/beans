@@ -29,19 +29,13 @@
   fill: var(--color-primary);
 }
 
-.nowLeaf {
-  display: block;
-  width: calc(var(--space-5) + var(--space-1));
-  height: calc(var(--space-4) + var(--space-1));
+.done .body {
   fill: var(--color-accent);
-  overflow: visible;
+  stroke: var(--color-accent);
 }
 
-.vein {
-  fill: none;
-  stroke: var(--color-surface);
-  stroke-width: 1.5;
-  stroke-linecap: round;
+.done .sprout {
+  transform: scale(1);
 }
 
 .vineLeaf {

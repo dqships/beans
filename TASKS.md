@@ -86,6 +86,11 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: The app's top bar is 60px tall, up from 52 (`--layout-topbar`, DQ). The day and sidebar header rows grow with it, so they still line up. The top-bar profile photo now fills its circle; the button's default padding had shrunk it to a square. The demo video was recorded at 52 and isn't re-rendered.
+- 2026-11-02: The landing page's Timebox now bean is the one that rides the vine: a checked-off bean with its sprout, holding at 10:40 until it reaches mid-screen. It passes behind the demo video, the board and the Timebox screenshot, and an outline draws round each from where it goes in to where it comes out. The hero Timebox vine now lines up with the page vine to the pixel (it was 1px right). Checked at 1440 and 375, light and dark; 38 landing tests pass on a production build.
+- 2026-11-02: The app's Timebox now marker is the same checked-off bean, centered on the vine.
+- 2026-11-02: Settings, Account shows the profile photo and name, and Manage account opens Clerk's profile, where people change their name, photo, email and password. The top bar avatar shows the photo too. Not yet tried with a real Clerk sign-in (see Needs DQ).
+- 2026-11-02: Switching to the calendar view closes the right panel; going back to Tasks restores it as it was. Also fixed the right-panel toggle, which had `display: contents` on the button itself and so had no box.
 - 2026-11-01: First-run onboarding merged into `claude/beans-v1` (PR #10, DQ). New accounts pick labels, spill tasks into the Brain Dump, choose what goes on today or tomorrow, give tasks a time and land on a populated planner. 15 browser tests, 11 core tests and 4 Convex tests cover finishing, skipping, reloading, a second device, existing accounts, the keyboard, axe in both themes and the phone layout.
 - 2026-11-01: Fixed the sign-in and sign-up pages on short screens. The page couldn't scroll, so Clerk's Continue button could end up cut off and out of reach. Removed the duplicate mascot from Clerk's card, and added a test.
 - 2026-11-01: Fixed the sign-in reload loop on the local dev server. Next's dev hot reload kept restarting `(app)` pages from a stale `.next/dev` cache. A clean checkout never looped, and neither did builds run alongside dev, so the exact trigger is unknown. Added `pnpm dev:clean`.
@@ -115,6 +120,7 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-02: The landing bean timeline follows the approved preview (https://claude.ai/artifact/SXrHyqLcwHN1Juh5eQXsT5), and the app's now marker uses the same bean (DQ).
 - 2026-10-31: The app is called Beans and lives in the `beans` folder, not `daily-planner`.
 - 2026-10-31: Build the web app first, in Next.js. The desktop app is saved for later.
 - 2026-10-31: Convex for the database, Clerk for authentication.
@@ -237,3 +243,4 @@ Steps only DQ can do. Filled in as phases finish.
 10. **Review and merge the PR** from `claude/beans-v1` into `main`.
 11. **Try onboarding with a real sign-up.** Agents can't create Clerk accounts, so `e2e:clerk` hasn't been run since onboarding landed. Its sign-up test now skips onboarding. Run `pnpm --filter @beans/web e2e:clerk`, then sign up once by hand and walk the five steps.
 12. **Delete merged phase branches.** This session's git access can't delete remote branches (tried three times; the push is refused). Please delete `claude/phase-2-web-ui` on GitHub, and the later phase branches once their PRs merge.
+13. **Try Manage account with a real sign-in.** Agents can't sign in to Clerk. Open Settings, Account, press Manage account, change the name and photo, and check the top bar avatar updates.
