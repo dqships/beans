@@ -42,7 +42,7 @@ Shared tags live in `apps/web/src/marketing/head.tsx`. Titles and descriptions l
 - [x] Doesn't block ChatGPT-User, OAI-SearchBot, Claude-User or PerplexityBot in robots.txt. e2e. Cloudflare isn't in front of the site.
 - [x] `sitemap.xml` with `lastmod`. e2e.
 - [x] `llms.txt` with markdown links that all resolve. e2e follows each link.
-- [x] About, Contact and Privacy pages. The contact page has no address until DQ supplies one.
+- [x] About, Contact, Privacy and Terms pages. Contact gives support@followusai.com.
 - [x] Public pricing page at `/pricing`: plans, the trial, how to cancel and refunds, and the live launch offer. Static, rebuilt at most once a minute. In the header and footer, sitemap, `llms.txt` and the markdown versions. e2e.
 
 ## 4. Server and HTTP behavior
