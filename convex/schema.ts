@@ -42,4 +42,23 @@ export default defineSchema({
   userSettings: defineTable({ userId: v.string(), ...settingsFields })
     .index("by_user", ["userId"])
     .index("by_last_rollover", ["lastRollover"]),
+  /** One row per user: their Stripe customer and newest subscription, kept current by the Stripe webhook. */
+  billing: defineTable({
+    userId: v.string(),
+    customerId: v.union(v.string(), v.null()),
+    subscriptionId: v.union(v.string(), v.null()),
+    status: v.union(v.string(), v.null()),
+    priceId: v.union(v.string(), v.null()),
+    trialEnd: v.union(v.number(), v.null()),
+    periodEnd: v.union(v.number(), v.null()),
+    cancelAtPeriodEnd: v.boolean(),
+    /** A launch offer on the subscription: its percent off and when it ends. */
+    discountPercent: v.optional(v.union(v.number(), v.null())),
+    discountEnd: v.optional(v.union(v.number(), v.null())),
+    /** Set by the first subscription, so the free trial is given once. */
+    trialUsed: v.boolean(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_customer", ["customerId"]),
 });

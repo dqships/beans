@@ -14,6 +14,13 @@ export const publicPages = {
       "Beans is a daily planner. Write down everything you need to do, choose what you'll get to today, and block out the time to do it on your schedule.",
     lastModified: "2026-10-31",
   },
+  pricing: {
+    path: "/pricing",
+    title: "Beans pricing: try the daily planner free for 7 days",
+    description:
+      "Beans costs $6 a month or $48 a year after a 7-day free trial. Every part of the daily planner is included, and you can cancel any time in Settings.",
+    lastModified: "2026-11-02",
+  },
   about: {
     path: "/about",
     title: "About Beans, a daily planner for your whole to-do list",

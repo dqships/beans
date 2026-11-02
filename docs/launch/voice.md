@@ -49,6 +49,11 @@ Each of these works today in the app.
 - Search, filter, keyboard shortcuts, and light and dark themes.
 - Changes sync live between open windows.
 - A phone layout in the browser.
+- Beans costs $6 a month or $48 a year, after a 7-day free trial. The trial needs a card, and you're charged when it ends unless you cancel first.
+- Cancel any time in Settings, Subscription. Beans stays open until the end of the time paid for.
+- A full refund on request within 14 days of a charge, by emailing support@followusai.com.
+- Tasks stay saved when a subscription ends.
+- During a launch offer: the code, what it takes off, how many are left and when it ends, exactly as the pricing page shows them. Never round a count or invent an end date.
 
 ## Facts you can't state
 
@@ -57,12 +62,13 @@ These aren't true or aren't decided. Leave them out.
 - Calendar account sync (Google, Outlook and the like), attachments, notifications, import or export.
 - A desktop app, native mobile apps, or offline use.
 - AI features or integrations of any kind.
-- Any price, "free", a free trial, or a number of users.
+- "Free" on its own, as if Beans had a free plan. Say "free for 7 days" or "free trial".
+- A discount that isn't running, or a number of users.
 - Any testimonial, rating, press mention or customer logo.
 
 ## Calls to action
 
-- Primary: **Start planning** (links to `/sign-up`).
+- Primary: **Start planning** (links to `/sign-up`). On `/pricing`: **Start your free trial**, also to `/sign-up`.
 - Secondary: **Sign in** (links to `/sign-in`).
 - Video outro: "Turn your to-do list into a plan for today." with **Start planning** beneath it.
 

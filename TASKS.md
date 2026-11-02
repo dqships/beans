@@ -6,12 +6,13 @@ Phase 1, planning, is finished. Phase 2 (web UI) is done and verified. Phase 3 (
 
 The Launch phase went to `main` with PR #5. What's left is listed under Launch. See `docs/launch/PLAN.md`.
 
-Billing and legal phase: integration branch `claude/billing-and-legal` takes the feature PRs, and only it goes to `main`. Legal pages are on `claude/legal-pages`. Stripe billing runs in its own session on its own branch.
+Billing and legal phase: integration branch `claude/billing-and-legal` takes the feature PRs, and only it goes to `main`. PR #13 (Stripe billing) and PR #12 (legal pages) are merged into it on 2026-11-02, and its PR into `main` waits for DQ's review.
 
 ### Billing and legal
 
 - [x] Terms, privacy, contact and about written for the 7-day trial, Stripe subscriptions, 14-day refunds, discount codes and Vercel Analytics
-- [ ] Stripe products, checkout, customer portal, pricing page and launch codes (Stripe session)
+- [x] Stripe products, checkout, customer portal, pricing page and launch codes (PR #13)
+- [ ] DQ reviews the `claude/billing-and-legal` PR into `main`
 - [x] Match the terms to the final Stripe setup: card required for the one 7-day trial, Settings > Subscription > Manage subscription, plan switching, failed payments, and the planner locking (data kept) when a subscription ends
 - [ ] Add PostHog to the privacy policy the day it goes live (the paragraph is ready in `apps/web/src/marketing/legal.ts`)
 - [x] Link `/pricing` from the terms and About (the page itself arrives with the Stripe PR)
@@ -98,6 +99,8 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Merged PR #13 (Stripe) and PR #12 (legal) into `claude/billing-and-legal` (DQ). Together they pass typecheck, lint, 135 unit tests, the production build and 42 public-page tests.
+- 2026-11-02: Stripe subscriptions on `claude/stripe-billing-27f5b5` (PR into `claude/billing-and-legal`). Paywall before first-run setup, `/pricing`, Settings, Subscription with the Stripe portal, a verified webhook into Convex, launch codes, `docs/BILLING.md`. Test mode is set up in the FollowUs AI account; three sandbox purchases passed (monthly with BEANS100 and a trial, then portal cancel and end, then yearly with a declined card first). 34 Convex, 81 core and 105 browser tests pass.
 - 2026-11-02: Matched the terms, privacy and contact pages to the final billing setup from the Stripe session.
 - 2026-11-02: Wrote the terms of service, privacy policy and contact page, and added who makes Beans to About. Removed the draft banners. 38 of 38 public-page tests pass on a production build, axe included, and the pages were checked at 1440 and 390 in light and dark with no overflow.
 
@@ -140,6 +143,12 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-02: Beans costs $6 a month or $48 a year, with a 7-day free trial that needs a card, once per account. After the trial or subscription ends the planner locks to the plans screen and keeps every task. (DQ)
+- 2026-11-02: Launch codes BEANS100, BEANS50, BEANS25 (100%, 50%, 25% off the first 3 months; 100, 250, 500 codes; 4, 2, 2 weeks) apply to the monthly plan only, and only to a first subscription. Not LAUNCH100: Vidzilla uses those names on the same Stripe account. (DQ)
+- 2026-11-02: The paywall comes right after sign-up, before first-run setup, because the trial needs a card. It isn't an onboarding step.
+- 2026-11-02: Monthly and yearly are separate Stripe products so the coupons can't touch yearly, even through a plan switch in the portal.
+- 2026-11-02: Refunds are by hand: a full refund within 14 days of a charge, by email to support@followusai.com (DQ, in the terms).
+- 2026-11-02: Stripe secrets live only on the Convex deployments. Billing is enforced only where `STRIPE_SECRET_KEY` is set.
 - 2026-11-02: Legal pages name FollowUs AI LLC as the operator, with support@followusai.com for all contact (DQ).
 - 2026-11-02: Michigan law, courts in Genesee County, small claims allowed, no arbitration clause (DQ).
 - 2026-11-02: Refunds: cancel any time and keep access to the end of the period; a full refund on request within 14 days of a charge (DQ).
@@ -257,6 +266,9 @@ None right now.
 
 Steps only DQ can do. Filled in as phases finish.
 
+- **Stripe keys and webhooks**: make restricted keys and set `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` on the Convex dev and production deployments, as `docs/BILLING.md` lists. Enable the test webhook endpoint once the code is on the dev deployment.
+- **Live launch code**: on launch day, add promotion code `BEANS100` to the live "Launch offer" coupon with 100 uses and a 4-week end date (`docs/BILLING.md`, Start a round).
+- **Comp your own account**: setting the Stripe key turns the paywall on for existing accounts too.
 1. **Clerk sign-up asks for a password as well as an email code.** That differs from `docs/DEPLOY.md`, which says email codes and Google. Keep it, or turn off the password in the Clerk dashboard.
 2. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.
 3. **Create the Vercel project** from the GitHub repo with Root Directory `apps/web`, keep "Include files outside the root directory" on, and add the environment variables listed in `docs/DEPLOY.md`. Then deploy.

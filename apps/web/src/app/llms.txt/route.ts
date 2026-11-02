@@ -4,6 +4,7 @@ import { publicPages } from "@/marketing/pages";
 export const dynamic = "force-static";
 
 const links = [
+  ["Pricing", publicPages.pricing.path, "Plans, the free trial and how to cancel"],
   ["About", publicPages.about.path, "What Beans is and how it works"],
   ["Contact", publicPages.contact.path, "Support email for help, billing, refunds and account requests"],
   ["Privacy", publicPages.privacy.path, "What Beans collects, why, and who handles it"],
