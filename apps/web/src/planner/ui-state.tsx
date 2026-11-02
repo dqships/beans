@@ -14,7 +14,8 @@ export type SettingsSection =
   | "labels"
   | "features"
   | "shortcuts"
-  | "account";
+  | "account"
+  | "subscription";
 
 export interface BoardApi {
   scrollTo(date: DateKey): void;

@@ -87,6 +87,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Stripe subscriptions on `claude/stripe-billing-27f5b5` (PR into `claude/billing-and-legal`). Paywall before first-run setup, `/pricing`, Settings, Subscription with the Stripe portal, a verified webhook into Convex, launch codes, `docs/BILLING.md`. Test mode is set up in the FollowUs AI account; three sandbox purchases passed (monthly with BEANS100 and a trial, then portal cancel and end, then yearly with a declined card first). 34 Convex, 81 core and 105 browser tests pass.
 - 2026-11-02: PR #5 merged `claude/beans-v1` into `main` once CI and GitGuardian passed (DQ). The `claude/beans-v1` branch is deleted on GitHub and locally.
 - 2026-11-02: Demo audio rebalanced (DQ): voice −23 LUFS and music −22 before ducking, and the music skips its quiet opening notes to start on its first full beat at 2.45 s. Settings live at the top of `scripts/mix-video-audio.mjs`.
 - 2026-11-02: Re-rendered the demo video, its three cuts and posters, then re-mixed the approved voice and music (`pnpm video:render`, `pnpm video:mix`). They show the bean now marker and the 60px top bar. The film had been showing first-run onboarding since onboarding landed, so its sample account is now marked onboarded, and its pointer geometry follows the taller top bar. Web cuts stay under 6 MB.
@@ -126,6 +127,12 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-02: Beans costs $6 a month or $48 a year, with a 7-day free trial that needs a card, once per account. After the trial or subscription ends the planner locks to the plans screen and keeps every task. (DQ)
+- 2026-11-02: Launch codes BEANS100, BEANS50, BEANS25 (100%, 50%, 25% off the first 3 months; 100, 250, 500 codes; 4, 2, 2 weeks) apply to the monthly plan only, and only to a first subscription. Not LAUNCH100: Vidzilla uses those names on the same Stripe account. (DQ)
+- 2026-11-02: The paywall comes right after sign-up, before first-run setup, because the trial needs a card. It isn't an onboarding step.
+- 2026-11-02: Monthly and yearly are separate Stripe products so the coupons can't touch yearly, even through a plan switch in the portal.
+- 2026-11-02: Refunds are by hand: a full refund within 14 days of a charge, by email to support@followusai.com (DQ, in the terms).
+- 2026-11-02: Stripe secrets live only on the Convex deployments. Billing is enforced only where `STRIPE_SECRET_KEY` is set.
 - 2026-11-02: The landing bean timeline follows the approved preview (https://claude.ai/artifact/SXrHyqLcwHN1Juh5eQXsT5), and the app's now marker uses the same bean (DQ).
 - 2026-10-31: The app is called Beans and lives in the `beans` folder, not `daily-planner`.
 - 2026-10-31: Build the web app first, in Next.js. The desktop app is saved for later.
@@ -237,6 +244,9 @@ None right now.
 
 Steps only DQ can do. Filled in as phases finish.
 
+- **Stripe keys and webhooks**: make restricted keys and set `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` on the Convex dev and production deployments, as `docs/BILLING.md` lists. Enable the test webhook endpoint once the code is on the dev deployment.
+- **Live launch code**: on launch day, add promotion code `BEANS100` to the live "Launch offer" coupon with 100 uses and a 4-week end date (`docs/BILLING.md`, Start a round).
+- **Comp your own account**: setting the Stripe key turns the paywall on for existing accounts too.
 1. **Clerk sign-up asks for a password as well as an email code.** That differs from `docs/DEPLOY.md`, which says email codes and Google. Keep it, or turn off the password in the Clerk dashboard.
 2. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.
 3. **Create the Vercel project** from the GitHub repo with Root Directory `apps/web`, keep "Include files outside the root directory" on, and add the environment variables listed in `docs/DEPLOY.md`. Then deploy.

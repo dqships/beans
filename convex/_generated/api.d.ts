@@ -8,10 +8,13 @@
  * @module
  */
 
+import type * as billing from "../billing.js";
 import type * as crons from "../crons.js";
+import type * as http from "../http.js";
 import type * as lib from "../lib.js";
 import type * as maintenance from "../maintenance.js";
 import type * as planner from "../planner.js";
+import type * as stripe from "../stripe.js";
 import type * as validators from "../validators.js";
 
 import type {
@@ -21,10 +24,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  billing: typeof billing;
   crons: typeof crons;
+  http: typeof http;
   lib: typeof lib;
   maintenance: typeof maintenance;
   planner: typeof planner;
+  stripe: typeof stripe;
   validators: typeof validators;
 }>;
 
