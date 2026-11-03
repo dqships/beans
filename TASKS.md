@@ -101,7 +101,7 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 - [ ] Move the analytics math to `packages/core`
 - [ ] `convex/mcp.ts`: server secret, user id, access check, one function per tool
 - [ ] `/mcp` route at `https://mcp.beans.followusai.com/mcp`: Vercel domain, DNS record, `proxy.ts` host rules, Clerk OAuth (CIMD), `.well-known` addresses
-- [ ] 14 tools with titles and all three hints
+- [ ] 19 tools with titles and all three hints, plus server instructions and four prompts (Plan my day, Weekly review, Shutdown, Clean up my Brain Dump)
 - [ ] Settings > Connected apps, `/connect-ai` help page, rate limits
 - [ ] Test with the MCP Inspector, Claude, Claude Code, ChatGPT and Cursor
 - [ ] Privacy policy and terms
@@ -111,9 +111,11 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 
 - [ ] Desktop app: see "Desktop app, saved for later" in `RESEARCH.md`
 - [ ] Calendar accounts, attachments, import and export, notifications
+- [ ] MCP after launch: `update_list` and `delete_list`, stale-task analytics, templates (`docs/ideas/mcp.md`)
 
 ## Done
 
+- 2026-11-03: Grew the MCP plan to 19 tools (adding `get_week`, `update_subtasks`, `set_repeat`, `log_time` and `restore_tasks`), server instructions and four prompts, with three more tools listed for after launch. DQ agreed to all of them. The build plan is now about 7 days.
 - 2026-11-03: Planned the Beans MCP in `docs/ideas/mcp.md` on branch `claude/beans-mcp`: DQ's decisions, 14 tools with directory-ready hints, Clerk OAuth with CIMD (no Pro tag found in Clerk's docs or pricing), how to submit to the Claude and ChatGPT directories, what a domain change would break, and a 6-day build plan. Took the one competitor mention out of `TASKS.md`. Nothing in the app changed.
 - 2026-11-03: Onboarding's Timebox step now works like the planner's: the day's tasks are the board's cards and drag onto the real Timebox grid, with the live preview and the user's snap step. Blocks are sized by estimate, move by dragging and drag back to the day to lose their time. Picking a card and then an hour still works, for phones, keyboards and screen readers; clicking a block clears it. The grid shows the whole day and opens at the first hour on offer. 19 onboarding browser tests pass (one new, for dragging on, moving and dragging back), and the full browser suite passes (111, 8 skipped). Checked at 1440 and 390 in light and dark. Merged into `main` with PR #24.
 - 2026-11-02: Onboarding's choose step lets each task go to today or tomorrow: Brain Dump tasks have Today and Tomorrow buttons, both days show beside it, the Timebox step plans today when it has tasks (otherwise tomorrow), and the last step sums up both days. 18 onboarding browser tests pass, including a new one; checked at 1440 and 390 in light and dark.

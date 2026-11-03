@@ -37,7 +37,7 @@ An MCP server is a web address that AI apps such as Claude, ChatGPT and Cursor c
 
 ## Tools
 
-A few clear tools work better with AI apps than many small ones. The directories also reject catch-all tools, and want reading and changing kept in separate tools. 14 to start:
+A few clear tools work better with AI apps than many small ones. The directories also reject catch-all tools, and want reading and changing kept in separate tools. 19 in v1, plus server instructions and four prompts:
 
 ### Reading
 
@@ -45,6 +45,7 @@ A few clear tools work better with AI apps than many small ones. The directories
 |---|---|
 | `get_overview` | Today's date in the user's time zone, workday limit, lists, labels, and counts for today and the Brain Dump |
 | `get_day` | One day's tasks in order, with Timebox times, estimates, actual time and the day's total against the workday limit |
+| `get_week` | A whole week in one call: each day's tasks and totals against the workday limit. Weekly planning takes one call instead of seven |
 | `list_tasks` | Tasks filtered by days, list, Brain Dump, label, done or not, and due date. Compact rows with ids |
 | `search_tasks` | Title and notes search, using the existing `search_title` index |
 | `get_task` | One task in full: notes, subtasks, time, repeat, due date, priority |
@@ -56,12 +57,16 @@ A few clear tools work better with AI apps than many small ones. The directories
 |---|---|
 | `create_tasks` | Up to 50 tasks at once, each in the Brain Dump, a list or a day, with optional label, estimate, start time, due date, priority, notes and subtasks |
 | `update_task` | Title, notes, label, estimate, actual time, due date, priority |
+| `update_subtasks` | Adds, ticks, renames, reorders or removes subtasks on an existing task, so "break this into steps" works after a task exists |
 | `set_done` | Marks tasks done or not done, using the same rules as the checkbox (actual-time fill, subtasks) |
 | `move_tasks` | Moves tasks to a day, a list or the Brain Dump |
 | `timebox_task` | Sets or clears a task's start time on its day, and warns when it overlaps or runs past midnight |
+| `set_repeat` | Makes a task repeat ("every weekday", "every 2 weeks on Monday") or stops it repeating, using `packages/core/src/repeat.ts` |
+| `log_time` | Adds actual minutes to a task ("I spent 40 minutes on the report"), so analytics stays right for people who don't run the timer |
 | `create_list` | A new list with a name, icon and optional auto label |
 | `create_label` | A new label in one of the 8 label colors |
 | `delete_tasks` | Moves tasks to Trash, where they can be restored for 30 days. Nothing is deleted for good |
+| `restore_tasks` | Brings tasks back from Trash, so the AI can undo its own mistake |
 
 Every tool gets a `title` and all three hints set explicitly. ChatGPT requires all three, and Claude requires the first two:
 
@@ -70,7 +75,43 @@ Every tool gets a `title` and all three hints set explicitly. ChatGPT requires a
 
 Tool names stay under 64 characters. Descriptions say only what the tool does: no instructions to call other tools, and nothing that reads like steering the AI.
 
-Left out at first: emptying Trash, deleting lists, settings, billing, account, templates, repeat rules and timers. Each is easy to add later if people ask.
+### Server instructions
+
+MCP lets a server send one short text to every AI app that connects. Beans' explains how the planner works, so the AI uses the tools the way Beans means them:
+
+- The Brain Dump holds undated tasks; lists hold undated tasks by topic; days hold planned tasks.
+- The Timebox gives a planned task a start time, and its block length comes from the estimate.
+- Estimates and actual time are in minutes, and each day has a workday limit.
+- Deleting moves tasks to Trash for 30 days, and `restore_tasks` brings them back.
+- Dates are `YYYY-MM-DD` in the person's time zone, from `get_overview`.
+
+It describes Beans only. It never tells the AI to call tools it wasn't asked to call.
+
+### Prompts
+
+Ready-made commands that show up in Claude and other apps, so people don't have to know what to ask. Each is a short template that points the AI at the right tools:
+
+| Prompt | What it does |
+|---|---|
+| Plan my day | Reads today, the Brain Dump and anything overdue, suggests what fits the workday limit, then plans and timeboxes what the person agrees to |
+| Weekly review | Reads last week's analytics and next week's days, sums up what got done and how estimates held up, and suggests next week's plan |
+| Shutdown | Reviews today's done and not-done tasks and moves unfinished ones where the person wants them |
+| Clean up my Brain Dump | Groups Brain Dump tasks, suggests what to plan, move to a list or delete, and acts only on what the person approves |
+
+### After launch
+
+Worth adding once people are using it:
+
+1. `update_list` and `delete_list`: rename a list, change its icon or auto label, or move it to Trash (`deleteList` and `restoreList` already exist in core).
+2. Stale-task analytics: Brain Dump tasks by age and long-overdue tasks, so "help me clean up" has data behind it.
+3. Templates: list them and create a task from one ("Add my weekly review template to Friday"), using `taskFromTemplate`.
+
+### Left out
+
+- Emptying Trash or deleting anything for good: an AI mistake there can't be undone.
+- Settings, billing and account: little benefit, and real risk.
+- Starting and stopping the timer: Beans has one active timer per person, so an AI starting it would surprise people. `log_time` covers the need.
+- Calendar events: Beans doesn't connect to calendars yet.
 
 ## How it's built
 
@@ -160,12 +201,12 @@ No model cost. Each call is one Vercel function run plus one or two Convex calls
 1. Move the analytics math to core, with tests. Half a day.
 2. `convex/mcp.ts`: secret check, user id, access check, and one function per tool on top of the core functions, with tests. One day.
 3. The `/mcp` route on `mcp.beans.followusai.com` (Vercel domain, DNS record, `proxy.ts` host rules), Clerk OAuth with CIMD and the `.well-known` addresses. One day.
-4. Tool definitions: input schemas, descriptions, titles, hints and compact outputs. One day.
+4. The 19 tools (input schemas, descriptions, titles, hints and compact outputs), the server instructions and the four prompts. Two days.
 5. Connected apps in Settings, the `/connect-ai` help page, rate limits. One day.
 6. Test with the MCP Inspector, Claude, Claude Code, ChatGPT and Cursor. Half a day.
 7. Privacy policy and terms. Half a day.
 
-About 6 days for one person. A directory submission later adds a demo account and half a day, plus review time.
+About 7 days for one person. A directory submission later adds a demo account and half a day, plus review time.
 
 ## Sources
 
