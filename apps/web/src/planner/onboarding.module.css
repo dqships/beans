@@ -385,66 +385,40 @@
   }
 }
 
-/* A small Timebox: the hours sit along a stalk. */
-.stalk {
-  position: relative;
+/* The planner's Timebox, at a height that fits beside the day's tasks. */
+.timebox {
+  height: calc(var(--layout-hour) * 6);
+  margin-top: var(--space-3);
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+/* The day's tasks as the board's cards, each one a handle to drag. */
+.cards {
+  min-height: 100%;
+}
+
+.cardList {
   display: grid;
-  margin: var(--space-3) 0 0;
-  padding: 0;
-  list-style: none;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 
-.stalk::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: calc(var(--space-6) * 2 + var(--space-3));
-  border-left: var(--focus-ring) solid var(--color-primary);
+.pickable {
+  border-radius: var(--radius-md);
+  cursor: grab;
+  touch-action: manipulation;
 }
 
-.hour {
-  display: grid;
-  grid-template-columns: calc(var(--space-6) * 2) 1fr;
-  align-items: center;
-  gap: var(--space-3);
+.pickable [aria-pressed="true"] {
+  outline: var(--focus-ring) solid var(--color-primary);
+  outline-offset: var(--border-width);
 }
 
-.hourTime {
-  color: var(--color-text-muted);
-  font-size: var(--text-xs-size);
-  line-height: var(--text-xs-line);
-  font-weight: var(--text-xs-weight);
-  text-align: right;
-}
-
-.slot,
-.block {
-  min-height: var(--control-height);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
-  text-align: left;
-}
-
-.slot {
-  border: 0;
-  background: none;
-}
-
-.slot:hover:not(:disabled) {
-  background: var(--color-surface-2);
-}
-
-.block {
-  --block: var(--color-surface-2);
-  --block-text: var(--color-text);
-  margin-left: var(--space-2);
-  border: 0;
-  background: var(--block);
-  color: var(--block-text);
-  font-weight: var(--text-md-weight);
-  overflow-wrap: anywhere;
-  animation: plant var(--duration-spring) var(--ease-spring);
+.pickableDragging {
+  opacity: var(--opacity-ghost);
 }
 
 .footer {

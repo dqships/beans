@@ -27,7 +27,7 @@ import {
   type Task,
 } from "@beans/core";
 import { useActions, useLabel, useSettings, useSubtasks, useTicker, useToday } from "@/data/hooks";
-import { BeanCheckbox } from "@/ui/garden";
+import { BeanCheckbox, BeanMark } from "@/ui/garden";
 import { Chip, LabelDot } from "@/ui/controls";
 import { Icon } from "@/ui/Icon";
 import { Menu, MenuDivider, MenuItem } from "@/ui/Menu";
@@ -41,9 +41,14 @@ interface TaskCardProps {
   /** Compact cards are used in the Timebox side list and rituals. */
   compact?: boolean;
   overlay?: boolean;
+  /**
+   * First-run setup: a click or Enter picks the card for the Timebox instead
+   * of opening details, and the card holds no controls of its own.
+   */
+  pick?: { pressed: boolean; onPick: () => void };
 }
 
-export const TaskCard = memo(function TaskCard({ task, compact, overlay }: TaskCardProps) {
+export const TaskCard = memo(function TaskCard({ task, compact, overlay, pick }: TaskCardProps) {
   const ui = useUi();
   const actions = useActions();
   const settings = useSettings();
@@ -67,6 +72,10 @@ export const TaskCard = memo(function TaskCard({ task, compact, overlay }: TaskC
   const overdue = task.dueDate !== null && diffDays(task.dueDate, today) < 0;
 
   const onClick = (e: MouseEvent) => {
+    if (pick) {
+      pick.onPick();
+      return;
+    }
     if (e.shiftKey || e.metaKey || e.ctrlKey) {
       e.preventDefault();
       ui.toggleSelected(task.id);
@@ -101,24 +110,36 @@ export const TaskCard = memo(function TaskCard({ task, compact, overlay }: TaskC
       data-task-id={task.id}
       onClick={onClick}
       onContextMenu={(e) => {
+        if (pick) return;
         e.preventDefault();
         setMenu({ x: e.clientX, y: e.clientY });
       }}
       onKeyDown={(e) => {
         if (e.target !== e.currentTarget) return;
-        if (e.key === "Enter") {
+        if (pick && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          pick.onPick();
+        } else if (e.key === "Enter") {
           e.preventDefault();
           ui.openTask(task.id);
         }
       }}
       tabIndex={0}
       role="button"
-      aria-label={`${task.title || "Untitled task"}${task.done ? ", done" : ""}`}
+      aria-pressed={pick?.pressed}
+      // A picked card is named by what it shows.
+      aria-label={pick ? undefined : `${task.title || "Untitled task"}${task.done ? ", done" : ""}`}
     >
       <div className={styles.row}>
-        <BeanCheckbox checked={task.done} onChange={toggleDone} label={`Mark “${task.title || "Untitled task"}” ${task.done ? "not done" : "done"}`} />
+        {pick ? (
+          <BeanMark done={task.done} />
+        ) : (
+          <BeanCheckbox checked={task.done} onChange={toggleDone} label={`Mark “${task.title || "Untitled task"}” ${task.done ? "not done" : "done"}`} />
+        )}
         <div className={styles.title}>{task.title || <span className={styles.untitled}>Untitled task</span>}</div>
-        {!compact ? (
+        {pick && !compact ? (
+          <span className={styles.timeChip}>{timeChip}</span>
+        ) : !compact ? (
           <button
             type="button"
             className={`${styles.timeChip} ${timer ? styles.timeChipLive : ""}`}
@@ -164,7 +185,7 @@ export const TaskCard = memo(function TaskCard({ task, compact, overlay }: TaskC
         </div>
       ) : null}
 
-      {!compact && !overlay && !label && !task.done ? (
+      {!compact && !overlay && !pick && !label && !task.done ? (
         <div className={styles.hoverRow} onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
           <button ref={labelRef} type="button" className={styles.hoverButton} onClick={() => setPicker("label")}>
             <Icon icon={Tag} /> Label

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type ClipboardEvent, type CSSProperties, type FormEvent, type ReactNode, type RefObject } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { ArrowLeft, Plus, X } from "@phosphor-icons/react";
 import {
   ONBOARDING_STEPS,
@@ -38,6 +40,9 @@ import { BeanMark, Mascot } from "@/ui/garden";
 import { Icon } from "@/ui/Icon";
 import { Illustration, type IllustrationName } from "@/ui/Illustration";
 import { useIsPhone } from "@/ui/useMedia";
+import { PlannerDnd, TaskDropZone } from "./dnd";
+import { TaskCard } from "./TaskCard";
+import { TimeGrid, type TimeboxPick } from "./TimeGrid";
 import { Toasts } from "./Toasts";
 import { useUi } from "./ui-state";
 import styles from "./onboarding.module.css";
@@ -438,79 +443,96 @@ function TimeboxStep() {
   const tasks = useDayTasks(day);
   const zone = useTimeZone();
   const now = useClock();
-  const settings = useSettings();
-  const labels = useLabels();
-  const format = settings?.timeFormat ?? "12h";
   const [picked, setPicked] = useState<string | null>(null);
   const selected = tasks.find((t) => t.id === picked) ?? tasks.find((t) => !t.start) ?? null;
   const hours = timeboxHours(day, today, minutesNowIn(zone, now));
   const anyTimed = tasks.some((t) => t.start);
+  const container = `day:${day}`;
+  const pick: TimeboxPick = {
+    hours,
+    title: selected?.title ?? null,
+    place: (date, start) => {
+      if (!selected) return;
+      actions.moveTask(selected.id, { date, start });
+      setPicked(null);
+    },
+    clear: (task) => actions.moveTask(task.id, { date: day, start: null }),
+  };
 
   return (
-    <Frame
-      title="Give your first task a time."
-      lead="The Timebox shows the hours of your day. Pick a task, then an hour, and Beans blocks out 30 minutes for it."
-      next={{ label: anyTimed ? "Continue" : "Skip this step", quiet: !anyTimed }}
+    <PlannerDnd>
+      <Frame
+        title="Give your first task a time."
+        lead="The Timebox shows the hours of your day. Drag a task onto it, or pick a task and then a time."
+        next={{ label: anyTimed ? "Continue" : "Skip this step", quiet: !anyTimed }}
+      >
+        <div className={styles.twoRows}>
+          <Row title={relativeDay(day, today)} count={tasks.length}>
+            <TaskDropZone target={{ kind: "day", date: day }} tasks={tasks} className={styles.cards}>
+              <div className={styles.cardList} role="list" aria-label="Task to give a time">
+                {tasks.map((task, index) => (
+                  <PickableTask
+                    key={task.id}
+                    task={task}
+                    container={container}
+                    index={index}
+                    pressed={task.id === selected?.id}
+                    onPick={() => setPicked(task.id)}
+                  />
+                ))}
+              </div>
+            </TaskDropZone>
+          </Row>
+          <Row title="Timebox">
+            {hours.length ? null : (
+              <p className={styles.empty}>There are no hours left to plan today. Anything you don&apos;t finish moves to tomorrow at midnight.</p>
+            )}
+            <div className={styles.timebox}>
+              <TimeGrid days={[day]} scrollKey={`onboarding-${day}`} pick={pick} />
+            </div>
+          </Row>
+        </div>
+      </Frame>
+    </PlannerDnd>
+  );
+}
+
+/**
+ * The board's task card, which drags onto the Timebox like it does in the
+ * planner. A click or Enter picks it for the hour buttons instead.
+ */
+function PickableTask({
+  task,
+  container,
+  index,
+  pressed,
+  onPick,
+}: {
+  task: Task;
+  container: string;
+  index: number;
+  pressed: boolean;
+  onPick: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: `task:${task.id}`,
+    data: { kind: "task", taskId: task.id, container, index },
+  });
+  // Enter and Space pick the task, so the keyboard sensor's handler is left off.
+  const pointer = { ...listeners };
+  delete pointer.onKeyDown;
+  return (
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...pointer}
+      role="listitem"
+      tabIndex={-1}
+      className={`${styles.pickable} ${isDragging ? styles.pickableDragging : ""}`}
+      style={{ transform: CSS.Translate.toString(transform), transition }}
     >
-      <div className={styles.twoRows}>
-        <Row title={relativeDay(day, today)} count={tasks.length}>
-          <div className={styles.tasks} role="group" aria-label="Task to give a time">
-            {tasks.map((task) => (
-              <button
-                key={task.id}
-                type="button"
-                aria-pressed={task.id === selected?.id}
-                className={styles.taskButton}
-                onClick={() => setPicked(task.id)}
-              >
-                <TaskText task={task} />
-              </button>
-            ))}
-          </div>
-        </Row>
-        <Row title="Timebox">
-          {hours.length ? (
-            <ol className={styles.stalk}>
-              {hours.map((hour) => {
-                const task = tasks.find((t) => t.start === hour);
-                const label = labels.find((l) => l.id === task?.labelId);
-                const time = formatTime(hour, format);
-                return (
-                  <li key={hour} className={styles.hour}>
-                    <span className={styles.hourTime}>{time}</span>
-                    {task ? (
-                      <button
-                        type="button"
-                        className={styles.block}
-                        style={label ? ({ "--block": `var(--label-${label.color})`, "--block-text": "var(--color-on-label)" } as CSSProperties) : undefined}
-                        aria-label={`Clear ${task.title} from ${time}`}
-                        onClick={() => actions.moveTask(task.id, { date: day, start: null })}
-                      >
-                        {task.title}
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className={styles.slot}
-                        disabled={!selected}
-                        aria-label={selected ? `Put ${selected.title} at ${time}` : `${time} is open`}
-                        onClick={() => {
-                          if (!selected) return;
-                          actions.moveTask(selected.id, { date: day, start: hour });
-                          setPicked(null);
-                        }}
-                      />
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
-          ) : (
-            <p className={styles.empty}>There are no hours left to plan today. Anything you don&apos;t finish moves to tomorrow at midnight.</p>
-          )}
-        </Row>
-      </div>
-    </Frame>
+      <TaskCard task={task} pick={{ pressed, onPick }} />
+    </div>
   );
 }
 
