@@ -378,7 +378,7 @@ function ChooseStep() {
       <div className={styles.twoRows}>
         <Row title="Brain Dump" count={dump.length}>
           {dump.length ? (
-            <ul className={styles.tasks}>
+            <ul className={`${styles.tasks} ${styles.oneColumn}`}>
               {dump.map((task) => (
                 <li key={task.id} className={styles.task}>
                   <TaskText task={task} />

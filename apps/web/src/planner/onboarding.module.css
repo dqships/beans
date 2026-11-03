@@ -245,6 +245,11 @@
   min-width: 0;
 }
 
+/* One task per line, so each has room for its title and both day buttons. */
+.tasks.oneColumn {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* A Brain Dump task's two ways onto the plan. */
 .dayChoice {
   flex: none;

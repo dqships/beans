@@ -99,6 +99,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Onboarding's choose step lets each task go to today or tomorrow: Brain Dump tasks have Today and Tomorrow buttons, both days show beside it, the Timebox step plans today when it has tasks (otherwise tomorrow), and the last step sums up both days. 18 onboarding browser tests pass, including a new one; checked at 1440 and 390 in light and dark.
 - 2026-11-02: `e2e:clerk` passes, 4 of 4 (DQ ran it): a real Clerk sign-up walks the 5 setup steps, takes the no-card free days at the paywall, saves a task and syncs it to a second window. It had failed because the dev Convex deployment was running code from before the paywall change; dev only updates when `npx convex dev` runs locally.
 - 2026-11-02: Setup can't be skipped any more (only the local test sign-in keeps Skip setup, for tests). The vine starts with a grown Sign up leaf and the header shows setup progress: 20% on Labels, 100% on Done. The onboarding accessibility test now waits for animations to settle, which fixes its intermittent contrast failure. Onboarding, billing, data and board browser tests pass; checked at 1440 and 390 in light and dark.
 - 2026-11-02: The first onboarding step shows task ideas for the parts of life picked so far, in an "Ideas for your Brain Dump" row that fills in as they pick (outlined, not added yet). The next step still offers them to add. Onboarding browser tests pass, plus a new one; checked at 1440 and 390 in light and dark.
