@@ -159,7 +159,7 @@ Left to do on the launch:
 
 ## Decisions
 
-- 2026-11-03: Beans stores each account under its Clerk user id (`user_…`, the token's subject), not Convex's token identifier, whose `https://clerk.beans.followusai.com|` prefix would change with the Clerk domain and orphan every account's data. Changing the domain later needs no data migration as long as the Clerk instance (and so its user ids) stays the same.
+- 2026-11-03: Beans stores each account under its Clerk user id (`user_…`, the token's subject), not Convex's token identifier, whose `https://clerk.beans.followusai.com|` prefix would change with the Clerk domain and orphan every account's data. Changing the domain later needs no data migration as long as the Clerk instance (and so its user ids) stays the same. DQ confirmed Beans will move off `followusai.com` one day, not soon, so this is required, not a precaution. The planned MCP server relies on it too: its Convex functions get the Clerk user id from an OAuth token.
 - 2026-11-03: Onboarding's Timebox step uses the planner's Timebox grid and dragging, and shows the whole day like the app, opening at the next hour. (DQ)
 - 2026-11-02: First-run setup has no Skip button: it's 5 short steps that get people started. Signing up counts as the first fifth of setup progress. (DQ)
 - 2026-11-02: Beans' launch codes are named in `STRIPE_PROMO_CODES` on the Convex deployment, not on Vercel, because the offer and checkout run on Convex. (DQ)
