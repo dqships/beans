@@ -92,15 +92,36 @@ Left to do on the launch:
 - [x] Paywall after first-run setup, with 3 free days and no card as the alternative to the card trial
 - [x] Timebox step drags tasks onto the planner's Timebox grid
 
+### Beans MCP (v1)
+
+People connect Claude, ChatGPT and other AI apps to read and change their planner. Plan and as-built notes in `docs/ideas/mcp.md`. Built on `claude/beans-mcp-server`.
+
+- [x] Decide scope, access, sign-in and who gets it (DQ, 2026-11-03)
+- [x] Check the Clerk Dashboard for a Pro tag on OAuth applications: none, so Clerk OAuth (DQ, 2026-11-03)
+- [x] Move the analytics math to `packages/core`
+- [x] `convex/mcp.ts`: server secret, user id, access check, one function per tool
+- [x] `/mcp` route: `proxy.ts` host rules, Clerk OAuth, `.well-known` addresses
+- [x] Clerk development: Publish CIMD support on; `MCP_SERVER_SECRET` set on the Convex dev deployment
+- [x] Production setup (DQ, 2026-11-03): `mcp.beans.followusai.com` on the Vercel project with its Cloudflare record (DNS only), `MCP_SERVER_SECRET` on Convex production and in Vercel, and Publish CIMD support in Clerk production with client admission at "Any compatible CIMD client". Steps in `docs/DEPLOY.md`, "MCP server"
+- [x] 19 tools with titles and all three hints, plus server instructions and four prompts (Plan my day, Weekly review, Shutdown, Clean up my Brain Dump)
+- [x] Settings > Connected apps, `/connect-ai` help page, rate limits
+- [x] Test every tool with the MCP Inspector, using a real Clerk OAuth token from Claude Code's CIMD client
+- [ ] Test the real apps against production: Claude Code (`claude mcp add --transport http beans https://mcp.beans.followusai.com/mcp`, then `/mcp`), Claude on the web, ChatGPT and Cursor (DQ)
+- [x] Privacy policy and terms paragraphs (for DQ to read: privacy "Connected AI apps" and the line under "What we collect"; terms "Connected AI apps")
+
 ### Later
 
 
 - [ ] Desktop app: see "Desktop app, saved for later" in `RESEARCH.md`
 - [ ] Calendar accounts, attachments, import and export, notifications
+- [ ] MCP after launch: `update_list` and `delete_list`, stale-task analytics, templates (`docs/ideas/mcp.md`)
 
 ## Done
 
+- 2026-11-03: Built the Beans MCP server (PR #28). `https://mcp.beans.followusai.com/mcp` serves 19 tools with titles and all three hints, server instructions and four prompts, behind Clerk OAuth with CIMD. `convex/mcp.ts` checks the server secret and access (subscription, trial, no-card pass), allows 60 calls a minute and 1,000 changes a day, and writes through the core functions and `applyOne`, so open windows update live. The analytics math moved to `packages/core`. Settings has Connected apps with Disconnect and Reconnect (a disconnected app stays out until Reconnect, because Clerk's tokens can't tell a refresh from a new sign-in), `/connect-ai` has the setup steps, and the privacy policy and terms have a Connected AI apps section. 66 Convex, 93 core and 26 web unit tests pass, plus 131 browser tests (8 skipped). Every tool ran through the MCP Inspector with a real Clerk development OAuth token from Claude Code's CIMD client. Not tested yet: Claude Code's own `/mcp` sign-in, Claude on the web, ChatGPT and Cursor.
 - 2026-11-03: Data is keyed by the Clerk user id instead of `<issuer>|<subject>`, so a new Clerk domain keeps everyone's data. `migrations:toStableUserIds` rewrites `userId` on all ten tables, billing and settings included, one user per transaction, and running it again changes nothing; `migrations:userIdForms` counts what's left. Until it runs, an account still under the old id is moved when it opens the planner. Stripe checkouts started before the change name the old id, which the webhook and checkout confirmation read as the new one. 45 Convex, 83 core and 20 web unit tests pass (7 new, for the migration, a domain change and old-id checkouts), plus the data and billing browser tests. Merged into `main` with PR #26. Production ran the migration on 2026-11-03: 33 rows from one account (9 tasks, 21 labels, 1 list, settings and billing) moved to the Clerk user id, and `userIdForms` reports 0 left in the old form.
+- 2026-11-03: Grew the MCP plan to 19 tools (adding `get_week`, `update_subtasks`, `set_repeat`, `log_time` and `restore_tasks`), server instructions and four prompts, with three more tools listed for after launch. DQ agreed to all of them. The build plan is now about 7 days.
+- 2026-11-03: Planned the Beans MCP in `docs/ideas/mcp.md` on branch `claude/beans-mcp`: DQ's decisions, 14 tools with directory-ready hints, Clerk OAuth with CIMD (no Pro tag found in Clerk's docs or pricing), how to submit to the Claude and ChatGPT directories, what a domain change would break, and a 6-day build plan. Took the one competitor mention out of `TASKS.md`. Nothing in the app changed.
 - 2026-11-03: Onboarding's Timebox step now works like the planner's: the day's tasks are the board's cards and drag onto the real Timebox grid, with the live preview and the user's snap step. Blocks are sized by estimate, move by dragging and drag back to the day to lose their time. Picking a card and then an hour still works, for phones, keyboards and screen readers; clicking a block clears it. The grid shows the whole day and opens at the first hour on offer. 19 onboarding browser tests pass (one new, for dragging on, moving and dragging back), and the full browser suite passes (111, 8 skipped). Checked at 1440 and 390 in light and dark. Merged into `main` with PR #24.
 - 2026-11-02: Onboarding's choose step lets each task go to today or tomorrow: Brain Dump tasks have Today and Tomorrow buttons, both days show beside it, the Timebox step plans today when it has tasks (otherwise tomorrow), and the last step sums up both days. 18 onboarding browser tests pass, including a new one; checked at 1440 and 390 in light and dark.
 - 2026-11-02: `e2e:clerk` passes, 4 of 4 (DQ ran it): a real Clerk sign-up walks the 5 setup steps, takes the no-card free days at the paywall, saves a task and syncs it to a second window. It had failed because the dev Convex deployment was running code from before the paywall change; dev only updates when `npx convex dev` runs locally.
@@ -160,11 +181,17 @@ Left to do on the launch:
 ## Decisions
 
 - 2026-11-03: Beans stores each account under its Clerk user id (`user_…`, the token's subject), not Convex's token identifier, whose `https://clerk.beans.followusai.com|` prefix would change with the Clerk domain and orphan every account's data. Changing the domain later needs no data migration as long as the Clerk instance (and so its user ids) stays the same. DQ confirmed Beans will move off `followusai.com` one day, not soon, so this is required, not a precaution. The planned MCP server relies on it too: its Convex functions get the Clerk user id from an OAuth token.
+- 2026-11-03: No Claude or ChatGPT directory submissions for now. People connect by pasting the MCP address into their AI app, so `/connect-ai` carries the setup steps. The directory steps stay in `docs/ideas/mcp.md` for later. (DQ)
+- 2026-11-03: The MCP address is `https://mcp.beans.followusai.com/mcp`, a host of its own served by the same Next.js app. (DQ)
+- 2026-11-03: Beans will move off `followusai.com` eventually, but not in the foreseeable future. Launch and the directory listings use the current domain; the move will mean reconnecting AI apps and a new ChatGPT listing (`docs/ideas/mcp.md`, "Changing the domain later"). (DQ)
+- 2026-11-03: Beans MCP is part of v1, with reading and changing from day one. Sign-in is Clerk OAuth: the Clerk Dashboard shows no Pro tag on OAuth applications, so it works on the free plan. Paying subscribers, the 7-day trial and the 3-day no-card pass get it. (DQ)
+- 2026-11-03: MCP comes first. People's own AI can plan goals with Beans' tools, so AI goal planning inside the app isn't being built for now. (DQ)
+- 2026-11-03: No competitor names anywhere on `main`: docs, code, comments or copy. Competitor research stays in its own private repos. (DQ)
 - 2026-11-03: Onboarding's Timebox step uses the planner's Timebox grid and dragging, and shows the whole day like the app, opening at the next hour. (DQ)
 - 2026-11-02: First-run setup has no Skip button: it's 5 short steps that get people started. Signing up counts as the first fifth of setup progress. (DQ)
 - 2026-11-02: Beans' launch codes are named in `STRIPE_PROMO_CODES` on the Convex deployment, not on Vercel, because the offer and checkout run on Convex. (DQ)
 - 2026-11-02: The paywall selects monthly while a launch code is running and yearly otherwise. No student, teacher or nonprofit discount for now. The founder note uses DQ's own words about why Beans costs what it does. (DQ)
-- 2026-11-02: The paywall comes after first-run setup, so people see their plan before paying, as in the Ellie teardown. A no-card 3-day pass is offered from the paywall; when it ends Beans locks to the paywall (not view-only) and the 7-day card trial stays available. (DQ)
+- 2026-11-02: The paywall comes after first-run setup, so people see their plan before paying. A no-card 3-day pass is offered from the paywall; when it ends Beans locks to the paywall (not view-only) and the 7-day card trial stays available. (DQ)
 - 2026-11-02: Beans lives on `beans.followusai.com`; `followusai.com` hosts other products. Clerk uses the subdomain so its sign-in hosts, account portal and cookies stay under Beans. (DQ)
 - 2026-11-02: Beans' Google sign-in uses its own Google Cloud project, not Guppy's, so the consent screen says Beans. Support email `dclouwork@gmail.com`, because this Google account has no organization or group for support@followusai.com; developer contacts dq@followusai.com and dclouwork@gmail.com, as for Guppy (DQ).
 - 2026-11-02: Beans costs $6 a month or $48 a year, with a 7-day free trial that needs a card, once per account. After the trial or subscription ends the planner locks to the plans screen and keeps every task. (DQ)

@@ -1,5 +1,5 @@
 import "server-only";
-import { createPrivateKey, createPublicKey, generateKeyPairSync, sign, type KeyObject } from "node:crypto";
+import { createPrivateKey, createPublicKey, generateKeyPairSync, sign, verify, type KeyObject } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -49,4 +49,16 @@ export function issueToken(user: string): string {
   };
   const body = `${b64url(JSON.stringify(header))}.${b64url(JSON.stringify(payload))}`;
   return `${body}.${b64url(sign("RSA-SHA256", Buffer.from(body), privateKey()))}`;
+}
+
+/** The test user of a token from `issueToken`, or null. Only in test runs. */
+export function verifyTestToken(token: string): { sub: string } | null {
+  if (!testAuthEnabled()) return null;
+  const [header, payload, signature] = token.split(".");
+  if (!header || !payload || !signature) return null;
+  const ok = verify("RSA-SHA256", Buffer.from(`${header}.${payload}`), createPublicKey(privateKey()), Buffer.from(signature, "base64url"));
+  if (!ok) return null;
+  const claims = JSON.parse(Buffer.from(payload, "base64url").toString()) as { iss?: string; sub?: string; exp?: number };
+  if (claims.iss !== process.env.BEANS_TEST_AUTH_ISSUER || !claims.sub || !claims.exp || claims.exp * 1000 < Date.now()) return null;
+  return { sub: claims.sub };
 }

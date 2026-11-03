@@ -35,19 +35,26 @@ export const publicPages = {
       "Email support@followusai.com for help with Beans: the planner, billing, refunds, cancelling, deleting your account or getting a copy of your data.",
     lastModified: "2026-11-02",
   },
+  connectAi: {
+    path: "/connect-ai",
+    title: "Connect Claude, ChatGPT or Cursor to your Beans planner",
+    description:
+      "Paste one address into Claude, ChatGPT, Cursor or another MCP app, sign in to Beans, and your AI can plan your days, add tasks and read your analytics.",
+    lastModified: "2026-11-03",
+  },
   privacy: {
     path: "/privacy",
     title: "Beans privacy policy: what the planner stores and why",
     description:
       "What Beans collects, why, and who handles it: Clerk for sign-in, Convex for your planner, Stripe for payments and Vercel for hosting and analytics.",
-    lastModified: "2026-11-02",
+    lastModified: "2026-11-03",
   },
   terms: {
     path: "/terms",
     title: "Beans terms of service: trial, billing and refunds",
     description:
       "The terms for using Beans: accounts, the 7-day free trial, subscriptions, cancelling, 14-day refunds, discount codes and what you can expect from us.",
-    lastModified: "2026-11-02",
+    lastModified: "2026-11-03",
   },
 } satisfies Record<string, PublicPage>;
 

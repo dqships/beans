@@ -56,6 +56,7 @@ It pushes the Convex functions, then builds the web app with the matching `NEXT_
    | `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | `/sign-in` | `/sign-in` |
    | `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | `/sign-up` | `/sign-up` |
    | `NEXT_PUBLIC_SITE_URL` | `https://<your domain>` | leave unset |
+   | `MCP_SERVER_SECRET` | the production Convex deployment's value | the dev or preview deployment's value |
 
    Don't set any `BEANS_TEST_AUTH` variable on Vercel. Production builds ignore them, but they don't belong there.
 5. Deploy. Then sign in on the deployed site, add a task, open a second window, and check it syncs.
@@ -86,7 +87,25 @@ Full detail in `docs/BILLING.md`. Stripe secrets go on the Convex deployments on
 4. The live Beans portal configuration exists. If the domain changes, run `scripts/stripe-portal-config.mjs --site https://<new domain>` again to update its legal links (`docs/BILLING.md`, Stripe objects).
 5. Setting `STRIPE_SECRET_KEY` turns the paywall on for that deployment. Accounts made before then (DQ's own) see it too: give yourself a 100% forever coupon in the Stripe dashboard if you want free access.
 
-### 5. Before a public launch
+### 5. MCP server
+
+The Beans MCP server is the `/mcp` route of the same app, at `https://mcp.beans.followusai.com/mcp`. Plan and decisions: `docs/ideas/mcp.md`.
+
+1. Add `mcp.beans.followusai.com` to the Vercel project's domains (`vercel domains add mcp.beans.followusai.com beans --scope followusai`), and the record Vercel asks for in Cloudflare (an `A` record for `mcp.beans` to `76.76.21.21`), DNS only (not proxied).
+2. Make one random secret per deployment (`openssl rand -hex 32`) and set it in both places, without printing it:
+
+   ```bash
+   openssl rand -hex 32 > /tmp/mcp-secret
+   npx convex env set MCP_SERVER_SECRET --deployment prod < /tmp/mcp-secret
+   pbcopy < /tmp/mcp-secret   # paste into Vercel: Settings, Environment Variables, Production
+   rm /tmp/mcp-secret
+   ```
+
+   Run the Convex command from a checkout linked to the hosted project. In a worktree set up with `pnpm backend:setup` it lands on the local backend instead. Preview deployments need it on their Convex preview deployment too (Convex project settings, default environment variables for previews).
+3. In the Clerk Dashboard, OAuth applications, Settings: turn on **Publish CIMD support**, first on development, then production. Leave client admission at "Any compatible CIMD client". Turn on DCR only for an AI app that can't use CIMD.
+4. Check: `curl -i -X POST https://mcp.beans.followusai.com/mcp` answers 401 with `WWW-Authenticate`, and `https://mcp.beans.followusai.com/.well-known/oauth-protected-resource/mcp` lists `"resource":"https://mcp.beans.followusai.com/mcp"`.
+
+### 6. Before a public launch
 
 - Legal review: privacy policy, terms, and what sign-in data Clerk and Convex store.
 

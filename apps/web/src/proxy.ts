@@ -1,6 +1,8 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { markdownFor, notFoundMarkdown, prefersMarkdown } from "@/marketing/markdown";
+import { isMcpHost, isMcpPath, MCP_PATH } from "@/mcp/config";
+import { siteUrl } from "@/lib/site";
 
 /**
  * Clerk's request handling, when Clerk is set up, on the routes that use it.
@@ -10,12 +12,27 @@ import { markdownFor, notFoundMarkdown, prefersMarkdown } from "@/marketing/mark
 const clerk =
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY ? clerkMiddleware() : null;
 
-const CLERK_ROUTES = /^\/(app|sign-in|sign-up|api|__clerk)(\/|$)/;
+const CLERK_ROUTES = /^\/(app|sign-in|sign-up|api|__clerk|mcp)(\/|$)/;
+
+/** The app's own host in production, which leaves the MCP addresses to the MCP host. */
+const appHost = /^https:\/\//.test(siteUrl) ? new URL(siteUrl).host : null;
+
+const notFound = () => new NextResponse("Not found", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
 
 const markdownHeaders = { "Content-Type": "text/markdown; charset=utf-8", Vary: "Accept" };
 
 export default function proxy(request: NextRequest, event: NextFetchEvent) {
   const { pathname } = request.nextUrl;
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
+
+  // The MCP host serves only the MCP server and its public OAuth metadata.
+  if (isMcpHost(host)) {
+    if (!isMcpPath(pathname)) return notFound();
+    if (pathname !== MCP_PATH) return NextResponse.next();
+  } else if (isMcpPath(pathname)) {
+    if (host === appHost) return notFound();
+    if (pathname !== MCP_PATH) return NextResponse.next();
+  }
 
   if (CLERK_ROUTES.test(pathname)) return clerk ? clerk(request, event) : NextResponse.next();
 

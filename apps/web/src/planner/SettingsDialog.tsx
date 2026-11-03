@@ -3,9 +3,12 @@
 import { useState, type ReactNode } from "react";
 import {
   CalendarBlank,
+  Check,
+  Copy,
   CreditCard,
   Faders,
   Keyboard,
+  PlugsConnected,
   PuzzlePiece,
   Tag,
   Timer,
@@ -13,8 +16,10 @@ import {
   UserCircle,
   X,
 } from "@phosphor-icons/react";
-import { formatDuration, formatHour, ESTIMATE_PRESETS, statusLine, type FeatureFlags, type Settings } from "@beans/core";
+import { formatDuration, formatHour, ESTIMATE_PRESETS, relativeDay, shortDate, statusLine, todayIn, type FeatureFlags, type Settings } from "@beans/core";
 import { useBilling } from "@/data/billing";
+import { useConnectedApps, type ConnectedApp } from "@/data/connections";
+import { MCP_URL } from "@/mcp/config";
 import { useActions, useBackend, useLabels, useSettings } from "@/data/hooks";
 import { Button, IconButton } from "@/ui/Button";
 import { LabelDot, Switcher, TextInput, Toggle } from "@/ui/controls";
@@ -37,6 +42,7 @@ const SECTIONS: { id: SettingsSection; label: string; icon: typeof Faders }[] = 
   { id: "features", label: "Optional features", icon: PuzzlePiece },
   { id: "shortcuts", label: "Keyboard shortcuts", icon: Keyboard },
   { id: "account", label: "Account", icon: UserCircle },
+  { id: "connected", label: "Connected apps", icon: PlugsConnected },
   { id: "subscription", label: "Subscription", icon: CreditCard },
 ];
 
@@ -76,6 +82,7 @@ export function SettingsDialog() {
             {section === "features" ? <Features /> : null}
             {section === "shortcuts" ? <Shortcuts /> : null}
             {section === "account" ? <Account /> : null}
+            {section === "connected" ? <ConnectedApps /> : null}
             {section === "subscription" ? <Subscription /> : null}
           </div>
         </div>
@@ -414,6 +421,88 @@ function Account() {
         </Row>
       ) : null}
     </div>
+  );
+}
+
+function ConnectedApps() {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(MCP_URL).then(
+      () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      },
+      (e: unknown) => console.error(e),
+    );
+  };
+  return (
+    <div className={styles.group}>
+      <p className={styles.intro}>
+        Connect an AI app, such as Claude, ChatGPT or Cursor, and it can read your planner and change it for you. Paste this address into the app, then sign in to Beans and choose Allow.{" "}
+        <a href="/connect-ai" target="_blank" rel="noreferrer">
+          Steps for each app
+        </a>
+      </p>
+      <div className={styles.address}>
+        <code className={styles.addressText}>{MCP_URL}</code>
+        <Button size="sm" icon={copied ? Check : Copy} onClick={copy}>
+          {copied ? "Copied" : "Copy"}
+        </Button>
+      </div>
+      <h3 className={styles.subhead}>Connected</h3>
+      <ConnectedList />
+    </div>
+  );
+}
+
+function ConnectedList() {
+  const connected = useConnectedApps();
+  const zone = useSettings()?.timeZone ?? "UTC";
+  if (!connected) return <p className={styles.rowHint}>Sign in to connect AI apps. Sample data stays in this tab.</p>;
+  const { apps, disconnect, reconnect } = connected;
+  if (apps === undefined) return <p className={styles.rowHint}>Loading…</p>;
+  if (!apps.length) return <p className={styles.rowHint}>No AI apps yet. Apps show up here after their first request.</p>;
+  return (
+    <ul className={styles.appList} aria-label="Connected apps">
+      {apps.map((app) => (
+        <ConnectedRow key={app.clientId} app={app} zone={zone} onToggle={() => (app.disconnected ? reconnect : disconnect)(app.clientId)} />
+      ))}
+    </ul>
+  );
+}
+
+function ConnectedRow({ app, zone, onToggle }: { app: ConnectedApp; zone: string; onToggle: () => Promise<void> }) {
+  const [busy, setBusy] = useState(false);
+  const today = todayIn(zone);
+  const day = (ms: number) => {
+    const d = todayIn(zone, ms);
+    const words = relativeDay(d, today);
+    return words === "Today" || words === "Yesterday" ? words.toLowerCase() : shortDate(d);
+  };
+  return (
+    <li className={styles.row}>
+      <div className={styles.rowText}>
+        <p className={styles.rowTitle}>{app.name}</p>
+        <p className={styles.rowHint}>
+          {app.disconnected
+            ? "Disconnected. It can't read or change your planner."
+            : `Last used ${day(app.lastUsedAt)}, connected since ${day(app.firstUsedAt)}`}
+        </p>
+      </div>
+      <div className={styles.rowControl}>
+        <Button
+          disabled={busy}
+          onClick={() => {
+            setBusy(true);
+            onToggle()
+              .catch((e: unknown) => console.error(e))
+              .finally(() => setBusy(false));
+          }}
+        >
+          {app.disconnected ? "Reconnect" : "Disconnect"}
+        </Button>
+      </div>
+    </li>
   );
 }
 

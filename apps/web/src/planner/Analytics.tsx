@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { DownloadSimple, X } from "@phosphor-icons/react";
-import { addDays, diffDays, formatDuration, shortDate, todayIn, weekdayName, type DateKey, type Task } from "@beans/core";
+import { addDays, ageInDays, analyticsFor, brainDumpAge, completedDay, formatDuration, shortDate, weekdayName } from "@beans/core";
 import { useActions, useAllTasks, useLabels, useSettings, useToday } from "@/data/hooks";
 import { Button, IconButton } from "@/ui/Button";
 import { LabelDot, Switcher } from "@/ui/controls";
@@ -33,10 +33,6 @@ export function Analytics() {
   );
 }
 
-function completedDay(t: Task, zone: string): DateKey {
-  return t.completedAt ? todayIn(zone, t.completedAt) : (t.date ?? "");
-}
-
 function AnalyticsBody() {
   const ui = useUi();
   const actions = useActions();
@@ -53,35 +49,21 @@ function AnalyticsBody() {
   };
   const days = Number(prefs.range);
   const from = addDays(today, -(days - 1));
-  const done = useMemo(
-    () => tasks.filter((t) => t.done && completedDay(t, zone) >= from && completedDay(t, zone) <= today),
-    [tasks, zone, from, today],
-  );
-  const value = (t: Task) => (prefs.units === "hours" ? t.actual : 1);
-  const fmt = (v: number) => (prefs.units === "hours" ? formatDuration(v) : `${v} task${v === 1 ? "" : "s"}`);
+  const stats = useMemo(() => analyticsFor(tasks, from, today, zone), [tasks, from, today, zone]);
+  const done = stats.finished;
+  const hours = prefs.units === "hours";
+  const fmt = (v: number) => (hours ? formatDuration(v) : `${v} task${v === 1 ? "" : "s"}`);
 
-  const byLabel = useMemo(() => {
-    const map = new Map<string | null, number>();
-    for (const t of done) map.set(t.labelId, (map.get(t.labelId) ?? 0) + value(t));
-    return [...map.entries()].map(([id, v]) => ({ id, v, label: labels.find((l) => l.id === id) })).sort((a, b) => b.v - a.v);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [done, labels, prefs.units]);
+  const byLabel = stats.byLabel
+    .map((r) => ({ id: r.labelId, v: hours ? r.minutes : r.tasks, label: labels.find((l) => l.id === r.labelId) }))
+    .sort((a, b) => b.v - a.v);
   const total = byLabel.reduce((s, r) => s + r.v, 0);
-
-  const perDay = useMemo(() => {
-    const out: { date: DateKey; v: number }[] = [];
-    for (let i = 0; i < days; i++) {
-      const d = addDays(from, i);
-      out.push({ date: d, v: done.filter((t) => completedDay(t, zone) === d).reduce((s, t) => s + value(t), 0) });
-    }
-    return out;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [done, days, from, zone, prefs.units]);
+  const perDay = stats.perDay.map((d) => ({ date: d.date, v: hours ? d.minutes : d.tasks }));
   const max = Math.max(1, ...perDay.map((d) => d.v));
 
-  const dump = tasks.filter((t) => t.date === null && !t.done);
-  const avgAge = dump.length ? Math.round(dump.reduce((s, t) => s + diffDays(today, todayIn(zone, t.createdAt)), 0) / dump.length) : 0;
-  const stale = dump.filter((t) => diffDays(today, todayIn(zone, t.createdAt)) >= 14);
+  const dump = brainDumpAge(tasks, today, zone);
+  const avgAge = dump.averageDays;
+  const stale = dump.stale;
 
   const csv = () => {
     const rows = [["Task", "Label", "Estimate (min)", "Actual (min)", "Completed"]];
@@ -113,7 +95,7 @@ function AnalyticsBody() {
         </div>
         <div className={styles.tile}>
           <span className={styles.tileLabel}>Time tracked</span>
-          <strong className={styles.tileValue}>{formatDuration(done.reduce((s, t) => s + t.actual, 0))}</strong>
+          <strong className={styles.tileValue}>{formatDuration(stats.total.minutes)}</strong>
         </div>
         <div className={styles.tile}>
           <span className={styles.tileLabel}>Average Brain Dump age</span>
@@ -186,21 +168,18 @@ function AnalyticsBody() {
                   </tr>
                 </thead>
                 <tbody>
-                  {done
-                    .slice()
-                    .sort((a, b) => (b.completedAt ?? 0) - (a.completedAt ?? 0))
-                    .map((t) => {
-                      const l = labels.find((x) => x.id === t.labelId);
-                      return (
-                        <tr key={t.id}>
-                          <td>{t.title}</td>
-                          <td>{l ? <><LabelDot color={l.color} /> {l.name}</> : "None"}</td>
-                          <td>{t.estimate ? formatDuration(t.estimate) : "None"}</td>
-                          <td>{formatDuration(t.actual)}</td>
-                          <td>{shortDate(completedDay(t, zone))}</td>
-                        </tr>
-                      );
-                    })}
+                  {done.map((t) => {
+                    const l = labels.find((x) => x.id === t.labelId);
+                    return (
+                      <tr key={t.id}>
+                        <td>{t.title}</td>
+                        <td>{l ? <><LabelDot color={l.color} /> {l.name}</> : "None"}</td>
+                        <td>{t.estimate ? formatDuration(t.estimate) : "None"}</td>
+                        <td>{formatDuration(t.actual)}</td>
+                        <td>{shortDate(completedDay(t, zone))}</td>
+                      </tr>
+                    );
+                })}
                 </tbody>
               </table>
             </div>
@@ -231,7 +210,7 @@ function AnalyticsBody() {
                 <button type="button" className={styles.linkish} onClick={() => ui.openTask(t.id)}>
                   {t.title}
                 </button>
-                <span className={styles.muted}>{diffDays(today, todayIn(zone, t.createdAt))} days in the Brain Dump</span>
+                <span className={styles.muted}>{ageInDays(t, today, zone)} days in the Brain Dump</span>
               </li>
             ))}
           </ul>

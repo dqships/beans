@@ -1,7 +1,7 @@
 import type { BeansState, Settings } from "../packages/core/src/model";
 import { ONBOARDED } from "../packages/core/src/onboarding";
 import { defaultSettings } from "../packages/core/src/settings";
-import type { Doc, TableNames } from "./_generated/dataModel";
+import type { Doc } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { DB_TABLE, type ClientTable } from "./validators";
 
@@ -44,7 +44,7 @@ export function toSettings(doc: Doc<"userSettings">): Settings {
 }
 
 export async function findByClientId(ctx: QueryCtx | MutationCtx, table: ClientTable, userId: string, clientId: string) {
-  const name = DB_TABLE[table] as Exclude<TableNames, "userSettings" | "billing">;
+  const name = DB_TABLE[table];
   return await ctx.db
     .query(name)
     .withIndex("by_user_client", (q) => q.eq("userId", userId).eq("clientId", clientId))

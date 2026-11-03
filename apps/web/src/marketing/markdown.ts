@@ -1,4 +1,5 @@
 import { absoluteUrl } from "../lib/site";
+import { connectBody } from "./connect";
 import { contactBody, legalUpdated, operator, privacyBody, supportEmail, termsBody } from "./legal";
 
 /**
@@ -52,6 +53,7 @@ At midnight, anything you didn't finish moves to the new day on its own, marked 
 ## Pages
 
 - [About](${absoluteUrl("/about")})
+- [Connect your AI app](${absoluteUrl("/connect-ai")})
 - [Contact](${absoluteUrl("/contact")})
 - [Privacy](${absoluteUrl("/privacy")})
 - [Terms](${absoluteUrl("/terms")})
@@ -78,6 +80,8 @@ Beans is made by ${operator}, a small software company in Michigan, USA. Questio
 const absolute = (body: string) => body.replace(/\]\((\/[^)]*)\)/g, (_, path: string) => `](${absoluteUrl(path)})`);
 
 const contact = `# Contact\n\n${absolute(contactBody)}\n`;
+
+const connectAi = `# Connect your AI app to Beans\n\n${absolute(connectBody)}\n`;
 
 const privacy = `# Privacy policy\n\nLast updated ${legalUpdated}\n\n${absolute(privacyBody)}\n`;
 
@@ -114,6 +118,7 @@ const bodies: Record<string, string> = {
   "/": home,
   "/pricing": pricing,
   "/about": about,
+  "/connect-ai": connectAi,
   "/contact": contact,
   "/privacy": privacy,
   "/terms": terms,
@@ -126,6 +131,7 @@ There's no page at this address. Try one of these instead:
 - [Home](${absoluteUrl("/")})
 - [Pricing](${absoluteUrl("/pricing")})
 - [About](${absoluteUrl("/about")})
+- [Connect your AI app](${absoluteUrl("/connect-ai")})
 - [Contact](${absoluteUrl("/contact")})
 - [Privacy](${absoluteUrl("/privacy")})
 - [Terms](${absoluteUrl("/terms")})

@@ -48,6 +48,9 @@ export function SiteFooter() {
             <a href="/about">About</a>
           </li>
           <li>
+            <a href="/connect-ai">Connect your AI</a>
+          </li>
+          <li>
             <a href="/contact">Contact</a>
           </li>
           <li>
