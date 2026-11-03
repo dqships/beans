@@ -1,27 +1,39 @@
-# Goal lists (idea)
+# Goal lists
 
-Status: idea only. Nothing is built. Branch `claude/goal-lists-concept`, started 2026-11-03.
+Status: decided for v1 on 2026-11-03, not built yet. Branch `claude/goal-lists-concept`.
 
-Demo of how it could look: see "Demo" at the end.
+Demo of how it looks: see "Demo" at the end.
 
 ## The idea, in DQ's words
 
 > Creating a list and marking it as a goal, then it creates labels specific to that list/goal and it auto-generates a first set of tasks for each label that can be completed to work toward the overall goal. At any point you can generate more tasks, either focusing on one label/area in a goal or more overall.
 
-DQ isn't sure about the shape yet. This note writes down the current thinking so it can be picked up later.
+## Decisions (DQ, 2026-11-03)
 
-## How it would work in Beans
+1. **Part of v1.** This replaces the 2026-10-31 decision "No AI integration for now" for this one feature.
+2. **Goal labels are ordinary labels that belong to one goal.** Not a new "area" concept, and not called areas anywhere.
+3. **OpenRouter, with a switchable model.** The model list lives in code at `convex/goalModels.ts` (93 models), and `GOAL_MODEL` picks one.
+4. **Included in the normal subscription, with a daily cap.**
+5. **Kept tasks land in the goal's list, unscheduled.** You plan them onto days like any other task.
+6. **Plain names with garden copy.** "Goal" and "labels" in the UI; "Plant a few more" on each label's button.
+7. **No chat and no "steer it" field.** People add and remove tasks themselves and can generate more at any time, for one label or the whole goal, so steering isn't needed.
+8. **No web research, now or later.**
+9. **No location or city data.** That was for Solo Quest's adventures and didn't work out.
 
-1. Make a list, or open one, and choose **Make this a goal**.
+Still to settle: the cap number (suggested 20 rounds a day per account), and whether the no-card 3-day pass gets the feature.
+
+## How it works
+
+1. Open a list and choose **Make this a goal**.
 2. Write the goal in a sentence ("Run a half marathon in March"), and optionally why it matters and a target date.
-3. Beans suggests 3 to 5 **areas** for the goal (for running: Training, Gear, Health, Race prep). Each area is a label that belongs to this goal, with its own color.
-4. Beans suggests a first set of small tasks for each area, with estimates. You see them as a proposal and keep, edit or drop each one before anything is added.
-5. Kept tasks land in the goal's list, labelled with their area. You plan them onto days and the Timebox like any other task.
+3. Press **Suggest labels and tasks**. Beans proposes 3 to 5 labels for the goal (for running: Training, Gear, Recovery, Race day), each with its own color, and a few small tasks for each label with estimates. Tasks already in the list get sorted under the new labels.
+4. Every suggestion starts ticked. Untick anything you don't want, then **Add**. Nothing changes until then.
+5. Kept tasks land in the goal's list with their label. Plan them onto days and the Timebox as usual.
 6. At any time:
-   - **More for this area** suggests the next few tasks for one area.
-   - **More for the goal** suggests the next steps across all areas.
-   Both read what's done and what's still open, so they build on progress and don't repeat tasks.
-7. The goal header shows progress per area (done out of total), so you can see which area is behind.
+   - **Plant a few more** on a label suggests the next few tasks for that label.
+   - **More for the goal** suggests next steps across all its labels.
+   Both send what's done and what's still open, so suggestions build on progress and skip repeats.
+7. The goal header shows each label's progress (done out of total).
 
 ## How Solo Quest's Notes works
 
@@ -29,44 +41,37 @@ Branch `codex/notes-experience` in `solo-quest-app`. Notes is an opt-in second e
 
 | Part | What it does |
 |---|---|
-| Note | Title, free-writing body, attachments (photos, video, audio), tasks, a research report, a chat thread, milestones and completion history |
-| Automatic research | After a signed-in person stops typing for 2 seconds (note at least 12 characters and 3 words), it sends the note to `/api/notes-assistant`. The server calls OpenAI's Responses API with web search required and a strict JSON schema. It returns a report and 5 to 15 small tasks |
-| Safety rules | Applies only if the note hasn't changed since the request (revision check). Never replaces the body, an existing report, existing tasks, completed state or a title the person edited. Stop, typing, leaving or backgrounding cancels it |
-| Report | Summary, key resources, budget and timeline, with source links. Read-only by default, with an Edit button and a version history you can restore from |
-| Ask AI | A chat per note. Can send up to 6 resized photos and an optional city. Every proposed change needs **Apply** |
-| Milestones | Before applying a new round of research, it snapshots the note, so the next round builds on real progress |
-| Tasks | Title, done, optional notes, Apple Reminders scheduling. Tasks are the default view; Research swaps in place |
-| Focus | Timer presets from 15 minutes to 2 hours, Pomodoro from 30 minutes, Screen Time app blocking, Home and Lock Screen widget |
-| Streak | Its own device-only streak with a 4 AM day, calendar and milestones |
-| Storage | Local JSON on the device with atomic writes, backups, export and import. No sync. Sign-in only unlocks the AI |
+| Note | Title, free-writing body, attachments, tasks, a research report, a chat thread, milestones and completion history |
+| Automatic research | After a signed-in person stops typing for 2 seconds, it sends the note to `/api/notes-assistant`. The server calls OpenAI's Responses API with web search required and a strict JSON schema, and returns a report and 5 to 15 small tasks |
+| Safety rules | Applies only if the note hasn't changed since the request. Never replaces the body, an existing report, existing tasks, completed state or a title the person edited |
+| Report | Summary, key resources, budget and timeline, with source links and a version history |
+| Ask AI | A chat per note, with optional photos and city. Every proposed change needs **Apply** |
+| Milestones | Snapshots the note before a new round of research, so the next round builds on progress |
+| Tasks | Title, done, optional notes, Apple Reminders scheduling |
+| Focus | Timer presets, Pomodoro, Screen Time app blocking, widgets |
+| Streak | A device-only streak with a 4 AM day |
+| Storage | Local JSON on the device, export and import, no sync |
 
-The prompt asks for small specific tasks, building on completed work, never deleting tasks, never inventing progress, and never repeating completed tasks. Those rules carry over well.
+## What carries over, and what doesn't
 
-## Keep, change, drop
+### Carried over
 
-### Keep
+1. **Proposals, then Add.** AI never writes straight into the planner.
+2. **Additions only.** No deleting, renaming or changing the done state of existing tasks.
+3. **Stale check.** If the goal's tasks changed while a request was out, drop suggestions that now duplicate a task, and never touch anything else.
+4. **Build on progress.** Every request sends done and open tasks.
+5. **Key on the server, strict JSON schema, bounded request.**
+6. **The prompt's rules:** small specific tasks, never repeat done work, never invent progress. Beans adds an estimate to each task.
 
-1. **Proposals, then Apply.** AI never writes straight into the planner. You review each suggested task first.
-2. **Never touch your work.** No deleting tasks, renaming them, or changing done state. Only additions.
-3. **Stale check.** If the goal changed while the request was out, show the proposal against the new state or discard it, as Solo Quest does with its revision check.
-4. **Build on progress.** Every "more tasks" request sends done tasks and open tasks, so it suggests the next steps and skips repeats. This is Solo Quest's milestone idea without the snapshots.
-5. **Server-side key, strict JSON schema, bounded request, no provider storage.** Same safety setup as `/api/notes-assistant`.
-6. **"Small, specific tasks" rule** from the prompt, plus an estimate on each one, because Beans plans by time.
+### Changed
 
-### Change
+1. **It lives in lists**, not a separate notes app.
+2. **Tasks come grouped by goal label**, so you can ask for more under one label.
+3. **The report shrinks to a two-sentence plan** shown in the goal header.
 
-1. **Tie it to lists, not a separate notes app.** A goal is a list with a goal sentence. Everything else in Beans (days, Timebox, filters, Pomodoro) keeps working.
-2. **Areas instead of one flat task list.** Solo Quest gives one pile of 5 to 15 tasks. Beans splits them by area so you can ask for more in one area.
-3. **The report becomes an optional short goal brief.** One paragraph plus a rough timeline, shown in the goal header. Budget and resources only if the goal needs them.
+### Left out
 
-### Drop
-
-1. **Generating on a typing pause.** It's surprising and costs money every time someone pauses. Beans generates when you press a button.
-2. **Required web search with citations on every run.** Slow (Solo Quest allows up to 110 seconds) and costly. Plain task suggestions don't need it. Offer "Look things up" as an opt-in later.
-3. **The chat thread.** Start with buttons plus an optional "steer it" line ("more beginner friendly", "I have 30 minutes a day"). Add chat only if people ask.
-4. **Report version history, milestones UI, attachments sent to AI, city.** Too much for a first version.
-5. **Focus timer with app blocking and its own streak.** Beans already has Focus mode and Pomodoro, and a browser can't block apps. A goal's progress bars do the streak's job.
-6. **Local-only JSON storage, export and import.** Beans stores everything in Convex already.
+Generating on a typing pause, web research and citations, chat, steering, report history, milestone snapshots, attachments and city sent to AI, the focus timer with app blocking, the separate streak, and local-only storage.
 
 ## How it compares to Ellie's AI
 
@@ -74,101 +79,76 @@ The Ellie teardown (`dqships/ellie-teardown-report`) left Ellie's AI out of scop
 
 What Ellie has:
 
-- **AI Assistant (beta, Pro only).** A chat bubble at bottom right, turned on in Power Features. It works on the tasks you already have: create tasks with subtasks from what you type, label unlabelled tasks, add time estimates, "Timebox my day" around calendar events, find free time, suggest what to focus on, add repeats, and move many tasks at once. A "Require confirmation before modifying data" setting is opt-in, so by default it seems to change things directly. Settings also hold a free-text description of your work routine for timeboxing. No provider or limits are named.
-- **MCP / API access (beta).** Outside AI tools such as Claude can read and write Ellie tasks, limited to read, write or both, and to chosen tools. The same key works for Zapier.
+- **AI Assistant (beta, Pro only).** A chat bubble at bottom right, turned on in Power Features. It works on the tasks you already have: create tasks with subtasks from what you type, label unlabelled tasks, add time estimates, "Timebox my day" around calendar events, find free time, suggest what to focus on, add repeats, and move many tasks at once. A "Require confirmation before modifying data" setting is opt-in, so by default it seems to change things directly. No provider or limits are named.
+- **MCP / API access (beta).** Outside AI tools can read and write Ellie tasks, limited to read, write or both, and to chosen tools. The same key works for Zapier.
 
 | | Ellie | Beans goal lists |
 |---|---|---|
 | Job | Arrange and edit the tasks you already know about | Work out what the tasks are, from a goal |
-| Goals or projects | None | A list becomes a goal with areas |
-| New tasks | Only the items you type ("buy milk, bread and cheese") | Suggests the steps itself, per area or for the whole goal, building on what's done |
-| Labels | Labels existing tasks from your labels | Makes new area labels for the goal |
+| Goals or projects | None | A list becomes a goal with its own labels |
+| New tasks | Only the items you type | Suggests the steps itself, per label or for the whole goal, building on what's done |
+| Labels | Applies your existing labels | Makes new labels for the goal |
 | Estimates | Adds estimates to existing tasks | Every suggested task comes with one |
-| Scheduling | "Timebox my day", free-time search | Not in the idea. Tasks land in the list and you plan them |
+| Scheduling | "Timebox my day", free-time search | You plan the tasks yourself |
 | Review | Opt-in confirmation | Always a proposal you approve |
-| Interface | General chat | Buttons, plus an optional "steer it" line |
-| Outside AI tools | MCP and API (beta) | None (MCP is "Out for now" in `RESEARCH.md`) |
+| Interface | General chat | Buttons only |
+| Outside AI tools | MCP and API (beta) | None |
 
-What this means for Beans:
+Goal lists don't overlap Ellie: Ellie arranges work you already listed, Beans helps work out what the work is. Two Ellie features would fit Beans later because it already plans by estimates and the Timebox: "Add estimates to tasks without them" and "Timebox my day". They could reuse the same server action and review drawer.
 
-1. **Goal lists don't overlap Ellie.** Ellie helps you arrange the work you already listed. Goal lists help you work out what the work is. It's the stronger story for Beans' first AI feature.
-2. **Two Ellie features fit Beans well later:** "Add estimates to tasks without them" and "Timebox my day", because Beans already plans by estimates and the Timebox. They could reuse the same server action and review-first drawer.
-3. **Skip general chat for now.** It's the most open-ended to build, test and price, and Ellie still has it in beta.
-4. **Review first by default** is a point in Beans' favor. Ellie makes it a setting you have to find.
+## Data model
 
-## Fit with the current Beans model
-
-Beans already has most of the pieces (`packages/core/src/model.ts`):
-
-- `List` has `name`, `icon` and `autoLabelId` (tasks made in a list get its label).
-- `Label` has `name` and `color` (8 label colors in `DESIGN.md`).
-- `Task` has one `labelId`, `notes`, subtasks and an `estimate`.
-
-Smallest change that works:
+Beans already has most of the pieces (`packages/core/src/model.ts`): `List` has `autoLabelId`, `Label` has a name and one of 8 colors, and `Task` has one `labelId` and an `estimate`.
 
 ```ts
 interface List {
   // existing fields…
   /** Set when the list is a goal. */
   goal: {
-    outcome: string;          // "Run a half marathon in March"
+    outcome: string;          // "Run a half marathon by March 14"
     why: string;              // optional, "" when empty
     targetDate: DateKey | null;
-    brief: string;            // optional short plan from the AI
+    plan: string;             // two-sentence plan from the first suggestion round
   } | null;
 }
 
 interface Label {
   // existing fields…
-  /** The goal this label is an area of. `null` for everyday labels. */
+  /** The goal list this label belongs to. `null` for everyday labels. */
   goalId: string | null;
 }
 ```
 
-New pieces:
+- Goal labels show in the sidebar under their goal's name, and only that goal's list offers them in the label picker.
+- A task has one label, so a goal task carries its goal label, not an everyday one like Work. Inside a goal that's the grouping that matters.
+- Goal labels use the same 8 label colors. Pick ones the account's everyday labels don't use, and reuse colors only when all 8 are taken.
 
-- `packages/core/src/goals.ts`: build the request context (goal, areas, done and open tasks), check a proposal, drop duplicate titles.
-- `convex/goals.ts`: an action that calls the model and returns a proposal (writes nothing), and a mutation that applies the tasks you kept through the existing task ops.
-- UI: "Make this a goal" in the list menu, the goal header with area progress, and a proposal drawer.
+## AI setup
 
-### The trade-off with area labels
+- **Provider:** OpenRouter's chat completions API, called from a Convex action. The key goes in Convex env as `OPENROUTER_API_KEY`, never in the browser.
+- **Model:** `GOAL_MODEL` in `convex/goalModels.ts`, default `anthropic/claude-haiku-5.5` ($0.10 in, $0.50 out per million tokens). The file lists 93 models that take a strict JSON schema, with prices, context and tier. TypeScript rejects an id that isn't in the list.
+- **Request:** `response_format` with a strict JSON schema; `provider: { require_parameters: true, data_collection: "deny" }` so OpenRouter only routes to providers that honor the schema and don't keep prompts; low reasoning effort on reasoning models; a timeout with a "Nothing changed, try again" error.
+- **Cost:** a round is about 1,500 tokens in and 1,200 out, so about $0.00075 on the default model. At a cap of 20 rounds a day, one person's worst month is about $0.45, against $6 a month.
+- **Refreshing the list:** run the command below and update the file's ids and prices by hand. Keep only models with `structured_outputs`, and skip `:batch` variants and `~…-latest` aliases.
 
-A task has one label. If areas are labels, a "Training" task can't also be labelled "Health". Two ways:
+```bash
+curl -s https://openrouter.ai/api/v1/models | jq -r '.data[] | select(.supported_parameters | index("structured_outputs")) | [.id, (.pricing.prompt | tonumber * 1e6), (.pricing.completion | tonumber * 1e6), .context_length] | @tsv'
+```
 
-| Option | Good | Cost |
-|---|---|---|
-| **A. Areas are labels with `goalId`** (recommended) | Colors on the Timebox, filters and Quick Capture work with no new code. Matches "creates labels" | A goal task can't also carry an everyday label. Goal labels need hiding from the label picker outside their goal |
-| B. New `areaId` field on tasks | Keeps everyday labels free | New field everywhere: filters, Timebox colors, Quick Capture, the Convex schema |
+## Build plan
 
-Start with A. Inside a goal list the area is the only grouping that matters.
+1. **Data:** `List.goal` and `Label.goalId` in core, Convex validators and schema, with defaults for existing rows.
+2. **Core:** `packages/core/src/goals.ts` builds the request context (goal, labels, done and open tasks), checks a proposal against the schema and drops duplicate titles.
+3. **Convex:** a `suggestGoalTasks` action (checks sign-in, subscription and the daily cap, calls OpenRouter, returns a proposal and writes nothing) and an `addGoalSuggestions` mutation that adds the kept labels and tasks through the existing ops.
+4. **UI:** Make this a goal, the goal header with label progress, Plant a few more, More for the goal, and the proposal drawer. Tokens from `DESIGN.md` only.
+5. **Legal:** the privacy policy names OpenRouter and says goal and task text goes to the model provider when you press a suggest button. The terms mention the daily cap.
+6. **Tests:** adding suggestions never edits existing tasks; duplicates are dropped; the cap blocks the 21st round; a bad or late response changes nothing.
 
-## Open decisions for DQ
-
-1. **This reverses "No AI integration for now" (2026-10-31).** Is goal lists a post-launch feature, or part of v1?
-2. **Areas as labels (option A) or a separate area field (option B)?**
-3. **Which model and provider.** Solo Quest uses OpenAI through its own server. Beans could call a model from a Convex action with the key stored in Convex env.
-4. **Paywall and limits.** Is it in the normal subscription with a daily cap (for example 20 generations a day), or a higher plan?
-5. **Where kept tasks land.** Recommended: the goal's list, unscheduled. Option: "spread over the next N days".
-6. **Name.** "Goal" is plain and matches `DESIGN.md` ("Names stay plain"). Garden copy can live in small lines, such as "Plant a few more" on the more-tasks button.
-
-## Before building
-
-- Privacy policy and terms: say task and goal text goes to the AI provider when you press generate, and that the provider doesn't store it.
-- Rate limit per user, and a timeout with a clear "nothing changed" error, as Solo Quest does.
-- Tests: applying a proposal never edits existing tasks; duplicate titles are dropped; a stale proposal is caught.
-- Screens in light and dark, desktop and phone, using `DESIGN.md` tokens only.
-
-Rough size, for one person: data model and apply mutation half a day, AI action with prompt, schema and tests one day, UI two days, legal and limits half a day. About 4 days.
+Rough size, for one person: about 4 days.
 
 ## Demo
 
-Interactive mock of the goal header, areas and the proposal flow, drawn with the `DESIGN.md` tokens. It uses fixed sample suggestions, no real AI: https://claude.ai/artifact/6NmwHW3a1Vsv3NwyYEZp1j (private until shared).
+Interactive mock with fixed sample suggestions, no real AI: https://claude.ai/artifact/6NmwHW3a1Vsv3NwyYEZp1j (private until shared).
 
-- **Desktop, interactive:** Make this a goal, then Suggest areas and tasks, untick anything, then Add. Tick tasks to grow the area bars. Plant a few more on an area, or More for the goal. Tweaks has a Dark switch.
+- **Desktop, interactive:** Make this a goal, then Suggest labels and tasks, untick anything, then Add. Tick tasks to grow the label bars. Plant a few more on a label, or More for the goal. Tweaks has a Dark switch.
 - **Phone, dark:** the goal view at 390 wide.
-
-Things the mock shows that aren't in the text above:
-
-- Tasks already in the list get sorted into the new areas as part of the first plan.
-- Goal areas show in the sidebar under their own heading, apart from everyday labels.
-- A goal task planned on a day keeps its area color.

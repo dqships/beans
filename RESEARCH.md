@@ -76,9 +76,9 @@ Browsers reserve some keys, so a few shortcuts must avoid them. Cmd+L, Cmd+T, Cm
 | Tier | Features |
 |---|---|
 | **v1 core** | Brain Dump, lists, infinite day board, tasks, task details, notes, subtasks, labels, estimates, actual time, Timebox, week calendar, drag and drop, rollover, repeats, search, filter, Trash and undo, light and dark, keyboard shortcuts, phone layout |
-| **v1 extras** | Focus mode, Quick Capture, count-up timer, Pomodoro, due dates, priority, templates, daily planning and shutdown, analytics, optional feature toggles |
+| **v1 extras** | Goal lists with AI-suggested tasks (`docs/ideas/goal-lists.md`), Focus mode, Quick Capture, count-up timer, Pomodoro, due dates, priority, templates, daily planning and shutdown, analytics, optional feature toggles |
 | **Later** | Desktop app, calendar accounts, attachments, data import and export, notifications |
-| **Out for now** | AI, email to task, Slack, Notion, Todoist, Zapier, MCP, mobile apps |
+| **Out for now** | Other AI (chat, web research), email to task, Slack, Notion, Todoist, Zapier, MCP, mobile apps |
 
 ## Quality goals
 

@@ -91,15 +91,29 @@ Left to do on the launch:
 - [x] Run the real Clerk sign-up through onboarding (DQ ran `e2e:clerk` on 2026-11-02)
 - [x] Paywall after first-run setup, with 3 free days and no card as the alternative to the card trial
 
+### Goal lists (v1)
+
+A list marked as a goal gets its own labels and suggested tasks for each. Plan and decisions in `docs/ideas/goal-lists.md`, branch `claude/goal-lists-concept`.
+
+- [x] Decide scope, labels, provider, paywall, naming (DQ, 2026-11-03)
+- [x] OpenRouter model list in `convex/goalModels.ts` (93 models, default Claude Haiku 5.5)
+- [ ] Set the daily cap number (suggested 20) and whether the no-card pass gets it (DQ)
+- [ ] Data: `List.goal` and `Label.goalId`
+- [ ] Core: request context, proposal checks, duplicate removal
+- [ ] Convex: `suggestGoalTasks` action with the daily cap, `addGoalSuggestions` mutation
+- [ ] UI: Make this a goal, goal header, Plant a few more, More for the goal, proposal drawer
+- [ ] Privacy policy and terms: OpenRouter and the daily cap
+- [ ] Set `OPENROUTER_API_KEY` on the Convex deployments (DQ)
+
 ### Later
 
 
 - [ ] Desktop app: see "Desktop app, saved for later" in `RESEARCH.md`
 - [ ] Calendar accounts, attachments, import and export, notifications
-- [ ] Goal lists (idea, not started): a list marked as a goal gets its own area labels and AI-suggested tasks per area. Notes, keep/drop from Solo Quest's Notes and open questions in `docs/ideas/goal-lists.md`. Waits on DQ's answers there, starting with whether to lift "No AI integration for now"
 
 ## Done
 
+- 2026-11-03: Recorded DQ's goal list decisions in `docs/ideas/goal-lists.md`, added the OpenRouter model list `convex/goalModels.ts` (93 models that take a strict JSON schema, prices from OpenRouter on 2026-11-03), compared the idea with Ellie's AI Assistant, and changed the mock to say labels and drop Steer it. Convex typecheck and workspace lint pass.
 - 2026-11-03: Wrote up the goal lists idea on branch `claude/goal-lists-concept`: how Solo Quest's Notes (`codex/notes-experience`) works, what to keep and drop, a data model sketch and six open decisions, in `docs/ideas/goal-lists.md`. Interactive mock at https://claude.ai/artifact/6NmwHW3a1Vsv3NwyYEZp1j, clicked through at desktop and phone widths. Nothing in the app changed.
 - 2026-11-02: Onboarding's choose step lets each task go to today or tomorrow: Brain Dump tasks have Today and Tomorrow buttons, both days show beside it, the Timebox step plans today when it has tasks (otherwise tomorrow), and the last step sums up both days. 18 onboarding browser tests pass, including a new one; checked at 1440 and 390 in light and dark.
 - 2026-11-02: `e2e:clerk` passes, 4 of 4 (DQ ran it): a real Clerk sign-up walks the 5 setup steps, takes the no-card free days at the paywall, saves a task and syncs it to a second window. It had failed because the dev Convex deployment was running code from before the paywall change; dev only updates when `npx convex dev` runs locally.
@@ -158,6 +172,8 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-03: Goal lists are part of v1, replacing "No AI integration for now" for this feature. Goal labels are ordinary labels that belong to one goal, not "areas". OpenRouter with the model picked by `GOAL_MODEL` in `convex/goalModels.ts`. Included in the normal subscription with a daily cap. Kept suggestions land unscheduled in the goal's list. Plain names, with "Plant a few more" on each label. (DQ)
+- 2026-11-03: Goal lists get no chat, no "steer it" field, no web research (now or later) and no location data. People add or remove tasks themselves and can ask for more at any time. (DQ)
 - 2026-11-02: First-run setup has no Skip button: it's 5 short steps that get people started. Signing up counts as the first fifth of setup progress. (DQ)
 - 2026-11-02: Beans' launch codes are named in `STRIPE_PROMO_CODES` on the Convex deployment, not on Vercel, because the offer and checkout run on Convex. (DQ)
 - 2026-11-02: The paywall selects monthly while a launch code is running and yearly otherwise. No student, teacher or nonprofit discount for now. The founder note uses DQ's own words about why Beans costs what it does. (DQ)
@@ -182,7 +198,7 @@ Left to do on the launch:
 - 2026-10-31: The app is called Beans and lives in the `beans` folder, not `daily-planner`.
 - 2026-10-31: Build the web app first, in Next.js. The desktop app is saved for later.
 - 2026-10-31: Convex for the database, Clerk for authentication.
-- 2026-10-31: No AI integration for now.
+- 2026-10-31: No AI integration for now. (Goal lists are the exception, from 2026-11-03.)
 - 2026-10-31: Development starts with UI.
 - 2026-10-31: The site lives in its own subfolder, and Vercel builds only for changes that affect it.
 - 2026-10-31: `DESIGN.md`, `TASKS.md` and `RESEARCH.md` stay in `beans`. Other research material stays outside this repo.
@@ -282,7 +298,7 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 
 ## Open decisions
 
-- Goal lists: six questions in `docs/ideas/goal-lists.md` (AI in or out, areas as labels, provider, paywall limits, where tasks land, naming). Only matters if the idea goes ahead.
+- Goal lists: the daily cap number (suggested 20 suggestion rounds a day per account), and whether the no-card 3-day pass gets the feature.
 
 ## Needs DQ
 
