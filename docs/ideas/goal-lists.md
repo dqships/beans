@@ -68,6 +68,34 @@ The prompt asks for small specific tasks, building on completed work, never dele
 5. **Focus timer with app blocking and its own streak.** Beans already has Focus mode and Pomodoro, and a browser can't block apps. A goal's progress bars do the streak's job.
 6. **Local-only JSON storage, export and import.** Beans stores everything in Convex already.
 
+## How it compares to Ellie's AI
+
+The Ellie teardown (`dqships/ellie-teardown-report`) left Ellie's AI out of scope; it only notes MCP/API access (beta). This section comes from Ellie's public guide, read 2026-11-03: [AI Assistant](https://guide.ellieplanner.com/features/ai-assistant) and [MCP and API access](https://guide.ellieplanner.com/features/integrations/mcp-and-api-access).
+
+What Ellie has:
+
+- **AI Assistant (beta, Pro only).** A chat bubble at bottom right, turned on in Power Features. It works on the tasks you already have: create tasks with subtasks from what you type, label unlabelled tasks, add time estimates, "Timebox my day" around calendar events, find free time, suggest what to focus on, add repeats, and move many tasks at once. A "Require confirmation before modifying data" setting is opt-in, so by default it seems to change things directly. Settings also hold a free-text description of your work routine for timeboxing. No provider or limits are named.
+- **MCP / API access (beta).** Outside AI tools such as Claude can read and write Ellie tasks, limited to read, write or both, and to chosen tools. The same key works for Zapier.
+
+| | Ellie | Beans goal lists |
+|---|---|---|
+| Job | Arrange and edit the tasks you already know about | Work out what the tasks are, from a goal |
+| Goals or projects | None | A list becomes a goal with areas |
+| New tasks | Only the items you type ("buy milk, bread and cheese") | Suggests the steps itself, per area or for the whole goal, building on what's done |
+| Labels | Labels existing tasks from your labels | Makes new area labels for the goal |
+| Estimates | Adds estimates to existing tasks | Every suggested task comes with one |
+| Scheduling | "Timebox my day", free-time search | Not in the idea. Tasks land in the list and you plan them |
+| Review | Opt-in confirmation | Always a proposal you approve |
+| Interface | General chat | Buttons, plus an optional "steer it" line |
+| Outside AI tools | MCP and API (beta) | None (MCP is "Out for now" in `RESEARCH.md`) |
+
+What this means for Beans:
+
+1. **Goal lists don't overlap Ellie.** Ellie helps you arrange the work you already listed. Goal lists help you work out what the work is. It's the stronger story for Beans' first AI feature.
+2. **Two Ellie features fit Beans well later:** "Add estimates to tasks without them" and "Timebox my day", because Beans already plans by estimates and the Timebox. They could reuse the same server action and review-first drawer.
+3. **Skip general chat for now.** It's the most open-ended to build, test and price, and Ellie still has it in beta.
+4. **Review first by default** is a point in Beans' favor. Ellie makes it a setting you have to find.
+
 ## Fit with the current Beans model
 
 Beans already has most of the pieces (`packages/core/src/model.ts`):
