@@ -10,7 +10,9 @@ import { signWebhook, verifyWebhook } from "./stripe";
 const modules = (import.meta as unknown as { glob: (p: string) => Record<string, () => Promise<unknown>> }).glob("./**/*.ts");
 
 const SECRET = "whsec_test_beans";
-const ALICE = "test|alice";
+const ALICE = "alice";
+/** Alice's id before the stable user id: Convex's token identifier, `<issuer>|<subject>`. */
+const LEGACY_ALICE = "https://clerk.example.com|alice";
 const MONTHLY = STRIPE_IDS.test.prices.monthly;
 const YEARLY = STRIPE_IDS.test.prices.yearly;
 const NOW_S = Math.floor(Date.now() / 1000);
@@ -64,8 +66,8 @@ let stripe: ReturnType<typeof fakeStripe>;
 
 function setup() {
   const t = convexTest(schema, modules);
-  const alice = t.withIdentity({ subject: "alice", tokenIdentifier: ALICE, name: "Alice", email: "alice@example.com" });
-  const bob = t.withIdentity({ subject: "bob", tokenIdentifier: "test|bob", name: "Bob" });
+  const alice = t.withIdentity({ subject: ALICE, tokenIdentifier: LEGACY_ALICE, name: "Alice", email: "alice@example.com" });
+  const bob = t.withIdentity({ subject: "bob", tokenIdentifier: "https://clerk.example.com|bob", name: "Bob" });
   return { t, alice, bob };
 }
 
@@ -141,6 +143,20 @@ describe("entitlement", () => {
     expect(res.status).toBe(200);
     expect(await alice.query(api.billing.status, {})).toMatchObject({ access: true, status: "trialing", plan: "monthly", trialAvailable: false, hasCustomer: true, discountPercent: null });
     await alice.mutation(api.planner.apply, { ops: [{ kind: "settings", fields: { theme: "dark" } }] });
+  });
+
+  it("matches a checkout from before the stable user id to the same account", async () => {
+    const { t, alice, bob } = setup();
+    stripe.subscriptions.set("sub_1", subscription("sub_1", { metadata: { app: "beans", user_id: LEGACY_ALICE, plan: "monthly" } }));
+    const res = await deliver(t, { id: "evt_1", type: "checkout.session.completed", data: { object: { metadata: { app: "beans", user_id: LEGACY_ALICE }, subscription: "sub_1" } } });
+    expect(await res.text()).toBe("saved");
+    expect(await alice.query(api.billing.status, {})).toMatchObject({ access: true, status: "trialing" });
+    expect((await bob.query(api.billing.status, {})).access).toBe(false);
+    // Later events name only the subscription, and find the row by its customer.
+    stripe.subscriptions.set("sub_1", subscription("sub_1", { status: "active", metadata: { app: "beans", user_id: LEGACY_ALICE, plan: "monthly" } }));
+    await deliver(t, subscriptionEvent("customer.subscription.updated", subscription("sub_1")));
+    expect(await alice.query(api.billing.status, {})).toMatchObject({ access: true, status: "active" });
+    expect(await t.run(async (ctx) => (await ctx.db.query("billing").collect()).map((r) => r.userId))).toEqual([ALICE]);
   });
 
   it("gives an ended subscription no onboarding writes", async () => {
@@ -351,6 +367,14 @@ describe("after checkout", () => {
     stripe.subscriptions.set("sub_1", subscription("sub_1"));
     stripe.sessions.set("cs_test_abcdefghijkl", { id: "cs_test_abcdefghijkl", status: "complete", subscription: "sub_1", metadata: { app: "beans", user_id: ALICE } });
     expect(await alice.action(api.billing.confirm, { sessionId: "cs_test_abcdefghijkl" })).toMatchObject({ access: true, status: "trialing" });
+  });
+
+  it("confirms a checkout started before the stable user id", async () => {
+    const { alice, bob } = setup();
+    stripe.subscriptions.set("sub_1", subscription("sub_1"));
+    stripe.sessions.set("cs_test_abcdefghijkl", { id: "cs_test_abcdefghijkl", status: "complete", subscription: "sub_1", metadata: { app: "beans", user_id: LEGACY_ALICE } });
+    expect(await alice.action(api.billing.confirm, { sessionId: "cs_test_abcdefghijkl" })).toMatchObject({ access: true });
+    await expect(bob.action(api.billing.confirm, { sessionId: "cs_test_abcdefghijkl" })).rejects.toThrow(/another account/);
   });
 
   it("won't confirm another account's checkout", async () => {

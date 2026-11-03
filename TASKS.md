@@ -100,6 +100,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-03: Data is keyed by the Clerk user id instead of `<issuer>|<subject>`, so a new Clerk domain keeps everyone's data. `migrations:toStableUserIds` rewrites `userId` on all ten tables, billing and settings included, one user per transaction, and running it again changes nothing; `migrations:userIdForms` counts what's left. Until it runs, an account still under the old id is moved when it opens the planner. Stripe checkouts started before the change name the old id, which the webhook and checkout confirmation read as the new one. 45 Convex, 83 core and 20 web unit tests pass (7 new, for the migration, a domain change and old-id checkouts), plus the data and billing browser tests. Production's row count is still to check (see Needs DQ).
 - 2026-11-03: Onboarding's Timebox step now works like the planner's: the day's tasks are the board's cards and drag onto the real Timebox grid, with the live preview and the user's snap step. Blocks are sized by estimate, move by dragging and drag back to the day to lose their time. Picking a card and then an hour still works, for phones, keyboards and screen readers; clicking a block clears it. The grid shows the whole day and opens at the first hour on offer. 19 onboarding browser tests pass (one new, for dragging on, moving and dragging back), and the full browser suite passes (111, 8 skipped). Checked at 1440 and 390 in light and dark. Merged into `main` with PR #24.
 - 2026-11-02: Onboarding's choose step lets each task go to today or tomorrow: Brain Dump tasks have Today and Tomorrow buttons, both days show beside it, the Timebox step plans today when it has tasks (otherwise tomorrow), and the last step sums up both days. 18 onboarding browser tests pass, including a new one; checked at 1440 and 390 in light and dark.
 - 2026-11-02: `e2e:clerk` passes, 4 of 4 (DQ ran it): a real Clerk sign-up walks the 5 setup steps, takes the no-card free days at the paywall, saves a task and syncs it to a second window. It had failed because the dev Convex deployment was running code from before the paywall change; dev only updates when `npx convex dev` runs locally.
@@ -158,6 +159,7 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-03: Beans stores each account under its Clerk user id (`user_…`, the token's subject), not Convex's token identifier, whose `https://clerk.beans.followusai.com|` prefix would change with the Clerk domain and orphan every account's data. Changing the domain later needs no data migration as long as the Clerk instance (and so its user ids) stays the same.
 - 2026-11-03: Onboarding's Timebox step uses the planner's Timebox grid and dragging, and shows the whole day like the app, opening at the next hour. (DQ)
 - 2026-11-02: First-run setup has no Skip button: it's 5 short steps that get people started. Signing up counts as the first fifth of setup progress. (DQ)
 - 2026-11-02: Beans' launch codes are named in `STRIPE_PROMO_CODES` on the Convex deployment, not on Vercel, because the offer and checkout run on Convex. (DQ)
@@ -295,6 +297,7 @@ Steps only DQ can do. Filled in as phases finish.
 - **Dev Stripe (test mode)**: set a `rk_test_…` key on the dev deployment, enable the test webhook endpoint `we_1UXOyBDyfH6JDnExIerJxiQb` and set its secret, as `docs/BILLING.md` lists.
 - **Promo codes setting**: on launch day, after making `BEANS100` in Stripe, run `npx convex env set --prod STRIPE_PROMO_CODES 'BEANS100'` (or set it in the Convex dashboard). Add each later round's code to the end.
 - **Live launch code**: on launch day, add promotion code `BEANS100` to the live "Launch offer" coupon with 100 uses and a 4-week end date (`docs/BILLING.md`, Start a round).
+- **Stable user id migration** (after the PR merges and Convex production deploys): run `npx convex run --prod migrations:userIdForms` to see how many rows production has, then `npx convex run --prod migrations:toStableUserIds`, then `userIdForms` again and check every `legacy` is 0. Agents weren't allowed to read production, so the count isn't known yet.
 - **Comp your own account**: setting the Stripe key turns the paywall on for existing accounts too.
 1. **Clerk sign-up asks for a password as well as an email code.** That differs from `docs/DEPLOY.md`, which says email codes and Google. Keep it, or turn off the password in the Clerk dashboard.
 2. **Create the Convex project** and its production deployment, set `CLERK_JWT_ISSUER_DOMAIN` there, and make a production deploy key (and a preview key if you want previews). Steps in `docs/DEPLOY.md`.

@@ -13,7 +13,7 @@ import {
 } from "./validators";
 
 /**
- * Every table is scoped by `userId` (the Clerk user's token identifier) and
+ * Every table is scoped by `userId` (the Clerk user id, see `stableUserId`) and
  * keyed by `clientId`, the id the client made. `updatedAt` and `deletedAt`
  * are kept for offline sync later.
  */
