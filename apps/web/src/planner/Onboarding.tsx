@@ -349,41 +349,52 @@ function DumpStep() {
   );
 }
 
+/**
+ * Brain Dump on the left, today and tomorrow on the right: each task can go to
+ * either day, so a plan can start today and carry on tomorrow.
+ */
 function ChooseStep() {
   const actions = useActions();
-  const { day, today } = useStep();
+  const { today } = useStep();
+  const tomorrow = addDays(today, 1);
   const dump = useListTasks(null);
-  const planned = useDayTasks(day);
-  const word = dayWord(day, today);
-  const other = day === today ? addDays(today, 1) : today;
+  const todays = useDayTasks(today);
+  const tomorrows = useDayTasks(tomorrow);
+  const days = [
+    { date: today, tasks: todays },
+    { date: tomorrow, tasks: tomorrows },
+  ];
   return (
     <Frame
-      title={`Choose what you'll get to ${word}.`}
-      lead="Pick a few from your Brain Dump. The rest stay there until you want them."
-      next={{ label: "Continue", disabled: !planned.length }}
-      controls={
-        <div className={styles.switchDay}>
-          <Button variant="quiet" onClick={() => actions.setOnboardingDay(day, other)}>
-            Switch to {dayWord(other, today)}
-          </Button>
-        </div>
-      }
+      title="Choose what you'll get to today and tomorrow."
+      lead="Move a few tasks from your Brain Dump to either day. The rest stay there until you want them."
+      next={{
+        label: "Continue",
+        disabled: !todays.length && !tomorrows.length,
+        // The Timebox step plans today when it has tasks, otherwise tomorrow.
+        onClick: () => actions.setOnboardingStep("timebox", todays.length ? today : tomorrow),
+      }}
     >
       <div className={styles.twoRows}>
         <Row title="Brain Dump" count={dump.length}>
           {dump.length ? (
-            <ul className={styles.tasks}>
+            <ul className={`${styles.tasks} ${styles.oneColumn}`}>
               {dump.map((task) => (
-                <li key={task.id}>
-                  <button
-                    type="button"
-                    className={styles.taskButton}
-                    aria-label={`Move ${task.title} to ${word}`}
-                    onClick={() => actions.moveTask(task.id, { date: day, index: planned.length })}
-                  >
-                    <TaskText task={task} />
-                    <Icon icon={Plus} />
-                  </button>
+                <li key={task.id} className={styles.task}>
+                  <TaskText task={task} />
+                  <span className={styles.dayChoice}>
+                    {days.map(({ date, tasks }) => (
+                      <Button
+                        key={date}
+                        size="sm"
+                        icon={Plus}
+                        aria-label={`Move ${task.title} to ${dayWord(date, today)}`}
+                        onClick={() => actions.moveTask(task.id, { date, index: tasks.length })}
+                      >
+                        {relativeDay(date, today)}
+                      </Button>
+                    ))}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -391,27 +402,31 @@ function ChooseStep() {
             <p className={styles.empty}>Everything is on your plan.</p>
           )}
         </Row>
-        <Row title={relativeDay(day, today)} count={planned.length}>
-          {planned.length ? (
-            <ul className={styles.tasks}>
-              {planned.map((task) => (
-                <li key={task.id}>
-                  <button
-                    type="button"
-                    className={styles.taskButton}
-                    aria-label={`Move ${task.title} back to the Brain Dump`}
-                    onClick={() => actions.moveTask(task.id, { date: null })}
-                  >
-                    <TaskText task={task} />
-                    <Icon icon={X} />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={styles.empty}>Choose a task from your Brain Dump to plant it here.</p>
-          )}
-        </Row>
+        <div className={styles.dayRows}>
+          {days.map(({ date, tasks }) => (
+            <Row key={date} title={relativeDay(date, today)} count={tasks.length}>
+              {tasks.length ? (
+                <ul className={styles.tasks}>
+                  {tasks.map((task) => (
+                    <li key={task.id}>
+                      <button
+                        type="button"
+                        className={styles.taskButton}
+                        aria-label={`Move ${task.title} back to the Brain Dump`}
+                        onClick={() => actions.moveTask(task.id, { date: null })}
+                      >
+                        <TaskText task={task} />
+                        <Icon icon={X} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className={styles.empty}>{`Choose a task from your Brain Dump to plant it ${dayWord(date, today)}.`}</p>
+              )}
+            </Row>
+          ))}
+        </div>
       </div>
     </Frame>
   );
@@ -505,19 +520,27 @@ function PlantedStep() {
   // Without a subscription the paywall comes next, so the button doesn't promise the planner.
   const locked = useBilling()?.status.access === false;
   const { day, today } = useStep();
-  const tasks = useDayTasks(day);
+  const tomorrow = addDays(today, 1);
+  const todays = useDayTasks(today);
+  const tomorrows = useDayTasks(tomorrow);
   const dump = useListTasks(null);
-  const word = dayWord(day, today);
-  const timed = tasks.filter((t) => t.start).length;
   const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  // One line per day that has tasks, then the Brain Dump.
+  const planned = [
+    { date: today, tasks: todays },
+    { date: tomorrow, tasks: tomorrows },
+  ].filter(({ tasks }) => tasks.length);
   const summary = [
-    `${plural(tasks.length, "task", "tasks")} for ${word}${timed ? `, ${timed} with a time` : ""}.`,
+    ...planned.map(({ date, tasks }) => {
+      const timed = tasks.filter((t) => t.start).length;
+      return `${plural(tasks.length, "task", "tasks")} for ${dayWord(date, today)}${timed ? `, ${timed} with a time` : ""}.`;
+    }),
     dump.length ? `${plural(dump.length, "task is", "tasks are")} waiting in your Brain Dump.` : null,
     "Anything you don't finish moves to the new day at midnight.",
   ];
   return (
     <Frame
-      title={day === today ? "Your day is planned." : "Tomorrow is planned."}
+      title={todays.length ? "Your day is planned." : "Tomorrow is planned."}
       lead={summary.filter(Boolean).join(" ")}
       next={{
         label: locked ? "Continue" : "Open my planner",
@@ -527,15 +550,17 @@ function PlantedStep() {
         },
       }}
     >
-      <Row title={relativeDay(day, today)} count={tasks.length}>
-        <ul className={styles.tasks}>
-          {tasks.map((task) => (
-            <li key={task.id} className={styles.task}>
-              <TaskText task={task} />
-            </li>
-          ))}
-        </ul>
-      </Row>
+      {planned.map(({ date, tasks }) => (
+        <Row key={date} title={relativeDay(date, today)} count={tasks.length}>
+          <ul className={styles.tasks}>
+            {tasks.map((task) => (
+              <li key={task.id} className={styles.task}>
+                <TaskText task={task} />
+              </li>
+            ))}
+          </ul>
+        </Row>
+      ))}
     </Frame>
   );
 }

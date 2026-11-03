@@ -25,6 +25,14 @@ async function finishSetup(page: Page) {
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("button", { name: /Skip this step|Continue/ }).first().click();
   await page.getByRole("button", { name: /Open my planner|Continue/ }).click();
+  // Where Stripe is set up, the paywall comes next: the no-card free days open the planner.
+  const planner = page.getByRole("region", { name: "Days" });
+  const freeDays = page.getByRole("button", { name: /Not ready to add a card/ });
+  await expect(planner.or(freeDays)).toBeVisible({ timeout: 30_000 });
+  if (await freeDays.isVisible()) {
+    await freeDays.click();
+    await page.getByRole("button", { name: /^Start \d+ free days$/ }).click();
+  }
 }
 
 async function signUp(page: Page) {

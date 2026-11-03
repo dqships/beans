@@ -20,8 +20,7 @@ test("onboarding fits a phone and ends on the planner", async ({ page }) => {
   await fits();
   await continueButton.click();
 
-  await page.getByRole("button", { name: "Switch to tomorrow" }).click();
-  await page.getByRole("button", { name: /^Move Plan from my phone/ }).click();
+  await page.getByRole("button", { name: /^Move Plan from my phone .* to tomorrow$/ }).click();
   await fits();
   await continueButton.click();
 

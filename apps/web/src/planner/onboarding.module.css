@@ -237,8 +237,24 @@
   margin-top: var(--space-3);
 }
 
-.switchDay {
-  margin: var(--space-2) 0 0 calc(var(--space-3) * -1);
+/* Today and tomorrow, stacked beside the Brain Dump. */
+.dayRows {
+  display: grid;
+  align-content: start;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* One task per line, so each has room for its title and both day buttons. */
+.tasks.oneColumn {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* A Brain Dump task's two ways onto the plan. */
+.dayChoice {
+  flex: none;
+  display: flex;
+  gap: var(--space-1);
 }
 
 /* Garden rows */
