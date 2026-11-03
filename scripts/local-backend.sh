@@ -17,6 +17,10 @@ fi
 npx convex dev --once --typecheck disable || true
 npx convex env set CLERK_JWT_ISSUER_DOMAIN none
 npx convex env set BEANS_TEST_AUTH_ISSUER "http://localhost:3000/api/test-auth/"
+# The MCP server's secret, shared by this local backend and the dev server.
+MCP_SECRET="$(grep -s '^MCP_SERVER_SECRET=' apps/web/.env.local | cut -d= -f2- || true)"
+MCP_SECRET="${MCP_SECRET:-$(openssl rand -hex 32)}"
+npx convex env set MCP_SERVER_SECRET "$MCP_SECRET" > /dev/null
 npx convex dev --once --typecheck disable
 
 if [ ! -f apps/web/.env.local ]; then
@@ -25,6 +29,7 @@ NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210
 NEXT_PUBLIC_BEANS_TEST_AUTH=1
 BEANS_TEST_AUTH=1
 BEANS_TEST_AUTH_ISSUER=http://localhost:3000/api/test-auth/
+MCP_SERVER_SECRET=$MCP_SECRET
 ENV
   echo "Wrote apps/web/.env.local for the local backend and test sign-in."
 fi
