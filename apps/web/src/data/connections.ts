@@ -1,16 +1,23 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@convex/_generated/api";
+import { createContext, useContext } from "react";
 
-export type ConnectedApp = { clientId: string; name: string; firstUsedAt: number; lastUsedAt: number };
+export type ConnectedApp = { clientId: string; name: string; firstUsedAt: number; lastUsedAt: number; disconnected: boolean };
 
 /**
- * AI apps connected to this account through the MCP server, and a way to
- * disconnect one. Only for the Convex backend; sample data has none.
+ * AI apps that have used this account through the MCP server, with ways to
+ * disconnect one and let it back in. `connections-provider.tsx` provides it
+ * from Convex.
  */
-export function useConnectedApps(): { apps: ConnectedApp[] | undefined; disconnect: (clientId: string) => Promise<void> } {
-  const apps = useQuery(api.mcp.connections);
-  const disconnect = useMutation(api.mcp.disconnect);
-  return { apps, disconnect: async (clientId) => void (await disconnect({ clientId })) };
+export type ConnectedApps = {
+  apps: ConnectedApp[] | undefined;
+  disconnect(clientId: string): Promise<void>;
+  reconnect(clientId: string): Promise<void>;
+};
+
+export const ConnectedAppsContext = createContext<ConnectedApps | null>(null);
+
+/** Null on sample data, which has no account to connect. */
+export function useConnectedApps(): ConnectedApps | null {
+  return useContext(ConnectedAppsContext);
 }

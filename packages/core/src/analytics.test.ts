@@ -66,8 +66,9 @@ describe("analytics", () => {
 
   it("measures how long undated tasks have waited", () => {
     let s = sample();
-    s = applyOps(s, updateTask("task-dump-1", { createdAt: NOW - STALE_DAYS * DAY }), NOW);
-    s = applyOps(s, updateTask("task-list-1", { createdAt: NOW - 20 * DAY }), NOW);
+    const madeAt = (id: string, createdAt: number) => (s = { ...s, tasks: { ...s.tasks, [id]: { ...s.tasks[id]!, createdAt } } });
+    madeAt("task-dump-1", NOW - STALE_DAYS * DAY);
+    madeAt("task-list-1", NOW - 20 * DAY);
     const age = brainDumpAge(liveTasks(s), TODAY, "UTC");
     // Three Brain Dump tasks and two list tasks: 14 + 20 + 0 + 0 + 0 days.
     expect(age.count).toBe(5);

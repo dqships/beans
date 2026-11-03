@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { BillingGate } from "@/data/billing-gate";
+import { ConnectedAppsProvider } from "@/data/connections-provider";
 import { PlannerSession } from "@/data/session";
 import { LoadingScreen, PlannerApp, SetupNeeded } from "@/planner/PlannerApp";
 
@@ -14,7 +15,9 @@ export function PlannerRoot() {
   return (
     <PlannerSession loading={<LoadingScreen />} unconfigured={<SetupNeeded />}>
       <BillingGate loading={<LoadingScreen />}>
-        <PlannerApp />
+        <ConnectedAppsProvider>
+          <PlannerApp />
+        </ConnectedAppsProvider>
       </BillingGate>
     </PlannerSession>
   );

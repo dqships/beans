@@ -9,7 +9,7 @@ const modules = (import.meta as unknown as { glob: (p: string) => Record<string,
 const TODAY = "2026-10-31";
 const NOW = Date.UTC(2026, 9, 31, 12);
 const SECRET = "s".repeat(40);
-const CLIENT = { id: "https://ai.example/oauth/client.json", name: "Example AI", issuedAt: NOW - 60_000 };
+const CLIENT = { id: "https://ai.example/oauth/client.json", name: "Example AI" };
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ["Date"] });
@@ -68,11 +68,11 @@ describe("MCP session checks", () => {
     const made = createTask(await appState(alice), { title: "Water the beans", date: TODAY, estimate: 15 });
     await alice.mutation(api.planner.apply, { ops: made.ops as never });
     const day = await t.mutation(api.mcp.getDay, { ...as, date: TODAY });
-    expect(day.list).toEqual([{ id: made.id, title: "Water the beans", done: false, estimate: 15 }]);
+    expect(day.tasks).toEqual([{ id: made.id, title: "Water the beans", done: false, estimate: 15 }]);
     // Another Clerk user sees nothing of Alice's.
     const bob = t.withIdentity({ subject: "user_bob" });
     await bob.mutation(api.planner.init, { timeZone: "UTC" });
-    expect((await t.mutation(api.mcp.getDay, { ...as, userId: "user_bob", date: TODAY })).list).toEqual([]);
+    expect((await t.mutation(api.mcp.getDay, { ...as, userId: "user_bob", date: TODAY })).tasks).toEqual([]);
   });
 
   it("asks people who never opened Beans to set it up first", async () => {
@@ -128,17 +128,24 @@ describe("MCP session checks", () => {
     await t.mutation(api.mcp.createTasks, { ...as, tasks: [{ title: "Two" }, { title: "Three" }] });
   });
 
-  it("lists connected apps and disconnects one until it signs in again", async () => {
+  it("lists connected apps, and keeps a disconnected one out until Reconnect", async () => {
     const { t, alice, as } = await setup();
     await t.mutation(api.mcp.getOverview, as);
-    expect(await alice.query(api.mcp.connections, {})).toEqual([{ clientId: CLIENT.id, name: "Example AI", firstUsedAt: expect.any(Number), lastUsedAt: expect.any(Number) }]);
+    const row = { clientId: CLIENT.id, name: "Example AI", firstUsedAt: expect.any(Number), lastUsedAt: expect.any(Number) };
+    expect(await alice.query(api.mcp.connections, {})).toEqual([{ ...row, disconnected: false }]);
     await alice.mutation(api.mcp.disconnect, { clientId: CLIENT.id });
-    expect(await alice.query(api.mcp.connections, {})).toEqual([]);
+    expect(await alice.query(api.mcp.connections, {})).toEqual([{ ...row, disconnected: true }]);
+    // Refused whatever token it brings, including ones refreshed after the disconnect.
     expect(await code(t.mutation(api.mcp.getOverview, as))).toBe("disconnected");
-    // A token issued after the disconnect is a new sign-in from that app.
-    vi.setSystemTime(NOW + 5000);
-    await t.mutation(api.mcp.getOverview, { ...as, client: { ...CLIENT, issuedAt: NOW + 1000 } });
-    expect((await alice.query(api.mcp.connections, {})).map((c) => c.name)).toEqual(["Example AI"]);
+    vi.setSystemTime(NOW + 86_400_000);
+    expect(await code(t.mutation(api.mcp.createTasks, { ...as, tasks: [{ title: "Sneaky" }] }))).toBe("disconnected");
+    // Another person can't reconnect it for Alice.
+    const bob = t.withIdentity({ subject: "user_bob" });
+    await bob.mutation(api.mcp.reconnect, { clientId: CLIENT.id });
+    expect(await code(t.mutation(api.mcp.getOverview, as))).toBe("disconnected");
+    await alice.mutation(api.mcp.reconnect, { clientId: CLIENT.id });
+    expect((await t.mutation(api.mcp.getOverview, as)).today).toBe("2026-11-01");
+    expect((await alice.query(api.mcp.connections, {}))[0]!.disconnected).toBe(false);
   });
 });
 
@@ -155,7 +162,7 @@ describe("MCP reading tools", () => {
     expect(o).toMatchObject({ today: TODAY, weekday: "Saturday", time: "12:00", workdayLimit: 480, brainDump: 1, overdue: 1 });
     expect(o.lists).toEqual([expect.objectContaining({ name: "Half marathon", icon: "🏃", label: "Work", open: 1 })]);
     expect(o.labels).toEqual([expect.objectContaining({ name: "Work", color: "rain" })]);
-    expect(o.todaySummary).toMatchObject({ tasks: 1, estimate: 90, left: 90 });
+    expect(o.todaySummary).toMatchObject({ count: 1, estimate: 90, left: 90 });
   });
 
   it("reads a week in one call, with repeating tasks made for it", async () => {
@@ -166,8 +173,8 @@ describe("MCP reading tools", () => {
     expect(repeat.next).toBe("2026-11-04");
     const week = await t.mutation(api.mcp.getWeek, { ...as, date: "2026-11-03" });
     expect(week.from).toBe("2026-11-01");
-    expect(week.days.map((d) => d.tasks ?? 0)).toEqual([0, 1, 0, 1, 0, 1, 0]);
-    expect(week.days[1]!.list![0]).toMatchObject({ title: "Stretch", repeats: true });
+    expect(week.days.map((d) => d.count)).toEqual([0, 1, 0, 1, 0, 1, 0]);
+    expect(week.days[1]!.tasks![0]).toMatchObject({ title: "Stretch", repeats: true });
     expect(week.estimate).toBe(30);
   });
 
@@ -248,7 +255,7 @@ describe("MCP changing tools", () => {
       ["Tempo run", TODAY, undefined],
       ["Second", TODAY, undefined],
     ]);
-    expect(res.days).toEqual([expect.objectContaining({ date: TODAY, tasks: 2, estimate: 40, workdayLimit: 480 })]);
+    expect(res.days).toEqual([expect.objectContaining({ date: TODAY, count: 2, estimate: 40, workdayLimit: 480 })]);
     // The app sees them, in the order they were given.
     const state = await appState(alice);
     const today = Object.values(state.tasks).filter((x) => x.date === TODAY).sort((a, b) => a.order - b.order);
@@ -337,10 +344,10 @@ describe("MCP changing tools", () => {
     expect((await t.mutation(api.mcp.logTime, { ...as, id, minutes: 40 })).actual).toBe(40);
     expect((await t.mutation(api.mcp.logTime, { ...as, id, minutes: 20 })).actual).toBe(60);
     await t.mutation(api.mcp.setRepeat, { ...as, id, repeat: { every: "day" } });
-    expect((await t.mutation(api.mcp.getDay, { ...as, date: "2026-11-01" })).tasks).toBe(1);
+    expect((await t.mutation(api.mcp.getDay, { ...as, date: "2026-11-01" })).count).toBe(1);
     const stopped = await t.mutation(api.mcp.setRepeat, { ...as, id, repeat: null });
     expect(stopped.task.repeats).toBeUndefined();
-    expect((await t.mutation(api.mcp.getDay, { ...as, date: "2026-11-01" })).tasks).toBe(0);
+    expect((await t.mutation(api.mcp.getDay, { ...as, date: "2026-11-01" })).count).toBe(0);
     expect(await code(t.mutation(api.mcp.setRepeat, { ...as, id, repeat: null }))).toBe("invalid");
   });
 

@@ -1,6 +1,6 @@
 # Beans MCP
 
-Status: planned for v1 on 2026-11-03, not built yet. Branch `claude/beans-mcp`.
+Status: built on 2026-11-03 (branch `claude/beans-mcp-server`). "As built" below lists where the build differs from this plan.
 
 ## The idea, in DQ's words
 
@@ -123,7 +123,7 @@ Clerk already runs Beans' sign-in, and it has an official guide for an MCP serve
 2. **Sign-in:** `withMcpAuth` plus Clerk's `auth({ acceptsToken: 'oauth_token' })` check the token on every call. A call without a token gets a 401 with a `WWW-Authenticate` header that points at the protected resource metadata. Clerk's helpers serve the `.well-known` OAuth addresses. Those must stay public, so `proxy.ts` lets them through without Clerk's page handling or the markdown answers.
 3. **Client registration:** turn on CIMD ("Publish CIMD support" in Clerk's OAuth applications settings). It's what the current MCP spec, Claude and ChatGPT prefer. Turn on DCR as well only if an AI app people use can't do CIMD. Keep Clerk's consent screen and PKCE on.
 4. **Redirects to allow:** `https://claude.ai/api/mcp/auth_callback` for Claude on the web, desktop and phone. Loopback redirects on any port for Claude Code (`http://localhost:*` and `http://127.0.0.1:*`). `https://chatgpt.com/connector_platform_oauth_redirect` for ChatGPT.
-5. **Reaching Convex:** the route has a Clerk OAuth token, not the Convex sign-in token the app uses. So a new `convex/mcp.ts` holds Convex functions that take the user id and a server-only secret (`MCP_SERVER_SECRET`). They check access, then run the same core functions and `applyOne` as the app. The user id has to match Beans' existing format, Convex's `tokenIdentifier` (issuer, a `|`, then the Clerk user id). A test proves the two match.
+5. **Reaching Convex:** the route has a Clerk OAuth token, not the Convex sign-in token the app uses. So a new `convex/mcp.ts` holds Convex functions that take the user id and a server-only secret (`MCP_SERVER_SECRET`). They check access, then run the same core functions and `applyOne` as the app. Since PR #26 Beans keys data by the plain Clerk user id, which is the OAuth token's `sub`, so the app and the MCP server see the same rows. A test proves it.
 6. **Shared logic:** tools call the core functions the app already uses, such as `createTask`, `moveTask`, `setDone`, `deleteTask`, `createList` and `createLabel`, so rules like actual-time fill and Trash stay the same everywhere.
 7. **Analytics:** the math lives in the analytics screen today (`apps/web/src/planner/Analytics.tsx`). Move it to `packages/core/src/analytics.ts` so the screen and `get_analytics` share one copy.
 8. **Settings > Connected apps:** lists connected AI apps and lets people disconnect one.
@@ -188,7 +188,7 @@ Beans will move off `followusai.com` eventually, but not in the foreseeable futu
 1. **Every connected AI app has to reconnect.** The MCP address and the OAuth server address both change, so existing tokens stop working. The old address can redirect for a while, but people still sign in again.
 2. **Claude:** the listing's slug stays. Changing the server address isn't self-serve; email mcp-review@anthropic.com first. Any auth change waits for a reviewer, so keep the old address working until the new one is approved.
 3. **ChatGPT:** the domain can't change within a plugin. A new domain means a new plugin with its own domain check, submission and review. OpenAI's docs also mention asking support, so ask them first. The old listing keeps working only while the old address does.
-4. **Beans' own user ids.** This applies with or without MCP. Beans stores every record under Convex's `tokenIdentifier`, which starts with Clerk's issuer address. If Clerk's sign-in domain changes, every user gets a new id and their data stops matching. A domain move needs a migration that rewrites `userId` on every table, or Beans switches to Clerk's user id alone before launch. That switch is being made now, in its own pull request, before launch.
+4. **Beans' own user ids.** This applies with or without MCP. Beans used to store every record under Convex's `tokenIdentifier`, which starts with Clerk's issuer address, so a new Clerk sign-in domain would have given every user a new id. A domain move needed a migration that rewrites `userId` on every table, or a switch to Clerk's user id alone. PR #26 made that switch, so a Clerk domain change no longer affects user ids.
 
 Because the move isn't soon, Beans lists on `mcp.beans.followusai.com` now and accepts a reconnect and a new ChatGPT listing when it happens. At move time: keep the old addresses running and redirecting until both directories show the new one, email Anthropic before switching, and ask OpenAI support before submitting the new plugin.
 
@@ -207,6 +207,18 @@ No model cost. Each call is one Vercel function run plus one or two Convex calls
 7. Privacy policy and terms. Half a day.
 
 About 7 days for one person. A directory submission later adds a demo account and half a day, plus review time.
+
+## As built (2026-11-03)
+
+- **Where things live:** `convex/mcp.ts` (one Convex function per tool, plus `connections`, `disconnect` and `reconnect`), `apps/web/src/mcp/` (tools, instructions, prompts, Clerk token check), `apps/web/src/app/mcp/route.ts`, the `.well-known` routes, and the host rules in `apps/web/src/proxy.ts`. Analytics math is in `packages/core/src/analytics.ts`, notes text conversion in `packages/core/src/notes.ts`.
+- **Reading tools are Convex mutations too,** so every call counts toward the rate limit and makes repeating-task instances for the days it reads, as the app does.
+- **Rate limits:** 60 calls a minute and 1,000 changes a day (UTC) per account, kept in the `mcpUsage` table. A change is one task, list, label or subtask edit batch.
+- **Disconnect stays until Reconnect.** Clerk's access tokens carry no grant id, so a refreshed token can't be told apart from a new sign-in. A disconnected app is refused whatever token it brings until the person chooses Reconnect in Settings > Connected apps. Apps are named from their client metadata document (`client_name`), so Claude Code shows as "Claude Code".
+- **`search_tasks` searches titles only,** using the `search_title` index. Notes aren't indexed.
+- **`restore_tasks` puts tasks on today,** the same rule as Beans' Trash.
+- **`get_overview` counts overdue tasks from the last 14 days,** the rollover window.
+- **Local tests:** the local test sign-in's tokens also work on `/mcp` in test runs (never in a production build), so `e2e/mcp.spec.ts` drives the real route against the local backend.
+- **Tested:** every tool and prompt through the MCP Inspector CLI with a real Clerk development OAuth token, got with Claude Code's own CIMD client (PKCE S256, loopback redirect) and Clerk's consent screen ("Claude Code wants to access Beans"). A refresh-token exchange works. Not tested: Claude Code's own `/mcp` sign-in (its CLI here isn't signed in to a Claude account), Claude on the web, ChatGPT (needs DQ's account) and Cursor.
 
 ## Sources
 

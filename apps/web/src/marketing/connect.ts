@@ -72,7 +72,7 @@ To keep a runaway AI from flooding your planner, each account allows 60 calls a 
 
 ## Disconnecting
 
-In Beans, open **Settings**, then **Connected apps**, and choose **Disconnect** next to the app. It can't read or change your planner after that. To stop seeing Beans in the AI app too, remove the connector there.
+In Beans, open **Settings**, then **Connected apps**, and choose **Disconnect** next to the app. It can't read or change your planner after that, even if it signs in again, until you choose **Reconnect** in the same place. To stop seeing Beans in the AI app too, remove the connector there.
 
 ## Privacy
 

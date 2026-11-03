@@ -94,17 +94,20 @@ Left to do on the launch:
 
 ### Beans MCP (v1)
 
-People connect Claude, ChatGPT and other AI apps to read and change their planner. Plan in `docs/ideas/mcp.md`, branch `claude/beans-mcp`.
+People connect Claude, ChatGPT and other AI apps to read and change their planner. Plan and as-built notes in `docs/ideas/mcp.md`. Built on `claude/beans-mcp-server`.
 
 - [x] Decide scope, access, sign-in and who gets it (DQ, 2026-11-03)
 - [x] Check the Clerk Dashboard for a Pro tag on OAuth applications: none, so Clerk OAuth (DQ, 2026-11-03)
-- [ ] Move the analytics math to `packages/core`
-- [ ] `convex/mcp.ts`: server secret, user id, access check, one function per tool
-- [ ] `/mcp` route at `https://mcp.beans.followusai.com/mcp`: Vercel domain, DNS record, `proxy.ts` host rules, Clerk OAuth (CIMD), `.well-known` addresses
-- [ ] 19 tools with titles and all three hints, plus server instructions and four prompts (Plan my day, Weekly review, Shutdown, Clean up my Brain Dump)
-- [ ] Settings > Connected apps, `/connect-ai` help page, rate limits
-- [ ] Test with the MCP Inspector, Claude, Claude Code, ChatGPT and Cursor
-- [ ] Privacy policy and terms
+- [x] Move the analytics math to `packages/core`
+- [x] `convex/mcp.ts`: server secret, user id, access check, one function per tool
+- [x] `/mcp` route: `proxy.ts` host rules, Clerk OAuth, `.well-known` addresses
+- [x] Clerk development: Publish CIMD support on; `MCP_SERVER_SECRET` set on the Convex dev deployment
+- [ ] Production setup (DQ, the permission check blocked these for the agent): add `mcp.beans.followusai.com` to the Vercel project, the `CNAME` to `cname.vercel-dns.com` in Cloudflare (DNS only), `MCP_SERVER_SECRET` on Convex production and in Vercel, and Publish CIMD support in Clerk production. Steps in `docs/DEPLOY.md`, "MCP server"
+- [x] 19 tools with titles and all three hints, plus server instructions and four prompts (Plan my day, Weekly review, Shutdown, Clean up my Brain Dump)
+- [x] Settings > Connected apps, `/connect-ai` help page, rate limits
+- [x] Test every tool with the MCP Inspector, using a real Clerk OAuth token from Claude Code's CIMD client
+- [ ] Test the real apps against production: Claude Code (`claude mcp add --transport http beans https://mcp.beans.followusai.com/mcp`, then `/mcp`), Claude on the web, ChatGPT and Cursor (DQ)
+- [x] Privacy policy and terms paragraphs (for DQ to read: privacy "Connected AI apps" and the line under "What we collect"; terms "Connected AI apps")
 
 ### Later
 

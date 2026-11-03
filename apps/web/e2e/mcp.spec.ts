@@ -112,15 +112,15 @@ test("Settings lists connected apps and disconnects one", async ({ page, request
   await expect(apps).toContainText("Last used today");
 
   await apps.getByRole("button", { name: "Disconnect" }).click();
-  await expect(settings.getByText("No AI apps yet.")).toBeVisible();
-  const refused = await callTool(request, token, "get_overview");
+  await expect(apps).toContainText("Disconnected.");
+  // Refused with any token, including a new one.
+  const refused = await callTool(request, await tokenFor(request, name), "get_overview");
   expect(refused.isError).toBe(true);
-  expect(refused.text).toContain("disconnected from Beans");
+  expect(refused.text).toContain("choose Reconnect next to Test client");
 
-  // Signing in again from the app connects it again.
-  await page.waitForTimeout(1100);
-  await callTool(request, await tokenFor(request, name), "get_overview");
-  await expect(apps.getByText("Test client")).toBeVisible();
+  await apps.getByRole("button", { name: "Reconnect" }).click();
+  await expect(apps).toContainText("Last used today");
+  expect((await callTool(request, token, "get_overview")).isError).toBe(false);
 });
 
 for (const colorScheme of ["light", "dark"] as const) {

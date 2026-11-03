@@ -425,7 +425,6 @@ function Account() {
 }
 
 function ConnectedApps() {
-  const backend = useBackend();
   const [copied, setCopied] = useState(false);
   const copy = () => {
     navigator.clipboard.writeText(MCP_URL).then(
@@ -451,26 +450,28 @@ function ConnectedApps() {
         </Button>
       </div>
       <h3 className={styles.subhead}>Connected</h3>
-      {backend === "convex" ? <ConnectedList /> : <p className={styles.rowHint}>Sign in to connect AI apps. Sample data stays in this tab.</p>}
+      <ConnectedList />
     </div>
   );
 }
 
 function ConnectedList() {
-  const { apps, disconnect } = useConnectedApps();
+  const connected = useConnectedApps();
   const zone = useSettings()?.timeZone ?? "UTC";
+  if (!connected) return <p className={styles.rowHint}>Sign in to connect AI apps. Sample data stays in this tab.</p>;
+  const { apps, disconnect, reconnect } = connected;
   if (apps === undefined) return <p className={styles.rowHint}>Loading…</p>;
   if (!apps.length) return <p className={styles.rowHint}>No AI apps yet. Apps show up here after their first request.</p>;
   return (
     <ul className={styles.appList} aria-label="Connected apps">
       {apps.map((app) => (
-        <ConnectedRow key={app.clientId} app={app} zone={zone} onDisconnect={() => disconnect(app.clientId)} />
+        <ConnectedRow key={app.clientId} app={app} zone={zone} onToggle={() => (app.disconnected ? reconnect : disconnect)(app.clientId)} />
       ))}
     </ul>
   );
 }
 
-function ConnectedRow({ app, zone, onDisconnect }: { app: ConnectedApp; zone: string; onDisconnect: () => Promise<void> }) {
+function ConnectedRow({ app, zone, onToggle }: { app: ConnectedApp; zone: string; onToggle: () => Promise<void> }) {
   const [busy, setBusy] = useState(false);
   const today = todayIn(zone);
   const day = (ms: number) => {
@@ -483,7 +484,9 @@ function ConnectedRow({ app, zone, onDisconnect }: { app: ConnectedApp; zone: st
       <div className={styles.rowText}>
         <p className={styles.rowTitle}>{app.name}</p>
         <p className={styles.rowHint}>
-          Last used {day(app.lastUsedAt)}, connected since {day(app.firstUsedAt)}
+          {app.disconnected
+            ? "Disconnected. It can't read or change your planner."
+            : `Last used ${day(app.lastUsedAt)}, connected since ${day(app.firstUsedAt)}`}
         </p>
       </div>
       <div className={styles.rowControl}>
@@ -491,13 +494,12 @@ function ConnectedRow({ app, zone, onDisconnect }: { app: ConnectedApp; zone: st
           disabled={busy}
           onClick={() => {
             setBusy(true);
-            onDisconnect().catch((e: unknown) => {
-              console.error(e);
-              setBusy(false);
-            });
+            onToggle()
+              .catch((e: unknown) => console.error(e))
+              .finally(() => setBusy(false));
           }}
         >
-          {busy ? "Disconnecting…" : "Disconnect"}
+          {app.disconnected ? "Reconnect" : "Disconnect"}
         </Button>
       </div>
     </li>

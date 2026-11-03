@@ -70,8 +70,8 @@ function fail(code: Code, message: string): never {
 const session = {
   secret: v.string(),
   userId: v.string(),
-  /** The OAuth client that made the call, and when its access token was issued (ms). */
-  client: v.object({ id: v.string(), name: v.string(), issuedAt: v.number() }),
+  /** The OAuth client that made the call. */
+  client: v.object({ id: v.string(), name: v.string() }),
 };
 
 type Session = ObjectType<typeof session>;
@@ -117,15 +117,17 @@ async function begin(ctx: MutationCtx, { secret, userId, client }: Session, now:
     );
   }
 
+  // A disconnected app stays out until the person chooses Reconnect in Beans. Its
+  // tokens can't tell a refresh from a new sign-in, so Beans doesn't guess.
   const connection = await connectionRow(ctx, userId, client.id);
-  if (connection?.revokedAt && client.issuedAt <= connection.revokedAt) {
+  if (connection?.revokedAt) {
     fail(
       "disconnected",
-      "This app was disconnected from Beans in Settings, Connected apps. To use Beans here again, remove the Beans connector from this app and add it again.",
+      `This app was disconnected from Beans. To use it again, open Beans, go to Settings, then Connected apps, and choose Reconnect next to ${connection.name}.`,
     );
   }
   if (connection) {
-    await ctx.db.patch(connection._id, { name: client.name || connection.name, lastUsedAt: now, revokedAt: null });
+    await ctx.db.patch(connection._id, { name: client.name || connection.name, lastUsedAt: now });
   } else {
     await ctx.db.insert("mcpConnections", { userId, clientId: client.id, name: client.name, firstUsedAt: now, lastUsedAt: now, revokedAt: null });
   }
@@ -335,14 +337,14 @@ class Planner {
       date,
       weekday: weekdayName(date, true),
       today: date === this.today ? true : null,
-      tasks: totals.count,
+      count: totals.count,
       done: totals.done,
       estimate: totals.estimate,
       actual: round(totals.actual),
       left,
       workdayLimit: limit,
       overBy: limit !== null && totals.estimate > limit ? totals.estimate - limit : null,
-      list: tasks.map((t) => this.row(t, { withDate })),
+      tasks: tasks.map((t) => this.row(t, { withDate })),
     });
   }
 }
@@ -421,8 +423,8 @@ function target(p: Planner, where: { date?: string; list?: string }) {
 /** Each day's totals after a change, so the AI can see what fits the workday limit. */
 function dayLoads(p: Planner, dates: (DateKey | null)[]) {
   return [...new Set(dates.filter((d): d is DateKey => d !== null))].sort().map((d) => {
-    const { list, ...summary } = p.day(d);
-    void list;
+    const { tasks, ...summary } = p.day(d);
+    void tasks;
     return summary;
   });
 }
@@ -433,8 +435,8 @@ export const getOverview = tool({}, async (p) => {
   const s = p.settings;
   await Promise.all([p.loadDays(p.today, p.today), p.loadDays(addDays(p.today, -14), addDays(p.today, -1), false), p.loadUndated()]);
   const live = liveTasks(p.state);
-  const { list, ...today } = p.day(p.today);
-  void list;
+  const { tasks, ...today } = p.day(p.today);
+  void tasks;
   return {
     today: p.today,
     weekday: weekdayName(p.today, true),
@@ -974,7 +976,7 @@ export const restoreTasks = tool({ ids: v.array(v.string()) }, async (p, { ids }
 
 // ---------- Settings > Connected apps ----------
 
-/** AI apps that have used this account through the MCP server, newest first. */
+/** AI apps that have used this account through the MCP server: connected ones first, then by last use. */
 export const connections = query({
   args: {},
   handler: async (ctx) => {
@@ -984,24 +986,30 @@ export const connections = query({
       .withIndex("by_user_client", (q) => q.eq("userId", userId))
       .collect();
     return rows
-      .filter((r) => r.revokedAt === null)
-      .sort((a, b) => b.lastUsedAt - a.lastUsedAt)
-      .map((r) => ({ clientId: r.clientId, name: r.name, firstUsedAt: r.firstUsedAt, lastUsedAt: r.lastUsedAt }));
+      .sort((a, b) => Number(a.revokedAt !== null) - Number(b.revokedAt !== null) || b.lastUsedAt - a.lastUsedAt)
+      .map((r) => ({ clientId: r.clientId, name: r.name, firstUsedAt: r.firstUsedAt, lastUsedAt: r.lastUsedAt, disconnected: r.revokedAt !== null }));
   },
 });
 
-/**
- * Stops an app reading or changing the planner. Its current tokens are
- * refused from now on; signing in to Beans from that app again reconnects it.
- */
+async function ownConnection(ctx: MutationCtx, clientId: string) {
+  const userId = await requireUser(ctx);
+  return await connectionRow(ctx, userId, clientId);
+}
+
+/** Stops an app reading or changing the planner, with any token it has now or gets later, until Reconnect. */
 export const disconnect = mutation({
   args: { clientId: v.string() },
   handler: async (ctx, { clientId }) => {
-    const userId = await requireUser(ctx);
-    const row = await ctx.db
-      .query("mcpConnections")
-      .withIndex("by_user_client", (q) => q.eq("userId", userId).eq("clientId", clientId))
-      .unique();
+    const row = await ownConnection(ctx, clientId);
     if (row) await ctx.db.patch(row._id, { revokedAt: Date.now() });
+  },
+});
+
+/** Lets a disconnected app back in. */
+export const reconnect = mutation({
+  args: { clientId: v.string() },
+  handler: async (ctx, { clientId }) => {
+    const row = await ownConnection(ctx, clientId);
+    if (row) await ctx.db.patch(row._id, { revokedAt: null });
   },
 });

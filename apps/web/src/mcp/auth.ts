@@ -10,36 +10,12 @@ export interface BeansAuth {
   userId: string;
   clientId: string;
   clientName: string;
-  /** When the access token was issued, in ms, so Disconnect can refuse older tokens. */
-  issuedAt: number;
 }
 
 const clerkConfigured = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY);
 
-/** Small caches for this server instance. Tokens last a day and app names rarely change. */
-const issued = new Map<string, number>();
+/** App names for this server instance. They rarely change. */
 const names = new Map<string, string>();
-
-function remember<V>(map: Map<string, V>, key: string, value: V): V {
-  if (map.size > 500) map.delete(map.keys().next().value!);
-  map.set(key, value);
-  return value;
-}
-
-/** A JWT access token carries `iat`. Clerk's opaque tokens are looked up once each. */
-async function issuedAtFor(token: string, tokenId: string): Promise<number> {
-  const cached = issued.get(tokenId);
-  if (cached) return cached;
-  const parts = token.split(".");
-  if (parts.length === 3) {
-    try {
-      const iat = (JSON.parse(Buffer.from(parts[1]!, "base64url").toString()) as { iat?: number }).iat;
-      if (typeof iat === "number") return remember(issued, tokenId, iat * 1000);
-    } catch {}
-  }
-  const verified = await (await clerkClient()).idPOAuthAccessToken.verify(token);
-  return remember(issued, tokenId, verified.createdAt * 1000);
-}
 
 /**
  * A readable name for the app behind an OAuth client: the `client_name` in its
@@ -64,7 +40,9 @@ async function clientNameFor(clientId: string): Promise<string> {
       name = apps.data.find((a) => a.clientId === clientId)?.name ?? name;
     } catch {}
   }
-  return remember(names, clientId, name.slice(0, 60));
+  if (names.size > 500) names.delete(names.keys().next().value!);
+  names.set(clientId, name.slice(0, 60));
+  return names.get(clientId)!;
 }
 
 /** Verifies a bearer token for the MCP route: a Clerk OAuth access token, or the local test sign-in's in test runs. */
@@ -72,14 +50,13 @@ export async function verifyBeansToken(_req: Request, token?: string): Promise<A
   if (!token) return undefined;
   const test = verifyTestToken(token);
   if (test) {
-    const extra: BeansAuth = { userId: test.sub, clientId: "beans-test-client", clientName: "Test client", issuedAt: test.iat * 1000 };
+    const extra: BeansAuth = { userId: test.sub, clientId: "beans-test-client", clientName: "Test client" };
     return { token, clientId: extra.clientId, scopes: [], extra: { ...extra } };
   }
   if (!clerkConfigured) return undefined;
   const clerkAuth = await auth({ acceptsToken: "oauth_token" });
   const info = verifyClerkToken(clerkAuth, token);
   if (!info || !clerkAuth.isAuthenticated) return undefined;
-  const [issuedAt, clientName] = await Promise.all([issuedAtFor(token, clerkAuth.id), clientNameFor(info.clientId)]);
-  const extra: BeansAuth = { userId: clerkAuth.userId, clientId: info.clientId, clientName, issuedAt };
+  const extra: BeansAuth = { userId: clerkAuth.userId, clientId: info.clientId, clientName: await clientNameFor(info.clientId) };
   return { ...info, extra: { ...info.extra, ...extra } };
 }

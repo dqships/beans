@@ -51,14 +51,14 @@ export function issueToken(user: string): string {
   return `${body}.${b64url(sign("RSA-SHA256", Buffer.from(body), privateKey()))}`;
 }
 
-/** The test user and issue time of a token from `issueToken`, or null. Only in test runs. */
-export function verifyTestToken(token: string): { sub: string; iat: number } | null {
+/** The test user of a token from `issueToken`, or null. Only in test runs. */
+export function verifyTestToken(token: string): { sub: string } | null {
   if (!testAuthEnabled()) return null;
   const [header, payload, signature] = token.split(".");
   if (!header || !payload || !signature) return null;
   const ok = verify("RSA-SHA256", Buffer.from(`${header}.${payload}`), createPublicKey(privateKey()), Buffer.from(signature, "base64url"));
   if (!ok) return null;
-  const claims = JSON.parse(Buffer.from(payload, "base64url").toString()) as { iss?: string; sub?: string; iat?: number; exp?: number };
-  if (claims.iss !== process.env.BEANS_TEST_AUTH_ISSUER || !claims.sub || !claims.iat || !claims.exp || claims.exp * 1000 < Date.now()) return null;
-  return { sub: claims.sub, iat: claims.iat };
+  const claims = JSON.parse(Buffer.from(payload, "base64url").toString()) as { iss?: string; sub?: string; exp?: number };
+  if (claims.iss !== process.env.BEANS_TEST_AUTH_ISSUER || !claims.sub || !claims.exp || claims.exp * 1000 < Date.now()) return null;
+  return { sub: claims.sub };
 }

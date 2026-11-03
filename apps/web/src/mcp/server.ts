@@ -98,7 +98,7 @@ export function registerBeans(server: McpServer) {
             ...t.args(input),
             secret,
             userId: auth.userId,
-            client: { id: auth.clientId, name: auth.clientName, issuedAt: auth.issuedAt },
+            client: { id: auth.clientId, name: auth.clientName },
           });
           return text(JSON.stringify(result));
         } catch (err) {

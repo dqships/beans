@@ -63,7 +63,7 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_customer", ["customerId"]),
-  /** AI apps that have used the MCP server for this user. `revokedAt` is set by Disconnect in Settings. */
+  /** AI apps that have used the MCP server for this user. `revokedAt` is set by Disconnect in Settings and cleared by Reconnect. */
   mcpConnections: defineTable({
     userId: v.string(),
     /** The OAuth client id, often the URL of the app's client metadata document. */
