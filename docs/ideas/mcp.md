@@ -26,7 +26,8 @@ An MCP server is a web address that AI apps such as Claude, ChatGPT and Cursor c
 6. **Directory listings:** how to submit to Claude and ChatGPT, and what a domain change would do, are under "Directory listings" and "Changing the domain later".
 7. **No competitor names on `main`.** Not in docs, code, comments or copy.
 8. **The MCP address is `https://mcp.beans.followusai.com/mcp`.** A host of its own, so the MCP could later move to a separate service without changing the address.
-9. **Beans will move off `followusai.com` eventually,** but not in the foreseeable future. Beans lists on the current domain now and handles the move when it comes (see "Changing the domain later").
+9. **No directory submissions for now.** People connect by pasting the MCP address into Claude, ChatGPT, Cursor or another MCP app. The directory steps below stay for later.
+10. **Beans will move off `followusai.com` eventually,** but not in the foreseeable future. Beans lists on the current domain now and handles the move when it comes (see "Changing the domain later").
 
 ## Why it's worth it
 
@@ -163,9 +164,8 @@ No model cost. Each call is one Vercel function run plus one or two Convex calls
 5. Connected apps in Settings, the `/connect-ai` help page, rate limits. One day.
 6. Test with the MCP Inspector, Claude, Claude Code, ChatGPT and Cursor. Half a day.
 7. Privacy policy and terms. Half a day.
-8. Demo account and both directory submissions. Half a day, plus waiting for review.
 
-About 6 days for one person, plus review time.
+About 6 days for one person. A directory submission later adds a demo account and half a day, plus review time.
 
 ## Sources
 

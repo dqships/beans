@@ -105,7 +105,6 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 - [ ] Settings > Connected apps, `/connect-ai` help page, rate limits
 - [ ] Test with the MCP Inspector, Claude, Claude Code, ChatGPT and Cursor
 - [ ] Privacy policy and terms
-- [ ] Demo account, then submit to the Claude and ChatGPT directories (DQ needs a paid Claude plan and a verified OpenAI platform identity)
 
 ### Later
 
@@ -174,6 +173,7 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 
 ## Decisions
 
+- 2026-11-03: No Claude or ChatGPT directory submissions for now. People connect by pasting the MCP address into their AI app, so `/connect-ai` carries the setup steps. The directory steps stay in `docs/ideas/mcp.md` for later. (DQ)
 - 2026-11-03: The MCP address is `https://mcp.beans.followusai.com/mcp`, a host of its own served by the same Next.js app. (DQ)
 - 2026-11-03: Beans will move off `followusai.com` eventually, but not in the foreseeable future. Launch and the directory listings use the current domain; the move will mean reconnecting AI apps and a new ChatGPT listing (`docs/ideas/mcp.md`, "Changing the domain later"). (DQ)
 - 2026-11-03: Beans MCP is part of v1, with reading and changing from day one. Sign-in is Clerk OAuth: the Clerk Dashboard shows no Pro tag on OAuth applications, so it works on the free plan. Paying subscribers, the 7-day trial and the 3-day no-card pass get it. (DQ)
