@@ -39,10 +39,16 @@ test.describe("MCP route", () => {
     expect(bad.status()).toBe(401);
   });
 
-  test("the MCP host serves nothing but the MCP addresses", async ({ request }) => {
-    for (const path of ["/", "/app", "/pricing", "/sign-in"]) {
+  test("the MCP host serves nothing but the MCP addresses and an icon page", async ({ request }) => {
+    for (const path of ["/app", "/pricing", "/sign-in"]) {
       expect((await request.get(path, { headers: { Host: "mcp.localhost" } })).status(), path).toBe(404);
     }
+    const home = await request.get("/", { headers: { Host: "mcp.localhost" } });
+    expect(home.status()).toBe(200);
+    const html = await home.text();
+    expect(html).toContain('<link rel="icon" href="/favicon.ico" sizes="48x48">');
+    expect(html).toContain('<link rel="icon" href="/icon.svg" type="image/svg+xml">');
+    expect((await request.get("/favicon.ico", { headers: { Host: "mcp.localhost" } })).headers()["content-type"]).toContain("image/");
     const res = await request.post("/mcp", { headers: { ...MCP, Host: "mcp.localhost" }, data: {} });
     expect(res.status()).toBe(401);
   });
@@ -52,6 +58,9 @@ test.describe("MCP route", () => {
     const token = await tokenFor(request, name);
     const init = await rpc(request, token, "initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "e2e", version: "1" } });
     expect(init.result.instructions).toContain("Beans is a daily planner");
+    const info = init.result.serverInfo as { websiteUrl: string; icons: { src: string; mimeType: string }[] };
+    expect(info.websiteUrl).toMatch(/^https?:\/\//);
+    expect(info.icons.map((i) => i.mimeType)).toEqual(["image/svg+xml", "image/png"]);
     const { result } = await rpc(request, token, "tools/list");
     const tools = result.tools as { name: string; title: string; annotations: Record<string, unknown> }[];
     expect(tools).toHaveLength(19);

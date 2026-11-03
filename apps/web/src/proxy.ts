@@ -2,6 +2,7 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { markdownFor, notFoundMarkdown, prefersMarkdown } from "@/marketing/markdown";
 import { isMcpHost, isMcpPath, MCP_PATH } from "@/mcp/config";
+import { mcpHomePage } from "@/mcp/home";
 import { siteUrl } from "@/lib/site";
 
 /**
@@ -25,8 +26,10 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
 
-  // The MCP host serves only the MCP server and its public OAuth metadata.
+  // The MCP host serves only the MCP server, its public OAuth metadata, and a
+  // home page that carries the Beans icons.
   if (isMcpHost(host)) {
+    if (pathname === "/" && (request.method === "GET" || request.method === "HEAD")) return mcpHomePage();
     if (!isMcpPath(pathname)) return notFound();
     if (pathname !== MCP_PATH) return NextResponse.next();
   } else if (isMcpPath(pathname)) {
