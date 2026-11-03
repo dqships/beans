@@ -97,9 +97,11 @@ Left to do on the launch:
 
 - [ ] Desktop app: see "Desktop app, saved for later" in `RESEARCH.md`
 - [ ] Calendar accounts, attachments, import and export, notifications
+- [ ] Beans MCP (idea, not started): let people connect Claude, ChatGPT and other AI apps to read and change their planner. Plan and open decisions in `docs/ideas/mcp.md`, branch `claude/beans-mcp`
 
 ## Done
 
+- 2026-11-03: Wrote up the Beans MCP idea in `docs/ideas/mcp.md` on branch `claude/beans-mcp`: 14 tools, a Clerk OAuth plus Next.js route plan that reuses the core ops and `applyOne`, limits, cost, six open decisions and a 5 to 6 day build plan. Nothing in the app changed.
 - 2026-11-03: Onboarding's Timebox step now works like the planner's: the day's tasks are the board's cards and drag onto the real Timebox grid, with the live preview and the user's snap step. Blocks are sized by estimate, move by dragging and drag back to the day to lose their time. Picking a card and then an hour still works, for phones, keyboards and screen readers; clicking a block clears it. The grid shows the whole day and opens at the first hour on offer. 19 onboarding browser tests pass (one new, for dragging on, moving and dragging back), and the full browser suite passes (111, 8 skipped). Checked at 1440 and 390 in light and dark. Merged into `main` with PR #24.
 - 2026-11-02: Onboarding's choose step lets each task go to today or tomorrow: Brain Dump tasks have Today and Tomorrow buttons, both days show beside it, the Timebox step plans today when it has tasks (otherwise tomorrow), and the last step sums up both days. 18 onboarding browser tests pass, including a new one; checked at 1440 and 390 in light and dark.
 - 2026-11-02: `e2e:clerk` passes, 4 of 4 (DQ ran it): a real Clerk sign-up walks the 5 setup steps, takes the no-card free days at the paywall, saves a task and syncs it to a second window. It had failed because the dev Convex deployment was running code from before the paywall change; dev only updates when `npx convex dev` runs locally.
@@ -283,7 +285,7 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 
 ## Open decisions
 
-None right now.
+- Beans MCP: six questions in `docs/ideas/mcp.md` (v1 or later, read-only first, OAuth or API keys, who gets it, how it relates to goal lists, directory listing).
 
 ## Needs DQ
 
