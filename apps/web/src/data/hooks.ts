@@ -424,24 +424,11 @@ export function useActions() {
 
       updateSettings: (fields: Partial<Omit<Settings, "id">>) => run([{ kind: "settings", fields }]),
 
-      setOnboardingStep: (step: OnboardingStep) => {
+      /** Goes to a step; `day` also sets the day the Timebox step plans. */
+      setOnboardingStep: (step: OnboardingStep, day?: DateKey) => {
         const onboarding = current().settings.onboarding;
         if (onboarding.status !== "active") return [];
-        return run([{ kind: "settings", fields: { onboarding: { ...onboarding, step } } }]);
-      },
-      /** Plans a different day, taking along whatever is already on the old one. */
-      setOnboardingDay: (from: DateKey, to: DateKey) => {
-        const start = current();
-        const onboarding = start.settings.onboarding;
-        if (onboarding.status !== "active") return [];
-        let state = start;
-        const ops: Op[] = [];
-        for (const task of [...tasksForDay(start, from)].reverse()) {
-          const next = moveTask(state, task.id, { date: to });
-          ops.push(...next);
-          state = applyOps(state, next);
-        }
-        return run([...ops, { kind: "settings", fields: { onboarding: { ...onboarding, day: to } } }]);
+        return run([{ kind: "settings", fields: { onboarding: { ...onboarding, step, ...(day ? { day } : {}) } } }]);
       },
       endOnboarding: (status: "finished" | "skipped") =>
         run([{ kind: "settings", fields: { onboarding: { status, at: Date.now() } } }]),

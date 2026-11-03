@@ -35,6 +35,30 @@ async function reachChooseStep(page: Page, tasks: string[]) {
   await expect(heading(page, /Choose what you'll get to today/)).toBeVisible();
 }
 
+test("some tasks can go to today and others to tomorrow", async ({ page }) => {
+  await startOnboarding(page);
+  await reachChooseStep(page, ["Call the plumber", "Renew my passport", "Clean the gutters"]);
+  await page.getByRole("button", { name: "Move Call the plumber to today" }).click();
+  await page.getByRole("button", { name: "Move Renew my passport to tomorrow" }).click();
+  await expect(page.getByRole("region", { name: "Today" })).toContainText("Call the plumber");
+  await expect(page.getByRole("region", { name: "Tomorrow" })).toContainText("Renew my passport");
+  await expect(page.getByRole("region", { name: "Brain Dump" })).toContainText("Clean the gutters");
+
+  // A task sent back can go to the other day.
+  await page.getByRole("button", { name: "Move Renew my passport back to the Brain Dump" }).click();
+  await page.getByRole("button", { name: "Move Renew my passport to today" }).click();
+  await page.getByRole("button", { name: "Move Clean the gutters to tomorrow" }).click();
+  await expect(page.getByRole("region", { name: "Today" })).toContainText("Renew my passport");
+
+  // The Timebox step plans today, which has tasks; the last step sums up both days.
+  await button(page, "Continue").click();
+  await button(page, "Skip this step").click();
+  await expect(heading(page, "Your day is planned.")).toBeVisible();
+  await expect(page.getByRole("main")).toContainText("2 tasks for today");
+  await expect(page.getByRole("main")).toContainText("1 task for tomorrow.");
+  await expect(page.getByRole("region", { name: "Tomorrow" })).toContainText("Clean the gutters");
+});
+
 test("the vine starts with sign-up done and counts setup in fifths", async ({ page }) => {
   await startOnboarding(page);
   await expect(page.getByRole("list", { name: "Setup, 20% done" })).toContainText("Sign up");
@@ -66,12 +90,10 @@ test("a new account finishes onboarding on a populated planner", async ({ page }
   await expect(button(page, "Continue without labels")).toBeVisible();
 
   await reachChooseStep(page, ["Renew my passport", "Call the plumber"]);
-  await page.getByRole("button", { name: "Move Renew my passport to today" }).click();
-
   // Tomorrow, so the hours on offer don't depend on when the test runs.
-  await page.getByRole("button", { name: "Switch to tomorrow" }).click();
-  await expect(heading(page, /Choose what you'll get to tomorrow/)).toBeVisible();
+  await page.getByRole("button", { name: "Move Renew my passport to tomorrow" }).click();
   await expect(page.getByRole("region", { name: "Tomorrow" })).toContainText("Renew my passport");
+  await expect(page.getByRole("region", { name: "Today" })).not.toContainText("Renew my passport");
   await button(page, "Continue").click();
 
   await expect(heading(page, "Give your first task a time.")).toBeVisible();
@@ -233,8 +255,6 @@ test("every step works from the keyboard", async ({ page }) => {
   await page.keyboard.press("Enter");
 
   await expect(heading(page, /Choose what/)).toBeFocused();
-  await page.getByRole("button", { name: "Switch to tomorrow" }).focus();
-  await page.keyboard.press("Enter");
   await page.getByRole("button", { name: "Move Typed with no mouse to tomorrow" }).focus();
   await page.keyboard.press("Enter");
   await button(page, "Continue").focus();
@@ -270,8 +290,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await audit();
     await reachChooseStep(page, ["Checked for contrast"]);
     await audit();
-    await page.getByRole("button", { name: "Move Checked for contrast to today" }).click();
-    await page.getByRole("button", { name: "Switch to tomorrow" }).click();
+    await page.getByRole("button", { name: "Move Checked for contrast to tomorrow" }).click();
     await button(page, "Continue").click();
     await page.getByRole("button", { name: "Put Checked for contrast at 8:00am" }).click();
     await audit();
