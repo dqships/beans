@@ -63,4 +63,23 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_customer", ["customerId"]),
+  /** AI apps that have used the MCP server for this user. `revokedAt` is set by Disconnect in Settings. */
+  mcpConnections: defineTable({
+    userId: v.string(),
+    /** The OAuth client id, often the URL of the app's client metadata document. */
+    clientId: v.string(),
+    name: v.string(),
+    firstUsedAt: v.number(),
+    lastUsedAt: v.number(),
+    revokedAt: v.union(v.number(), v.null()),
+  }).index("by_user_client", ["userId", "clientId"]),
+  /** One row per user: MCP calls this minute and changes today (UTC), for the rate limits. */
+  mcpUsage: defineTable({
+    userId: v.string(),
+    /** Minutes since the epoch. */
+    minute: v.number(),
+    calls: v.number(),
+    day: v.string(),
+    changes: v.number(),
+  }).index("by_user", ["userId"]),
 });
