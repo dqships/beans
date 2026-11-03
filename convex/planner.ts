@@ -8,6 +8,7 @@ import { defaultSettings } from "../packages/core/src/settings";
 import type { RecordOf, TableName } from "../packages/core/src/model";
 import { requireAccess } from "./billing";
 import { findByClientId, getSettings, requireUser, stateWith, toRecord, toSettings } from "./lib";
+import { moveUser } from "./migrations";
 import { DB_TABLE, opValidator, settingsFields, type ClientTable, type OpInput } from "./validators";
 
 /** How far back dated tasks load by default, in days. Older days load on request. */
@@ -56,13 +57,19 @@ export const load = query({
   },
 });
 
-/** Creates the user's settings on first sign-in, in their time zone. */
+/**
+ * Creates the user's settings on first sign-in, in their time zone. An
+ * account whose rows are still under the old token-identifier id is moved to
+ * the stable id instead, so it keeps its data before the migration reaches it.
+ */
 export const init = mutation({
   args: { timeZone: v.string() },
   handler: async (ctx, { timeZone }) => {
     const userId = await requireUser(ctx);
-    const existing = await getSettings(ctx, userId);
-    if (existing) return;
+    if (await getSettings(ctx, userId)) return;
+    const identity = (await ctx.auth.getUserIdentity())!;
+    await moveUser(ctx, identity.tokenIdentifier, userId);
+    if (await getSettings(ctx, userId)) return;
     const { id, ...fields } = defaultSettings(timeZone, Date.now());
     void id;
     await ctx.db.insert("userSettings", { userId, ...fields });

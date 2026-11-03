@@ -5,11 +5,22 @@ import type { Doc, TableNames } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { DB_TABLE, type ClientTable } from "./validators";
 
+/**
+ * Beans' id for a user, stored in every table's `userId`: the Clerk user id
+ * (the token's subject). Rows used to be stored under Convex's token
+ * identifier, `<issuer>|<subject>`, whose issuer is Clerk's sign-in domain, so
+ * changing that domain would have given everyone a new id.
+ */
+export function stableUserId(id: string): string {
+  const bar = id.indexOf("|");
+  return bar === -1 ? id : id.slice(bar + 1);
+}
+
 /** The signed-in user's stable id, or an error when signed out. */
 export async function requireUser(ctx: QueryCtx | MutationCtx): Promise<string> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) throw new Error("Not signed in");
-  return identity.tokenIdentifier;
+  return identity.subject;
 }
 
 type Owned = { _id: unknown; _creationTime: number; userId: string; clientId: string };

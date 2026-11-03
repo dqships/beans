@@ -22,7 +22,7 @@ import {
   type StripePromotionCode,
   TRIAL_DAYS,
 } from "../packages/core/src/billing";
-import { getSettings, requireUser } from "./lib";
+import { getSettings, requireUser, stableUserId } from "./lib";
 import { stripeClient, subscriptionFields, type StripeCall, type StripeObject, type SubscriptionFields } from "./stripe";
 
 /**
@@ -160,11 +160,13 @@ const subscriptionArgs = {
 /**
  * Stores a subscription Stripe reported, found by the user it names or by its
  * customer. A subscription that has ended never replaces a different one that
- * still keeps the planner open.
+ * still keeps the planner open. Checkouts from before the stable user id name
+ * the user in the old `<issuer>|<subject>` form, which is read as the new one.
  */
 export const saveSubscription = internalMutation({
   args: { userId: v.union(v.string(), v.null()), sub: v.object(subscriptionArgs) },
-  handler: async (ctx, { userId, sub }) => {
+  handler: async (ctx, { userId: named, sub }) => {
+    const userId = named === null ? null : stableUserId(named);
     const row =
       (userId ? await rowFor(ctx, userId) : null) ??
       (await ctx.db
@@ -251,7 +253,7 @@ export const checkout = action({
   handler: async (ctx, { plan, origin }): Promise<{ url: string }> => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new ConvexError("Not signed in");
-    const userId = identity.tokenIdentifier;
+    const userId = identity.subject;
     const back = checkOrigin(origin);
     const { call, ids } = stripe();
     const row = await ctx.runQuery(internal.billing.getRow, { userId });
@@ -326,7 +328,7 @@ export const confirm = action({
     if (!/^cs_(test|live)_[A-Za-z0-9]{10,200}$/.test(sessionId)) throw new ConvexError("Bad checkout session");
     const { call } = stripe();
     const session = await call("GET", `/v1/checkout/sessions/${sessionId}`);
-    if (session.metadata?.user_id !== userId) throw new ConvexError("This checkout belongs to another account");
+    if (stableUserId(session.metadata?.user_id ?? "") !== userId) throw new ConvexError("This checkout belongs to another account");
     if (session.status === "complete" && typeof session.subscription === "string") await syncSubscription(ctx, call, session.subscription, userId);
     return toStatus(await ctx.runQuery(internal.billing.getRow, { userId }));
   },
@@ -353,5 +355,5 @@ export const portal = action({
 async function requireActionUser(ctx: ActionCtx): Promise<string> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) throw new ConvexError("Not signed in");
-  return identity.tokenIdentifier;
+  return identity.subject;
 }
