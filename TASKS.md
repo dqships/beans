@@ -99,6 +99,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Setup can't be skipped any more (only the local test sign-in keeps Skip setup, for tests). The vine starts with a grown Sign up leaf and the header shows setup progress: 20% on Labels, 100% on Done. The onboarding accessibility test now waits for animations to settle, which fixes its intermittent contrast failure. Onboarding, billing, data and board browser tests pass; checked at 1440 and 390 in light and dark.
 - 2026-11-02: The first onboarding step shows task ideas for the parts of life picked so far, in an "Ideas for your Brain Dump" row that fills in as they pick (outlined, not added yet). The next step still offers them to add. Onboarding browser tests pass, plus a new one; checked at 1440 and 390 in light and dark.
 - 2026-11-02: Launch codes come from the `STRIPE_PROMO_CODES` setting on Convex instead of a list in code, like Vidzilla's: the last running code is advertised and applied, used rounds stay listed with their totals, and changes show within a minute with no deploy. 38 Convex and 83 core unit tests pass.
 - 2026-11-02: Vercel Web Analytics. Public pages load Vercel's script from `_document` (they run no React); the planner and sign-in pages use `<Analytics />` with query strings removed, so checkout session IDs aren't sent. Both load only when built on Vercel. 44 public-page tests pass.
@@ -153,6 +154,7 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-02: First-run setup has no Skip button: it's 5 short steps that get people started. Signing up counts as the first fifth of setup progress. (DQ)
 - 2026-11-02: Beans' launch codes are named in `STRIPE_PROMO_CODES` on the Convex deployment, not on Vercel, because the offer and checkout run on Convex. (DQ)
 - 2026-11-02: The paywall selects monthly while a launch code is running and yearly otherwise. No student, teacher or nonprofit discount for now. The founder note uses DQ's own words about why Beans costs what it does. (DQ)
 - 2026-11-02: The paywall comes after first-run setup, so people see their plan before paying, as in the Ellie teardown. A no-card 3-day pass is offered from the paywall; when it ends Beans locks to the paywall (not view-only) and the 7-day card trial stays available. (DQ)

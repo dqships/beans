@@ -35,6 +35,15 @@ async function reachChooseStep(page: Page, tasks: string[]) {
   await expect(heading(page, /Choose what you'll get to today/)).toBeVisible();
 }
 
+test("the vine starts with sign-up done and counts setup in fifths", async ({ page }) => {
+  await startOnboarding(page);
+  await expect(page.getByRole("list", { name: "Setup, 20% done" })).toContainText("Sign up");
+  await expect(page.getByText("20% done", { exact: true })).toBeVisible();
+  await button(page, "Continue without labels").click();
+  await expect(page.getByRole("list", { name: "Setup, 40% done" })).toBeVisible();
+  await expect(page.getByText("40% done", { exact: true })).toBeVisible();
+});
+
 test("the first step shows task ideas for the picked parts of life", async ({ page }) => {
   await startOnboarding(page);
   const ideas = page.getByRole("region", { name: "Ideas for your Brain Dump" });
@@ -252,6 +261,8 @@ for (const colorScheme of ["light", "dark"] as const) {
   test(`axe finds nothing on any step in ${colorScheme}`, async ({ page }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     const audit = async () => {
+      // Contrast is measured on settled screens: mid-fade text reads as too faint.
+      await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"));
       const { violations } = await new AxeBuilder({ page }).analyze();
       expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual([]);
     };

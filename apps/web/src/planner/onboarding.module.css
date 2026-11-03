@@ -29,6 +29,21 @@
   font-weight: var(--text-md-weight);
 }
 
+.headerEnd {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* How far through setup, beside the vine it measures. */
+.progress {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+  font-variant-numeric: tabular-nums;
+}
+
 .brandMark {
   width: var(--control-height-sm);
   height: var(--control-height-sm);
