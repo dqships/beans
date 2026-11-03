@@ -17,6 +17,7 @@ import {
   weekdayName,
   type DateKey,
   type Task,
+  type TimeKey,
 } from "@beans/core";
 import { useActions, useClock, useLabel, useRangeTasks, useSettings, useTimeZone, useToday } from "@/data/hooks";
 import { BeanCheckbox, NowBean } from "@/ui/garden";
@@ -65,7 +66,28 @@ function layout(tasks: Task[]): Lane[] {
   return out;
 }
 
-export function TimeGrid({ days, showHeader, scrollKey }: { days: DateKey[]; showHeader?: boolean; scrollKey?: string }) {
+/** First-run setup's Timebox: a click places the chosen task instead of starting a new one. */
+export interface TimeboxPick {
+  /** Hours offered as buttons, so the keyboard and screen readers can place a task too. */
+  hours: TimeKey[];
+  /** The task a click places, if one is chosen. */
+  title: string | null;
+  place: (date: DateKey, start: TimeKey) => void;
+  /** Clicking a block takes its time away instead of opening its details. */
+  clear: (task: Task) => void;
+}
+
+export function TimeGrid({
+  days,
+  showHeader,
+  scrollKey,
+  pick,
+}: {
+  days: DateKey[];
+  showHeader?: boolean;
+  scrollKey?: string;
+  pick?: TimeboxPick;
+}) {
   const settings = useSettings();
   const zone = useTimeZone();
   const now = useClock();
@@ -78,14 +100,17 @@ export function TimeGrid({ days, showHeader, scrollKey }: { days: DateKey[]; sho
   const format = settings?.timeFormat ?? "12h";
   const tasksByDay = useRangeTasks(days[0]!, days.length);
 
-  // Open near the current hour.
+  // Open near the current hour, or the first hour on offer.
+  const openAt = pick?.hours[0];
   useEffect(() => {
     const el = scroller.current;
     if (!el) return;
-    const minutes = minutesNowIn(zone);
-    el.scrollTop = Math.max(0, ((minutes - startHour * 60) / 60 - 1) * hourPx);
+    const minutes = openAt ? timeToMinutes(openAt) : minutesNowIn(zone);
+    // Half an hour above the first hour on offer keeps its label clear of the top edge.
+    const above = openAt ? 0.5 : 1;
+    el.scrollTop = Math.max(0, ((minutes - startHour * 60) / 60 - above) * hourPx);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scrollKey, hourPx]);
+  }, [scrollKey, hourPx, openAt]);
 
   return (
     <div className={styles.wrap} style={{ ["--hour" as string]: `calc(var(--layout-hour) * ${zoom})` }}>
@@ -121,6 +146,7 @@ export function TimeGrid({ days, showHeader, scrollKey }: { days: DateKey[]; sho
               startHour={startHour}
               hourPx={hourPx}
               nowMinutes={d === today ? minutesNowIn(zone, now) : null}
+              pick={pick}
             />
           ))}
         </div>
@@ -136,6 +162,7 @@ function DayGrid({
   startHour,
   hourPx,
   nowMinutes,
+  pick,
 }: {
   date: DateKey;
   tasks: Task[];
@@ -143,6 +170,7 @@ function DayGrid({
   startHour: number;
   hourPx: number;
   nowMinutes: number | null;
+  pick?: TimeboxPick;
 }) {
   const ui = useUi();
   const settings = useSettings();
@@ -153,12 +181,18 @@ function DayGrid({
   const snap = settings?.snapMinutes ?? 15;
   const offset = startHour * 60;
 
+  const format = settings?.timeFormat ?? "12h";
+
   const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target !== e.currentTarget) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const minutes = offset + ((e.clientY - rect.top) / hourPx) * 60;
     const start = minutesToTime(Math.min(24 * 60 - snap, Math.floor(minutes / snap) * snap));
-    ui.setDraft({ date, start, estimate: 15 });
+    if (pick) {
+      if (pick.title) pick.place(date, start);
+    } else {
+      ui.setDraft({ date, start, estimate: 15 });
+    }
   };
 
   return (
@@ -167,13 +201,28 @@ function DayGrid({
       className={`${styles.day} ${isOver ? styles.dayOver : ""}`}
       onClick={onClick}
       data-timebox={date}
-      aria-label={`Timebox for ${date}. Click an empty time to add a task.`}
+      aria-label={pick ? `Timebox for ${date}` : `Timebox for ${date}. Click an empty time to add a task.`}
     >
       {hours.map((h) => (
         <div key={h} className={styles.hourLine} style={{ top: (h - startHour) * hourPx }} aria-hidden="true" />
       ))}
+      {pick?.hours.map((hour) => {
+        const time = formatTime(hour, format);
+        return (
+          <button
+            key={hour}
+            type="button"
+            className={styles.slot}
+            style={{ top: ((timeToMinutes(hour) - offset) / 60) * hourPx, height: hourPx }}
+            disabled={!pick.title}
+            aria-label={pick.title ? `Put ${pick.title} at ${time}` : `${time} is open`}
+            // The hour its name promises; dragging places a task to the snap step.
+            onClick={() => pick.place(date, hour)}
+          />
+        );
+      })}
       {lanes.map((l) => (
-        <Block key={l.task.id} lane={l} offset={offset} hourPx={hourPx} snap={snap} />
+        <Block key={l.task.id} lane={l} offset={offset} hourPx={hourPx} snap={snap} onPick={pick?.clear} />
       ))}
       {preview && preview.date === date ? (
         <div
@@ -195,7 +244,19 @@ function DayGrid({
   );
 }
 
-function Block({ lane, offset, hourPx, snap }: { lane: Lane; offset: number; hourPx: number; snap: number }) {
+function Block({
+  lane,
+  offset,
+  hourPx,
+  snap,
+  onPick,
+}: {
+  lane: Lane;
+  offset: number;
+  hourPx: number;
+  snap: number;
+  onPick?: (task: Task) => void;
+}) {
   const { task } = lane;
   const ui = useUi();
   const actions = useActions();
@@ -249,13 +310,19 @@ function Block({ lane, offset, hourPx, snap }: { lane: Lane; offset: number; hou
       }}
       onClick={(e) => {
         e.stopPropagation();
-        ui.openTask(task.id);
+        if (onPick) onPick(task);
+        else ui.openTask(task.id);
       }}
       role="button"
-      aria-label={`${task.title}, ${formatTime(task.start!, format)} to ${formatTime(end, format)}`}
+      // When a click clears the block, it's named by what it shows, after the word that says so.
+      aria-label={onPick ? undefined : `${task.title}, ${formatTime(task.start!, format)} to ${formatTime(end, format)}`}
     >
       <div className={styles.blockTop}>
-        <BeanCheckbox size="sm" checked={task.done} onChange={(d) => actions.setDone(task.id, d)} label={`Mark “${task.title}” ${task.done ? "not done" : "done"}`} />
+        {onPick ? (
+          <span className="visually-hidden">Clear </span>
+        ) : (
+          <BeanCheckbox size="sm" checked={task.done} onChange={(d) => actions.setDone(task.id, d)} label={`Mark “${task.title}” ${task.done ? "not done" : "done"}`} />
+        )}
         <span className={styles.blockTitle}>{task.title}</span>
         {past ? <Icon icon={Warning} label="Runs past midnight" /> : null}
       </div>

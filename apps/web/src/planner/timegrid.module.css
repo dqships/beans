@@ -115,6 +115,30 @@
   background: var(--color-surface-2);
 }
 
+/* First-run setup: an hour you can put the chosen task in. */
+.slot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: cell;
+}
+
+.slot:hover:not(:disabled) {
+  background: var(--color-surface-2);
+}
+
+.slot:disabled {
+  cursor: default;
+}
+
+.slot:focus-visible {
+  outline: var(--focus-ring) solid var(--color-primary);
+  outline-offset: calc(var(--focus-ring) * -1);
+}
+
 .hourLine {
   position: absolute;
   left: 0;

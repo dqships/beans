@@ -5,7 +5,7 @@ import { join, resolve } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { defaultSettings } from "@beans/core";
-import { addDaysKey, card, day, openPlanner, signIn, signInOnly, testUser, todayKey } from "./helpers";
+import { addDaysKey, card, day, drag, openPlanner, signIn, signInOnly, testUser, todayKey } from "./helpers";
 
 // These run against the local Convex backend with the test sign-in, apart from the sample test.
 
@@ -234,6 +234,31 @@ test("sample mode opens straight to the planner", async ({ page }) => {
   await openPlanner(page);
   await expect(heading(page, firstStep)).toHaveCount(0);
   await expect(button(page, "Skip setup")).toHaveCount(0);
+});
+
+test("tasks drag onto the Timebox and back, like in the planner", async ({ page }) => {
+  await startOnboarding(page);
+  await reachChooseStep(page, ["Drag me to nine"]);
+  // Tomorrow, so the hours on offer don't depend on when the test runs.
+  await page.getByRole("button", { name: "Move Drag me to nine to tomorrow" }).click();
+  await button(page, "Continue").click();
+  await expect(heading(page, "Give your first task a time.")).toBeVisible();
+
+  const task = page.getByRole("list", { name: "Task to give a time" }).getByRole("button", { name: /^Drag me to nine/ });
+  await drag(page, task, button(page, "Put Drag me to nine at 9:00am"), { targetY: 4 });
+  const block = page.getByRole("button", { name: /^Clear Drag me to nine 9:00am/ });
+  await expect(block).toBeVisible();
+  await expect(button(page, "Continue")).toBeVisible();
+
+  // A block moves by dragging, and the drop doesn't count as a click that clears it.
+  await drag(page, block, button(page, "10:00am is open"), { targetY: 4 });
+  const moved = page.getByRole("button", { name: /^Clear Drag me to nine 10:00am/ });
+  await expect(moved).toBeVisible();
+
+  // Dragged back to the day, it loses its time.
+  await drag(page, moved, page.locator(`[data-drop="day:${addDaysKey(todayKey(), 1)}"]`));
+  await expect(page.getByRole("button", { name: /^Clear Drag me to nine/ })).toHaveCount(0);
+  await expect(button(page, "Skip this step")).toBeVisible();
 });
 
 test("every step works from the keyboard", async ({ page }) => {
