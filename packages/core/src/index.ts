@@ -14,3 +14,4 @@ export * from "./capture";
 export * from "./rollover";
 export * from "./trash";
 export * from "./billing";
+export * from "./analytics";
