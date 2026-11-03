@@ -25,6 +25,8 @@ An MCP server is a web address that AI apps such as Claude, ChatGPT and Cursor c
 5. **MCP comes first.** People's own AI can plan their goals for them: make a list, add labels and tasks, and timebox it all. So Beans won't build AI goal planning into the app for now, and may never need to.
 6. **Directory listings:** how to submit to Claude and ChatGPT, and what a domain change would do, are under "Directory listings" and "Changing the domain later".
 7. **No competitor names on `main`.** Not in docs, code, comments or copy.
+8. **The MCP address is `https://mcp.beans.followusai.com/mcp`.** A host of its own, so the MCP could later move to a separate service without changing the address.
+9. **Beans will move off `followusai.com` eventually,** but not in the foreseeable future. Beans lists on the current domain now and handles the move when it comes (see "Changing the domain later").
 
 ## Why it's worth it
 
@@ -75,7 +77,7 @@ Left out at first: emptying Trash, deleting lists, settings, billing, account, t
 
 Clerk already runs Beans' sign-in, and it has an official guide for an MCP server in a Next.js app. Clerk acts as the OAuth server: it shows the "Allow Claude to access Beans?" screen and issues the access token.
 
-1. **Endpoint:** `https://beans.followusai.com/mcp`, a route in `apps/web` built with Vercel's `mcp-handler`, on the stateless Streamable HTTP transport.
+1. **Endpoint:** `https://mcp.beans.followusai.com/mcp`. It's still a route in `apps/web`, built with Vercel's `mcp-handler` on the stateless Streamable HTTP transport, so there's one codebase and one deploy. `mcp.beans.followusai.com` is added to the same Vercel project with one DNS record in Cloudflare. On that host, `proxy.ts` serves only `/mcp` and the `.well-known` addresses and returns 404 for everything else; the app host doesn't serve `/mcp`. The protected resource metadata's `resource` is exactly `https://mcp.beans.followusai.com/mcp`.
 2. **Sign-in:** `withMcpAuth` plus Clerk's `auth({ acceptsToken: 'oauth_token' })` check the token on every call. A call without a token gets a 401 with a `WWW-Authenticate` header that points at the protected resource metadata. Clerk's helpers serve the `.well-known` OAuth addresses. Those must stay public, so `proxy.ts` lets them through without Clerk's page handling or the markdown answers.
 3. **Client registration:** turn on CIMD ("Publish CIMD support" in Clerk's OAuth applications settings). It's what the current MCP spec, Claude and ChatGPT prefer. Turn on DCR as well only if an AI app people use can't do CIMD. Keep Clerk's consent screen and PKCE on.
 4. **Redirects to allow:** `https://claude.ai/api/mcp/auth_callback` for Claude on the web, desktop and phone. Loopback redirects on any port for Claude Code (`http://localhost:*` and `http://127.0.0.1:*`). `https://chatgpt.com/connector_platform_oauth_redirect` for ChatGPT.
@@ -106,7 +108,7 @@ Access follows `requireAccess`: an active subscription, the 7-day trial or the 3
 
 ## Directory listings
 
-Getting listed means people find Beans inside Claude or ChatGPT and connect with one click. Without a listing, people can still connect by pasting the `/mcp` address as a custom connector.
+Getting listed means people find Beans inside Claude or ChatGPT and connect with one click. Without a listing, people can still connect by pasting `https://mcp.beans.followusai.com/mcp` as a custom connector.
 
 ### Claude Connectors Directory
 
@@ -124,7 +126,7 @@ OpenAI now calls these plugins. A plain MCP server with tools is enough, with no
 
 1. **Who can submit:** an OpenAI platform organization owner, or a member with the Apps Management Write permission, with identity verification done. Individual verification publishes under DQ's name, and business verification under FollowUs AI LLC. The project must not use EU data residency.
 2. **Where:** https://platform.openai.com/plugins, then Upload new or existing plugin.
-3. **Domain check:** the portal gives a token, which Beans serves as plain text at `https://beans.followusai.com/.well-known/openai-apps-challenge`.
+3. **Domain check:** the portal gives a token, which Beans serves as plain text at `https://mcp.beans.followusai.com/.well-known/openai-apps-challenge`.
 4. **What the server needs:** public HTTPS, OAuth 2.1 with PKCE (S256), protected resource metadata, the token's audience set from the `resource` parameter, and the ChatGPT redirect above. API-key connections aren't accepted.
 5. **What you fill in:** name (30 characters), short description (30), long description (4,000), developer name, a square icon and logo of at least 48 px, privacy, support and terms URLs, and example prompts.
 6. **Reviewer material:** a demo account with sample data and no MFA or email codes, 5 test prompts that should work (each with the tools it triggers and the expected result), 3 that shouldn't, a video walkthrough, and release notes.
@@ -139,14 +141,14 @@ OpenAI now calls these plugins. A plain MCP server with tools is enough, with no
 
 ## Changing the domain later
 
-Beans runs on `beans.followusai.com`, and the MCP address, Clerk's sign-in domain (`clerk.beans.followusai.com`) and both directory listings would all be tied to it. Moving to a new domain later would mean:
+Beans will move off `followusai.com` eventually, but not in the foreseeable future. The MCP address (`mcp.beans.followusai.com`), Clerk's sign-in domain (`clerk.beans.followusai.com`) and both directory listings are tied to the current domain. The move will mean:
 
 1. **Every connected AI app has to reconnect.** The MCP address and the OAuth server address both change, so existing tokens stop working. The old address can redirect for a while, but people still sign in again.
 2. **Claude:** the listing's slug stays. Changing the server address isn't self-serve; email mcp-review@anthropic.com first. Any auth change waits for a reviewer, so keep the old address working until the new one is approved.
 3. **ChatGPT:** the domain can't change within a plugin. A new domain means a new plugin with its own domain check, submission and review. OpenAI's docs also mention asking support, so ask them first. The old listing keeps working only while the old address does.
-4. **Beans' own user ids.** This applies with or without MCP. Beans stores every record under Convex's `tokenIdentifier`, which starts with Clerk's issuer address. If Clerk's sign-in domain changes, every user gets a new id and their data stops matching. A domain move needs a migration that rewrites `userId` on every table, or Beans switches to Clerk's user id alone before launch.
+4. **Beans' own user ids.** This applies with or without MCP. Beans stores every record under Convex's `tokenIdentifier`, which starts with Clerk's issuer address. If Clerk's sign-in domain changes, every user gets a new id and their data stops matching. A domain move needs a migration that rewrites `userId` on every table, or Beans switches to Clerk's user id alone before launch. That switch is being made now, in its own pull request, before launch.
 
-So if a new domain is likely, move before submitting to the directories, ideally before launch.
+Because the move isn't soon, Beans lists on `mcp.beans.followusai.com` now and accepts a reconnect and a new ChatGPT listing when it happens. At move time: keep the old addresses running and redirecting until both directories show the new one, email Anthropic before switching, and ask OpenAI support before submitting the new plugin.
 
 ## Cost
 
@@ -156,7 +158,7 @@ No model cost. Each call is one Vercel function run plus one or two Convex calls
 
 1. Move the analytics math to core, with tests. Half a day.
 2. `convex/mcp.ts`: secret check, user id, access check, and one function per tool on top of the core functions, with tests. One day.
-3. The `/mcp` route, Clerk OAuth with CIMD, the `.well-known` addresses and the `proxy.ts` change. One day.
+3. The `/mcp` route on `mcp.beans.followusai.com` (Vercel domain, DNS record, `proxy.ts` host rules), Clerk OAuth with CIMD and the `.well-known` addresses. One day.
 4. Tool definitions: input schemas, descriptions, titles, hints and compact outputs. One day.
 5. Connected apps in Settings, the `/connect-ai` help page, rate limits. One day.
 6. Test with the MCP Inspector, Claude, Claude Code, ChatGPT and Cursor. Half a day.

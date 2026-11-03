@@ -100,7 +100,7 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 - [x] Check the Clerk Dashboard for a Pro tag on OAuth applications: none, so Clerk OAuth (DQ, 2026-11-03)
 - [ ] Move the analytics math to `packages/core`
 - [ ] `convex/mcp.ts`: server secret, user id, access check, one function per tool
-- [ ] `/mcp` route with Clerk OAuth (CIMD), `.well-known` addresses, `proxy.ts`
+- [ ] `/mcp` route at `https://mcp.beans.followusai.com/mcp`: Vercel domain, DNS record, `proxy.ts` host rules, Clerk OAuth (CIMD), `.well-known` addresses
 - [ ] 14 tools with titles and all three hints
 - [ ] Settings > Connected apps, `/connect-ai` help page, rate limits
 - [ ] Test with the MCP Inspector, Claude, Claude Code, ChatGPT and Cursor
@@ -174,6 +174,8 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 
 ## Decisions
 
+- 2026-11-03: The MCP address is `https://mcp.beans.followusai.com/mcp`, a host of its own served by the same Next.js app. (DQ)
+- 2026-11-03: Beans will move off `followusai.com` eventually, but not in the foreseeable future. Launch and the directory listings use the current domain; the move will mean reconnecting AI apps and a new ChatGPT listing (`docs/ideas/mcp.md`, "Changing the domain later"). (DQ)
 - 2026-11-03: Beans MCP is part of v1, with reading and changing from day one. Sign-in is Clerk OAuth: the Clerk Dashboard shows no Pro tag on OAuth applications, so it works on the free plan. Paying subscribers, the 7-day trial and the 3-day no-card pass get it. (DQ)
 - 2026-11-03: MCP comes first. People's own AI can plan goals with Beans' tools, so AI goal planning inside the app isn't being built for now. (DQ)
 - 2026-11-03: No competitor names anywhere on `main`: docs, code, comments or copy. Competitor research stays in its own private repos. (DQ)
@@ -302,7 +304,7 @@ Found during the launch reviews. None of these block the merge. Delete a line on
 
 ## Open decisions
 
-- Beans MCP: whether a domain change is likely. If so, move before launch and before the directory submissions (see "Changing the domain later" in `docs/ideas/mcp.md`).
+None right now.
 
 ## Needs DQ
 
