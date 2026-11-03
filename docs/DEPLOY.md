@@ -91,17 +91,17 @@ Full detail in `docs/BILLING.md`. Stripe secrets go on the Convex deployments on
 
 The Beans MCP server is the `/mcp` route of the same app, at `https://mcp.beans.followusai.com/mcp`. Plan and decisions: `docs/ideas/mcp.md`.
 
-1. Add `mcp.beans.followusai.com` to the Vercel project's domains, and a `CNAME` record for `mcp.beans` to `cname.vercel-dns.com` in Cloudflare, DNS only (not proxied).
+1. Add `mcp.beans.followusai.com` to the Vercel project's domains (`vercel domains add mcp.beans.followusai.com beans --scope followusai`), and the record Vercel asks for in Cloudflare (an `A` record for `mcp.beans` to `76.76.21.21`), DNS only (not proxied).
 2. Make one random secret per deployment (`openssl rand -hex 32`) and set it in both places, without printing it:
 
    ```bash
    openssl rand -hex 32 > /tmp/mcp-secret
-   npx convex env set MCP_SERVER_SECRET --prod < /tmp/mcp-secret
-   vercel env add MCP_SERVER_SECRET production < /tmp/mcp-secret
+   npx convex env set MCP_SERVER_SECRET --deployment prod < /tmp/mcp-secret
+   pbcopy < /tmp/mcp-secret   # paste into Vercel: Settings, Environment Variables, Production
    rm /tmp/mcp-secret
    ```
 
-   Preview deployments need it on their Convex preview deployment too (Convex project settings, default environment variables for previews).
+   Run the Convex command from a checkout linked to the hosted project. In a worktree set up with `pnpm backend:setup` it lands on the local backend instead. Preview deployments need it on their Convex preview deployment too (Convex project settings, default environment variables for previews).
 3. In the Clerk Dashboard, OAuth applications, Settings: turn on **Publish CIMD support**, first on development, then production. Leave client admission at "Any compatible CIMD client". Turn on DCR only for an AI app that can't use CIMD.
 4. Check: `curl -i -X POST https://mcp.beans.followusai.com/mcp` answers 401 with `WWW-Authenticate`, and `https://mcp.beans.followusai.com/.well-known/oauth-protected-resource/mcp` lists `"resource":"https://mcp.beans.followusai.com/mcp"`.
 
