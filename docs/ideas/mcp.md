@@ -20,7 +20,7 @@ An MCP server is a web address that AI apps such as Claude, ChatGPT and Cursor c
 
 1. **Part of v1.** This replaces "MCP: out for now" in `RESEARCH.md`.
 2. **Reading and changing from day one.**
-3. **Clerk OAuth, if the free plan allows it.** If Clerk needs Pro for it, Beans uses API keys for now. See "Clerk on the free plan".
+3. **Clerk OAuth.** DQ checked the Clerk Dashboard: OAuth applications carry no Pro tag, so it works on the free plan. No API keys.
 4. **Who gets it:** paying subscribers, people on the 7-day trial, and people on the 3-day no-card pass.
 5. **MCP comes first.** People's own AI can plan their goals for them: make a list, add labels and tasks, and timebox it all. So Beans won't build AI goal planning into the app for now, and may never need to.
 6. **Directory listings:** how to submit to Claude and ChatGPT, and what a domain change would do, are under "Directory listings" and "Changing the domain later".
@@ -87,11 +87,10 @@ Clerk already runs Beans' sign-in, and it has an official guide for an MCP serve
 
 ### Clerk on the free plan
 
-Clerk's pricing page doesn't list OAuth applications, CIMD or DCR as Pro features. Its MCP and OAuth guides mention no plan requirement either. Clerk's pricing FAQ says features that need an upgrade are tagged in the Dashboard.
+Confirmed on 2026-11-03: the OAuth applications page in the Clerk Dashboard has no Pro tag. Clerk's pricing FAQ says features that need an upgrade carry one, and its pricing page and MCP and OAuth guides name no plan requirement either.
 
-- **Check before building:** open the production instance's OAuth applications page in the Clerk Dashboard and make sure nothing there has a Pro tag. No tag means Clerk OAuth. A tag means API keys.
-- **Fallback, API keys:** Clerk's end-user API keys are on the free plan, capped at 1,000 keys created and 100,000 checks a month. That's enough to start, and Pro removes the caps. Note that ChatGPT's directory doesn't accept API-key connections, so the ChatGPT listing would wait for OAuth.
 - Clerk's OAuth access tokens last 1 day, and refresh tokens don't expire, so people stay connected.
+- When building, turn on "Publish CIMD support" (and DCR only if needed) in the development instance first, then production.
 
 ### Who can use it
 
@@ -155,15 +154,14 @@ No model cost. Each call is one Vercel function run plus one or two Convex calls
 
 ## Build plan
 
-1. Check the Clerk Dashboard for a Pro tag on OAuth applications. Five minutes.
-2. Move the analytics math to core, with tests. Half a day.
-3. `convex/mcp.ts`: secret check, user id, access check, and one function per tool on top of the core functions, with tests. One day.
-4. The `/mcp` route, Clerk OAuth with CIMD, the `.well-known` addresses and the `proxy.ts` change. One day.
-5. Tool definitions: input schemas, descriptions, titles, hints and compact outputs. One day.
-6. Connected apps in Settings, the `/connect-ai` help page, rate limits. One day.
-7. Test with the MCP Inspector, Claude, Claude Code, ChatGPT and Cursor. Half a day.
-8. Privacy policy and terms. Half a day.
-9. Demo account and both directory submissions. Half a day, plus waiting for review.
+1. Move the analytics math to core, with tests. Half a day.
+2. `convex/mcp.ts`: secret check, user id, access check, and one function per tool on top of the core functions, with tests. One day.
+3. The `/mcp` route, Clerk OAuth with CIMD, the `.well-known` addresses and the `proxy.ts` change. One day.
+4. Tool definitions: input schemas, descriptions, titles, hints and compact outputs. One day.
+5. Connected apps in Settings, the `/connect-ai` help page, rate limits. One day.
+6. Test with the MCP Inspector, Claude, Claude Code, ChatGPT and Cursor. Half a day.
+7. Privacy policy and terms. Half a day.
+8. Demo account and both directory submissions. Half a day, plus waiting for review.
 
 About 6 days for one person, plus review time.
 

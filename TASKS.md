@@ -97,7 +97,7 @@ Left to do on the launch:
 People connect Claude, ChatGPT and other AI apps to read and change their planner. Plan in `docs/ideas/mcp.md`, branch `claude/beans-mcp`.
 
 - [x] Decide scope, access, sign-in and who gets it (DQ, 2026-11-03)
-- [ ] Check the Clerk Dashboard: OAuth applications without a Pro tag means Clerk OAuth, otherwise API keys (DQ)
+- [x] Check the Clerk Dashboard for a Pro tag on OAuth applications: none, so Clerk OAuth (DQ, 2026-11-03)
 - [ ] Move the analytics math to `packages/core`
 - [ ] `convex/mcp.ts`: server secret, user id, access check, one function per tool
 - [ ] `/mcp` route with Clerk OAuth (CIMD), `.well-known` addresses, `proxy.ts`
@@ -174,7 +174,7 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 
 ## Decisions
 
-- 2026-11-03: Beans MCP is part of v1, with reading and changing from day one. Sign-in is Clerk OAuth if the free plan allows it, otherwise API keys for now. Paying subscribers, the 7-day trial and the 3-day no-card pass get it. (DQ)
+- 2026-11-03: Beans MCP is part of v1, with reading and changing from day one. Sign-in is Clerk OAuth: the Clerk Dashboard shows no Pro tag on OAuth applications, so it works on the free plan. Paying subscribers, the 7-day trial and the 3-day no-card pass get it. (DQ)
 - 2026-11-03: MCP comes first. People's own AI can plan goals with Beans' tools, so AI goal planning inside the app isn't being built for now. (DQ)
 - 2026-11-03: No competitor names anywhere on `main`: docs, code, comments or copy. Competitor research stays in its own private repos. (DQ)
 - 2026-11-03: Onboarding's Timebox step uses the planner's Timebox grid and dragging, and shows the whole day like the app, opening at the next hour. (DQ)
