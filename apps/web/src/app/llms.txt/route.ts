@@ -6,6 +6,7 @@ export const dynamic = "force-static";
 const links = [
   ["Pricing", publicPages.pricing.path, "Plans, the free trial and how to cancel"],
   ["About", publicPages.about.path, "What Beans is and how it works"],
+  ["Connect your AI app", publicPages.connectAi.path, "How to connect Claude, ChatGPT, Cursor or another MCP app to a Beans planner"],
   ["Contact", publicPages.contact.path, "Support email for help, billing, refunds and account requests"],
   ["Privacy", publicPages.privacy.path, "What Beans collects, why, and who handles it"],
   ["Terms", publicPages.terms.path, "Accounts, the free trial, billing, cancelling and refunds"],

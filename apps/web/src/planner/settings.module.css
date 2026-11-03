@@ -235,3 +235,46 @@
     gap: var(--space-2);
   }
 }
+
+.intro {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.intro a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+/* The MCP address, on a soil line like the other rows, ready to copy. */
+.address {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+}
+
+.addressText {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+  user-select: all;
+}
+
+.appList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.appList p {
+  margin: 0;
+}

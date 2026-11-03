@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/(.*)", headers: securityHeaders },
       // Later entries win. Unknown URLs keep the app policy, because the App Router renders the 404.
-      { source: "/:path(pricing|about|contact|privacy|terms)?", headers: marketingHeaders },
+      { source: "/:path(pricing|about|connect-ai|contact|privacy|terms)?", headers: marketingHeaders },
     ];
   },
 };

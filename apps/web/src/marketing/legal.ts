@@ -12,7 +12,7 @@
 
 export const operator = "FollowUs AI LLC";
 export const supportEmail = "support@followusai.com";
-export const legalUpdated = "November 2, 2026";
+export const legalUpdated = "November 3, 2026";
 
 const mail = `[${supportEmail}](mailto:${supportEmail})`;
 
@@ -50,6 +50,7 @@ export const privacyBody = `Beans is a daily planner run by ${operator} ("we"). 
 - **Your planner.** Tasks, notes, subtasks, lists, labels, estimates, timer history, repeats, templates and settings, including your time zone, so unfinished tasks can move to the next day at your midnight.
 - **Billing.** When you start a trial, Stripe collects your name, email address, card and billing details. We never see your full card number. We send Stripe your Beans account ID so it can link payments to your account, and we store your Stripe customer ID, plan, subscription status and the date your current period ends. In Stripe we can also see your payment history, invoices, billing country, and your card's brand and last four digits.
 - **How the site is used.** Vercel Web Analytics counts page views, with the referring site, country, browser, operating system and device type. It uses no cookies and doesn't identify you across days. Our hosting also logs requests, including IP addresses, to keep the service running and secure.
+- **Connected AI apps.** If you connect an AI app to Beans, we record which app it is and when it last used Beans.
 - **Messages to us.** If you email us, we keep the message and anything you attach.
 
 ## Cookies and local storage
@@ -79,6 +80,10 @@ These companies process information for us, only to provide their part of Beans:
 We may also share information if the law requires it, to protect people's safety, or as part of a sale or merger of the business, in which case this policy would still apply to it.
 
 These providers store data in the United States. When information moves from the European Economic Area or the UK to the US, they rely on safeguards such as Standard Contractual Clauses.
+
+## Connected AI apps
+
+You can connect an AI app, such as Claude or ChatGPT, to your planner. Once you sign in to Beans from that app and allow it, Beans sends the app the parts of your planner it asks for and makes the changes it asks for. What the app and the company behind it do with that information is covered by their own privacy policy, not this one. You can disconnect an app at any time in Settings, under Connected apps. See [Connect your AI app](/connect-ai).
 
 ## How long we keep it
 
@@ -153,6 +158,10 @@ We sometimes offer discount codes, such as at launch. Each code has its own disc
 ## Your tasks
 
 You own what you put in Beans. You give us permission to store, copy and show it only as needed to run Beans for you, such as syncing it between your devices and keeping backups. The [privacy policy](/privacy) explains how we handle it.
+
+## Connected AI apps
+
+If you connect an AI app to Beans, changes it makes to your planner count as changes you made, so check what it plans to do before you approve it. We limit how often connected apps can use Beans, to keep the service running for everyone. You can disconnect an app at any time in Settings, under Connected apps.
 
 ## Using Beans fairly
 

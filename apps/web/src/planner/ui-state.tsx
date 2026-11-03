@@ -15,6 +15,7 @@ export type SettingsSection =
   | "features"
   | "shortcuts"
   | "account"
+  | "connected"
   | "subscription";
 
 export interface BoardApi {
