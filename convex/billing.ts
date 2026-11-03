@@ -10,7 +10,7 @@ import {
   PASS_DAYS,
   pickPromos,
   planForPrice,
-  PROMO_CODES,
+  promoCodes,
   PROMO_PLAN,
   readPromo,
   STRIPE_IDS,
@@ -213,7 +213,7 @@ export const clearPromoCache = () => promoCache.clear();
 
 async function loadPromos(call: StripeCall, now = Date.now()) {
   const found = await Promise.all(
-    PROMO_CODES.map(async (code) => {
+    promoCodes(process.env.STRIPE_PROMO_CODES).map(async (code) => {
       const hit = promoCache.get(code);
       if (hit && now - hit.at < PROMO_CACHE_MS) return hit.promo;
       try {

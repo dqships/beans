@@ -99,6 +99,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: Launch codes come from the `STRIPE_PROMO_CODES` setting on Convex instead of a list in code, like Vidzilla's: the last running code is advertised and applied, used rounds stay listed with their totals, and changes show within a minute with no deploy. 38 Convex and 83 core unit tests pass.
 - 2026-11-02: Vercel Web Analytics. Public pages load Vercel's script from `_document` (they run no React); the planner and sign-in pages use `<Analytics />` with query strings removed, so checkout session IDs aren't sent. Both load only when built on Vercel. 44 public-page tests pass.
 - 2026-11-02: Rechecked the new site launch checklist on a production build of this branch. Added: JSON-LD `WebApplication` with both plans and an `Organization` (FollowUs AI LLC, support contact), `.md` URLs for every public page (`/pricing.md`), and full head tags on sign-in and sign-up. 44 public-page tests pass (axe in both themes, no console errors, headers, robots, sitemap, 404s, markdown), and mobile Lighthouse is 100 in every category on `/` and `/pricing`.
 - 2026-11-02: The paywall now shows the account's saved tasks, "$0 due today" with the trial end date, yearly as $4 a month, where the card goes, and a founder note with DQ's photo. Yearly is selected unless a launch code is running. The paywall page also scrolls now: the app shell's `overflow: hidden` had been cutting it off on short screens. Checked at 1440 and 390 in light and dark.
@@ -151,6 +152,7 @@ Left to do on the launch:
 
 ## Decisions
 
+- 2026-11-02: Beans' launch codes are named in `STRIPE_PROMO_CODES` on the Convex deployment, not on Vercel, because the offer and checkout run on Convex. (DQ)
 - 2026-11-02: The paywall selects monthly while a launch code is running and yearly otherwise. No student, teacher or nonprofit discount for now. The founder note uses DQ's own words about why Beans costs what it does. (DQ)
 - 2026-11-02: The paywall comes after first-run setup, so people see their plan before paying, as in the Ellie teardown. A no-card 3-day pass is offered from the paywall; when it ends Beans locks to the paywall (not view-only) and the 7-day card trial stays available. (DQ)
 - 2026-11-02: Beans lives on `beans.followusai.com`; `followusai.com` hosts other products. Clerk uses the subdomain so its sign-in hosts, account portal and cookies stay under Beans. (DQ)
@@ -283,6 +285,7 @@ Steps only DQ can do. Filled in as phases finish.
 - **After the Vercel deploy**: check HTTPS on beans.followusai.com, and that Vercel's bot protection doesn't block ChatGPT-User, OAI-SearchBot, Claude-User or PerplexityBot. Then run yourwebsitescore.com and is-agentic.com.
 - **Live webhook secret**: reveal the signing secret of "Beans production" in Stripe (Workbench, Webhooks) and set it with `npx convex env set --prod STRIPE_WEBHOOK_SECRET 'whsec_…'`. The live key is already set on production.
 - **Dev Stripe (test mode)**: set a `rk_test_…` key on the dev deployment, enable the test webhook endpoint `we_1UXOyBDyfH6JDnExIerJxiQb` and set its secret, as `docs/BILLING.md` lists.
+- **Promo codes setting**: on launch day, after making `BEANS100` in Stripe, run `npx convex env set --prod STRIPE_PROMO_CODES 'BEANS100'` (or set it in the Convex dashboard). Add each later round's code to the end.
 - **Live launch code**: on launch day, add promotion code `BEANS100` to the live "Launch offer" coupon with 100 uses and a 4-week end date (`docs/BILLING.md`, Start a round).
 - **Comp your own account**: setting the Stripe key turns the paywall on for existing accounts too.
 1. **Clerk sign-up asks for a password as well as an email code.** That differs from `docs/DEPLOY.md`, which says email codes and Google. Keep it, or turn off the password in the Clerk dashboard.

@@ -31,12 +31,19 @@ export const TRIAL_DAYS = 7;
 export const PASS_DAYS = 3;
 
 /**
- * Launch offer codes, oldest first. A round starts when its promotion code is
- * made in Stripe; the last one still running is applied at checkout. Codes
- * Stripe doesn't know are skipped. They discount the monthly plan only: the
- * coupons apply to the monthly product, so yearly checkouts never use them.
+ * Launch offer codes, oldest first, from the `STRIPE_PROMO_CODES` setting on
+ * the Convex deployment: "BEANS100,BEANS50". The last one still running is
+ * applied at checkout and advertised with its count; earlier ones that were
+ * used stay listed as finished rounds. Codes Stripe doesn't know are skipped.
+ * They discount the monthly plan only: the coupons apply to the monthly
+ * product, so yearly checkouts never use them.
  */
-export const PROMO_CODES = ["BEANS100", "BEANS50", "BEANS25"];
+export function promoCodes(setting: string | undefined): string[] {
+  return (setting ?? "")
+    .split(",")
+    .map((code) => code.trim())
+    .filter(Boolean);
+}
 export const PROMO_PLAN: PlanId = "monthly";
 
 /** Stripe IDs per mode. The mode follows the secret key (`sk_test_`, `rk_live_`...). Not secret. */

@@ -86,6 +86,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", stripe.fetchMock);
   vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_fake");
   vi.stubEnv("STRIPE_WEBHOOK_SECRET", SECRET);
+  vi.stubEnv("STRIPE_PROMO_CODES", "BEANS100, BEANS50,BEANS25");
 });
 
 afterEach(() => {
@@ -308,6 +309,24 @@ describe("checkout", () => {
     const tries = stripe.calls.filter((c) => c.path === "/v1/checkout/sessions");
     expect(tries.map((c) => c.body.has("discounts[0][promotion_code]"))).toEqual([true, false]);
     expect(tries[1].body.get("allow_promotion_codes")).toBe("true");
+  });
+
+  it("follows STRIPE_PROMO_CODES: the last running code leads and used rounds stay listed", async () => {
+    const coupon = { name: "Launch offer", percent_off: 100, duration: "repeating", duration_in_months: 3, valid: true };
+    stripe.promos.set("BEANS100", { id: "promo_100", code: "BEANS100", active: true, times_redeemed: 100, max_redemptions: 100, coupon });
+    stripe.promos.set("SPRING30", { id: "promo_s30", code: "SPRING30", active: true, times_redeemed: 2, max_redemptions: 50, coupon: { ...coupon, name: "Spring offer", percent_off: 30 } });
+    stripe.promos.set("HIDDEN", { id: "promo_h", code: "HIDDEN", active: true, times_redeemed: 0, coupon });
+    vi.stubEnv("STRIPE_PROMO_CODES", "BEANS100,SPRING30");
+    const { t } = setup();
+    const offer = await t.action(api.billing.offer, {});
+    expect(offer.promo).toMatchObject({ code: "SPRING30", claimed: "2 of 50 claimed" });
+    expect(offer.pastPromos).toHaveLength(1);
+    expect(offer.pastPromos[0]).toMatch(/100 people/);
+
+    // No setting, no advertised code: checkout falls back to the code box.
+    clearPromoCache();
+    vi.stubEnv("STRIPE_PROMO_CODES", "");
+    expect(await t.action(api.billing.offer, {})).toMatchObject({ promo: null, pastPromos: [] });
   });
 
   it("shows the offer with its count, or full prices without Stripe", async () => {
