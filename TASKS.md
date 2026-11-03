@@ -88,7 +88,7 @@ Left to do on the launch:
 
 - [x] First-run onboarding: labels, Brain Dump, choose a day, Timebox, done
 - [x] Saved per account, resumes after a reload and on a second device, and can be skipped
-- [ ] Run the real Clerk sign-up through onboarding (DQ, see Needs DQ)
+- [x] Run the real Clerk sign-up through onboarding (DQ ran `e2e:clerk` on 2026-11-02)
 - [x] Paywall after first-run setup, with 3 free days and no card as the alternative to the card trial
 
 ### Later
@@ -99,6 +99,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: `e2e:clerk` passes, 4 of 4 (DQ ran it): a real Clerk sign-up walks the 5 setup steps, takes the no-card free days at the paywall, saves a task and syncs it to a second window. It had failed because the dev Convex deployment was running code from before the paywall change; dev only updates when `npx convex dev` runs locally.
 - 2026-11-02: Setup can't be skipped any more (only the local test sign-in keeps Skip setup, for tests). The vine starts with a grown Sign up leaf and the header shows setup progress: 20% on Labels, 100% on Done. The onboarding accessibility test now waits for animations to settle, which fixes its intermittent contrast failure. Onboarding, billing, data and board browser tests pass; checked at 1440 and 390 in light and dark.
 - 2026-11-02: The first onboarding step shows task ideas for the parts of life picked so far, in an "Ideas for your Brain Dump" row that fills in as they pick (outlined, not added yet). The next step still offers them to add. Onboarding browser tests pass, plus a new one; checked at 1440 and 390 in light and dark.
 - 2026-11-02: Launch codes come from the `STRIPE_PROMO_CODES` setting on Convex instead of a list in code, like Vidzilla's: the last running code is advertised and applied, used rounds stay listed with their totals, and changes show within a minute with no deploy. 38 Convex and 83 core unit tests pass.
