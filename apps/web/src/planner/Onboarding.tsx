@@ -217,7 +217,36 @@ function LabelsStep() {
           );
         })}
       </div>
+      <IdeaPreview />
     </Frame>
+  );
+}
+
+/**
+ * Task ideas for the parts of life picked so far, so the first step already
+ * shows what Beans will hold. They're added for real on the next step.
+ */
+function IdeaPreview() {
+  const labels = useLabels();
+  const ideas = labels.length ? taskIdeas(labels, []) : [];
+  return (
+    <Row title="Ideas for your Brain Dump">
+      {ideas.length ? (
+        <>
+          <ul className={styles.tasks} aria-live="polite">
+            {ideas.map((idea) => (
+              <li key={idea.title} className={styles.idea}>
+                <LabelDot color={labels.find((l) => l.id === idea.labelId)?.color} />
+                <span className={styles.taskTitle}>{idea.title}</span>
+              </li>
+            ))}
+          </ul>
+          <p className={styles.empty}>You can add any of these on the next step, or write your own.</p>
+        </>
+      ) : (
+        <p className={styles.empty}>Pick a part of your life to see task ideas for it.</p>
+      )}
+    </Row>
   );
 }
 

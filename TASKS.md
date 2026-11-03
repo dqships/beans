@@ -99,6 +99,7 @@ Left to do on the launch:
 
 ## Done
 
+- 2026-11-02: The first onboarding step shows task ideas for the parts of life picked so far, in an "Ideas for your Brain Dump" row that fills in as they pick (outlined, not added yet). The next step still offers them to add. Onboarding browser tests pass, plus a new one; checked at 1440 and 390 in light and dark.
 - 2026-11-02: Launch codes come from the `STRIPE_PROMO_CODES` setting on Convex instead of a list in code, like Vidzilla's: the last running code is advertised and applied, used rounds stay listed with their totals, and changes show within a minute with no deploy. 38 Convex and 83 core unit tests pass.
 - 2026-11-02: Vercel Web Analytics. Public pages load Vercel's script from `_document` (they run no React); the planner and sign-in pages use `<Analytics />` with query strings removed, so checkout session IDs aren't sent. Both load only when built on Vercel. 44 public-page tests pass.
 - 2026-11-02: Rechecked the new site launch checklist on a production build of this branch. Added: JSON-LD `WebApplication` with both plans and an `Organization` (FollowUs AI LLC, support contact), `.md` URLs for every public page (`/pricing.md`), and full head tags on sign-in and sign-up. 44 public-page tests pass (axe in both themes, no console errors, headers, robots, sitemap, 404s, markdown), and mobile Lighthouse is 100 in every category on `/` and `/pricing`.

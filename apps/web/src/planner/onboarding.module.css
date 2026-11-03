@@ -305,6 +305,18 @@
   outline-offset: calc(var(--border-width) * -1);
 }
 
+/* An idea not planted yet: the task card's shape, drawn as an outline on the soil. */
+.idea {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: calc(var(--control-height) + var(--space-2));
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+}
+
 .taskTitle {
   flex: 1;
   min-width: 0;

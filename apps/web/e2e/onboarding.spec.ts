@@ -35,6 +35,22 @@ async function reachChooseStep(page: Page, tasks: string[]) {
   await expect(heading(page, /Choose what you'll get to today/)).toBeVisible();
 }
 
+test("the first step shows task ideas for the picked parts of life", async ({ page }) => {
+  await startOnboarding(page);
+  const ideas = page.getByRole("region", { name: "Ideas for your Brain Dump" });
+  await expect(ideas).toContainText("Pick a part of your life");
+  await page.getByRole("checkbox", { name: "Health" }).click();
+  await expect(ideas).toContainText("Go for a walk");
+  await page.getByRole("checkbox", { name: "Money" }).click();
+  await expect(ideas).toContainText("Pay the bills");
+  await page.getByRole("checkbox", { name: "Health" }).click();
+  await expect(ideas).not.toContainText("Go for a walk");
+
+  // The same ideas are offered on the next step, where they can be added.
+  await button(page, "Continue").click();
+  await expect(page.getByRole("group", { name: "Task ideas" })).toContainText("Pay the bills");
+});
+
 test("a new account finishes onboarding on a populated planner", async ({ page }) => {
   await startOnboarding(page);
   await expect(page.getByRole("region", { name: "Days" })).toHaveCount(0);
