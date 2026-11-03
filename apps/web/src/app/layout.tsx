@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
 import { siteUrl, themeColors } from "@/lib/site";
+import { PlannerAnalytics } from "./analytics";
 import { ThemeScript } from "./theme-script";
 import "./globals.css";
 
@@ -41,7 +42,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <ThemeScript />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Vercel serves the analytics script; anywhere else it would 404. */}
+        {process.env.VERCEL ? <PlannerAnalytics /> : null}
+      </body>
     </html>
   );
 }
