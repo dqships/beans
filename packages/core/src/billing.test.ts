@@ -7,6 +7,7 @@ import {
   describePromo,
   grantsAccess,
   openAt,
+  promoCodes,
   pickPromos,
   planForPrice,
   readPromo,
@@ -178,5 +179,13 @@ describe("open at", () => {
     expect(openAt({ enforced: true, status: null, passEnd: end }, end - 1)).toBe(true);
     expect(openAt({ enforced: true, status: null, passEnd: end }, end)).toBe(false);
     expect(openAt({ enforced: true, status: "canceled", passEnd: end }, end + 1)).toBe(false);
+  });
+});
+
+describe("promo codes setting", () => {
+  it("reads a comma-separated list, oldest first, ignoring spaces and blanks", () => {
+    expect(promoCodes("BEANS100, BEANS50,,BEANS25 ")).toEqual(["BEANS100", "BEANS50", "BEANS25"]);
+    expect(promoCodes("")).toEqual([]);
+    expect(promoCodes(undefined)).toEqual([]);
   });
 });

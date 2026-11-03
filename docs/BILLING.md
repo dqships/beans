@@ -16,7 +16,7 @@ Beans sells one subscription through Stripe, on the FollowUs AI account (the sam
 
 | Piece | Where |
 |---|---|
-| Plans, Stripe IDs per mode, launch code list, offer and status wording | `packages/core/src/billing.ts` (tests: `billing.test.ts`) |
+| Plans, Stripe IDs per mode, launch code parsing, offer and status wording | `packages/core/src/billing.ts` (tests: `billing.test.ts`) |
 | Stripe client and webhook signature check (no SDK) | `convex/stripe.ts` |
 | Status query, checkout, portal, confirm, offer, the write lock | `convex/billing.ts` (tests: `convex/billing.test.ts`) |
 | Webhook endpoint `POST /stripe/webhook` | `convex/http.ts` |
@@ -97,7 +97,15 @@ Without the last two, the launch offer stays hidden and checkout still works at 
 
 ## Launch offers
 
-`PROMO_CODES` in `packages/core/src/billing.ts` lists the rounds oldest first: `BEANS100`, `BEANS50`, `BEANS25`. The last code that's running (active, under its cap, before its end) is applied to monthly checkouts for the buyer, and the pricing page and paywall show it with its live count and end date. Finished rounds that were used stay listed ("Launch offer: 100 people got 3 months of Beans free."). Codes that don't exist in Stripe yet are skipped, so a round starts the moment its promotion code exists. No deploy needed.
+The **`STRIPE_PROMO_CODES`** setting on the Convex deployment lists the rounds, oldest first, comma-separated: `BEANS100,BEANS50`. Same name and format as Vidzilla's, but it lives on Convex (next to `STRIPE_SECRET_KEY`), because the paywall offer and checkout run there. The last code that's running (active, under its cap, before its end) is applied to monthly checkouts for the buyer, and the pricing page and paywall show it with its live count and end date. Earlier rounds that were used stay listed ("Launch offer: 100 people got 3 months of Beans free."). Codes that don't exist in Stripe yet are skipped. Changes show within a minute, with no deploy. Without the setting, no offer shows and first checkouts get Stripe's code box instead.
+
+Set it in the Convex dashboard (Production, Settings, Environment Variables) or:
+
+```bash
+npx convex env set --prod STRIPE_PROMO_CODES 'BEANS100'
+```
+
+To run the next round, add its code to the end (`BEANS100,BEANS50`); keep the old ones so their totals stay visible. Any promotion code works, not only these three, as long as its coupon applies to the Beans monthly product only.
 
 The names aren't `LAUNCH100`: promotion codes are unique across the Stripe account, and Vidzilla uses the `LAUNCH` names.
 
@@ -107,7 +115,7 @@ The names aren't `LAUNCH100`: promotion codes are unique across the Stripe accou
 | 2 | `BEANS50` | `beans-round-2-50`: 50% off, 3 months, "Round 2" | 250 | 2 weeks |
 | 3 | `BEANS25` | `beans-round-3-25`: 25% off, 3 months, "Round 3" | 500 | 2 weeks |
 
-**Start a round** in the Stripe dashboard: Product catalog, Coupons, open the round's coupon, Add promotion code. Code as above, **Limit the number of times this code can be redeemed** to the cap, and **Add an expiration date** at the round's end. Promotion codes can't get an end date later, so set it when you make it.
+**Start a round** in the Stripe dashboard: Product catalog, Coupons, open the round's coupon, Add promotion code. Code as above, **Limit the number of times this code can be redeemed** to the cap, and **Add an expiration date** at the round's end. Promotion codes can't get an end date later, so set it when you make it. Then add the code to the end of `STRIPE_PROMO_CODES`.
 
 The 3 months count from the start of the trial, and Stripe discounts every invoice that starts inside them, so a buyer gets their first 3 paid months at the discount (trial, then 3 months, then $6 a month). Returning customers get no trial, no code and no code box.
 
