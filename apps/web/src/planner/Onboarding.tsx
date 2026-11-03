@@ -30,6 +30,7 @@ import {
   useTimeZone,
   useToday,
 } from "@/data/hooks";
+import { authMode } from "@/data/auth-mode";
 import { useBilling } from "@/data/billing";
 import { Button } from "@/ui/Button";
 import { Chip, LabelDot, TextInput } from "@/ui/controls";
@@ -105,11 +106,15 @@ function Frame({
             <Mascot className={styles.brandMark} />
             Beans
           </span>
-          {following ? (
-            <Button variant="quiet" onClick={() => actions.endOnboarding("skipped")}>
-              Skip setup
-            </Button>
-          ) : null}
+          <span className={styles.headerEnd}>
+            {/* Setup is short, so people can't skip it. Only the local test sign-in can, to reach an empty planner. */}
+            {following && authMode === "test" ? (
+              <Button variant="quiet" onClick={() => actions.endOnboarding("skipped")}>
+                Skip setup
+              </Button>
+            ) : null}
+            <span className={styles.progress} aria-hidden="true">{`${setupPercent(step)}% done`}</span>
+          </span>
         </div>
         <Vine step={step} />
       </header>
@@ -147,16 +152,31 @@ function Frame({
   );
 }
 
-/** Progress as a vine that grows a leaf for each step reached. */
+/**
+ * How far through setup: signing up counts as the first fifth, so the first
+ * step reads 20% and the last 100%.
+ */
+function setupPercent(step: OnboardingStep): number {
+  return Math.round(((ONBOARDING_STEPS.indexOf(step) + 1) / ONBOARDING_STEPS.length) * 100);
+}
+
+/** Progress as a vine that grows a leaf for each step reached, starting from sign-up, which is already done. */
 function Vine({ step }: { step: OnboardingStep }) {
   const reached = ONBOARDING_STEPS.indexOf(step);
+  const leaf = (
+    <svg className={styles.vineLeaf} viewBox="0 0 24 16" aria-hidden="true">
+      <path d="M2 8 C6 1 16 0 22 8 C16 16 6 15 2 8 Z" />
+    </svg>
+  );
   return (
-    <ol className={styles.vine} aria-label={`Step ${reached + 1} of ${ONBOARDING_STEPS.length}`}>
+    <ol className={styles.vine} aria-label={`Setup, ${setupPercent(step)}% done`}>
+      <li className={styles.grown}>
+        {leaf}
+        <span>Sign up</span>
+      </li>
       {ONBOARDING_STEPS.map((id, i) => (
         <li key={id} className={i <= reached ? styles.grown : undefined} aria-current={id === step ? "step" : undefined}>
-          <svg className={styles.vineLeaf} viewBox="0 0 24 16" aria-hidden="true">
-            <path d="M2 8 C6 1 16 0 22 8 C16 16 6 15 2 8 Z" />
-          </svg>
+          {leaf}
           <span>{STEPS[id].name}</span>
         </li>
       ))}

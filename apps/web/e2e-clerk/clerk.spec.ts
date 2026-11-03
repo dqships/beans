@@ -14,6 +14,19 @@ const id = randomBytes(4).toString("hex");
 const email = `beans-${id}+clerk_test@example.com`;
 const password = `${randomBytes(16).toString("hex")}-Bn1`;
 
+/** Walks first-run setup the short way. Real accounts can't skip it. */
+async function finishSetup(page: Page) {
+  await page.getByRole("button", { name: "Continue without labels" }).click({ timeout: 30_000 });
+  const add = page.getByRole("textbox", { name: "Add a task" });
+  await add.fill(`Set up through Clerk ${id}`);
+  await add.press("Enter");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("button", { name: `Move Set up through Clerk ${id} to today` }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("button", { name: /Skip this step|Continue/ }).first().click();
+  await page.getByRole("button", { name: /Open my planner|Continue/ }).click();
+}
+
 async function signUp(page: Page) {
   await setupClerkTestingToken({ page });
   await page.goto("/sign-up");
@@ -60,7 +73,7 @@ test("the whole sign-up form can be reached on a short screen", async ({ page })
 
 test("sign up, save a task, sync a second window, sign out", async ({ context, page }) => {
   await signUp(page);
-  await page.getByRole("button", { name: "Skip setup" }).click({ timeout: 30_000 });
+  await finishSetup(page);
   await expect(page.getByRole("region", { name: "Days" })).toBeVisible({ timeout: 30_000 });
 
   const title = `Saved through Clerk ${id}`;
