@@ -105,7 +105,22 @@ The Beans MCP server is the `/mcp` route of the same app, at `https://mcp.beans.
 3. In the Clerk Dashboard, OAuth applications, Settings: turn on **Publish CIMD support**, first on development, then production. Leave client admission at "Any compatible CIMD client". Turn on DCR only for an AI app that can't use CIMD.
 4. Check: `curl -i -X POST https://mcp.beans.followusai.com/mcp` answers 401 with `WWW-Authenticate`, and `https://mcp.beans.followusai.com/.well-known/oauth-protected-resource/mcp` lists `"resource":"https://mcp.beans.followusai.com/mcp"`.
 
-### 6. Before a public launch
+### 6. PostHog
+
+Product analytics go to the Beans PostHog project (id 708990, US cloud). The project key is public.
+
+| Event | Sent from | When |
+|---|---|---|
+| `signed_up` | `planner.init` (Convex) | The account's settings are created on first sign-in. Sets the person's `email`. |
+| `activated` | `noteActivation` in `convex/analytics.ts`, called by `planner.apply` and the MCP tools | The first time a task lands on a day: added there, or moved from the Brain Dump or a list. `source` is `app` or `mcp`. Once per account (`userSettings.activatedAt`). |
+| `paid` | `billing.recordPayment`, from `invoice.paid` on the Stripe webhook | The first invoice with a charge, once per account (`billing.paidAt`). `plan`, `amount` in dollars (6, not 600), `currency`. |
+
+Every event has `product: "beans"` and the Clerk user id as `distinct_id`; the planner calls `posthog.identify` with the same id and the email. Server events go out from hosted Convex deployments only, so local backends and tests send nothing. `POSTHOG_KEY` on a deployment overrides the built-in key.
+
+1. Vercel: `NEXT_PUBLIC_POSTHOG_KEY` (the `phc_…` key) for Production and Preview. Without it the planner loads no PostHog.
+2. Stripe: add `invoice.paid` to the events of the "Beans production" webhook endpoint (and the test one). Without it `paid` never fires.
+
+### 7. Before a public launch
 
 - Legal review: privacy policy, terms, and what sign-in data Clerk and Convex store.
 

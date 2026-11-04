@@ -96,3 +96,23 @@ export function subscriptionFields(sub: StripeObject) {
 }
 
 export type SubscriptionFields = ReturnType<typeof subscriptionFields>;
+
+/**
+ * A paid invoice reduced to what the `paid` event needs, or null when nothing
+ * was charged (a trial or a 100% launch code). Reads both invoice shapes: the
+ * subscription and its metadata sit at the top level up to API version
+ * 2025-02-24, and under `parent.subscription_details` from 2025-03-31.
+ * Amounts stay in the smallest currency unit, as Stripe sends them.
+ */
+export function paidInvoice(invoice: StripeObject) {
+  if (invoice.status !== "paid" || typeof invoice.amount_paid !== "number" || invoice.amount_paid <= 0) return null;
+  const details = invoice.parent?.subscription_details ?? invoice.subscription_details ?? {};
+  const line = invoice.lines?.data?.[0];
+  return {
+    customerId: typeof invoice.customer === "string" ? invoice.customer : String(invoice.customer?.id ?? ""),
+    metadata: (details.metadata ?? {}) as Record<string, string>,
+    priceId: (line?.price?.id ?? line?.pricing?.price_details?.price ?? null) as string | null,
+    amount: invoice.amount_paid as number,
+    currency: String(invoice.currency ?? "").toLowerCase(),
+  };
+}

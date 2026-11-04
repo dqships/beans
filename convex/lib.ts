@@ -36,10 +36,11 @@ export function toRecord<T extends Owned>(doc: T): Stripped<T> {
 }
 
 export function toSettings(doc: Doc<"userSettings">): Settings {
-  const { _id, _creationTime, userId, ...rest } = doc;
+  const { _id, _creationTime, userId, activatedAt, ...rest } = doc;
   void _id;
   void _creationTime;
   void userId;
+  void activatedAt;
   return { id: "settings", ...rest, onboarding: rest.onboarding ?? ONBOARDED };
 }
 

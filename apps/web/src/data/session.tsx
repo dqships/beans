@@ -7,6 +7,7 @@ import { useAuth, useClerk, useUser } from "@clerk/nextjs";
 import { AccountContext, type Account } from "@/planner/account";
 import { authMode } from "./auth-mode";
 import { ConvexDataProvider } from "./convex-provider";
+import { identifyUser, resetAnalytics } from "./posthog";
 import { SampleDataProvider } from "./sample-provider";
 import { setTestUser, useTestUser } from "./test-auth-client";
 
@@ -60,6 +61,10 @@ function ClerkAccount({ children }: { children: ReactNode }) {
   const clerk = useClerk();
   const email = user?.primaryEmailAddress?.emailAddress ?? null;
   const name = user?.fullName || email;
+  const userId = user?.id;
+  useEffect(() => {
+    if (userId) identifyUser(userId, email);
+  }, [userId, email]);
   const account: Account = {
     name,
     email,
@@ -67,7 +72,10 @@ function ClerkAccount({ children }: { children: ReactNode }) {
     // Clerk gives everyone a generated picture; only show one they chose.
     imageUrl: user?.hasImage ? user.imageUrl : null,
     manage: () => clerk.openUserProfile(),
-    signOut: () => void clerk.signOut({ redirectUrl: "/sign-in" }),
+    signOut: () => {
+      resetAnalytics();
+      void clerk.signOut({ redirectUrl: "/sign-in" });
+    },
   };
   return <AccountContext.Provider value={account}>{children}</AccountContext.Provider>;
 }

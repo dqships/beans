@@ -46,7 +46,7 @@ export const publicPages = {
     path: "/privacy",
     title: "Beans privacy policy: what the planner stores and why",
     description:
-      "What Beans collects, why, and who handles it: Clerk for sign-in, Convex for your planner, Stripe for payments and Vercel for hosting and analytics.",
+      "What Beans collects, why, and who handles it: Clerk for sign-in, Convex for your planner, Stripe for payments, Vercel for hosting and PostHog for analytics.",
     lastModified: "2026-11-03",
   },
   terms: {

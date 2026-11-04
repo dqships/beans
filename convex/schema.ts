@@ -39,7 +39,12 @@ export default defineSchema({
   attachments: defineTable({ ...owned, ...attachmentFields })
     .index("by_user_client", ["userId", "clientId"])
     .index("by_user_task", ["userId", "taskId"]),
-  userSettings: defineTable({ userId: v.string(), ...settingsFields })
+  userSettings: defineTable({
+    userId: v.string(),
+    ...settingsFields,
+    /** When the user first planned a day, for the `activated` event. Server only: `toSettings` leaves it out. */
+    activatedAt: v.optional(v.number()),
+  })
     .index("by_user", ["userId"])
     .index("by_last_rollover", ["lastRollover"]),
   /** One row per user: their Stripe customer and newest subscription, kept current by the Stripe webhook. */
@@ -59,6 +64,8 @@ export default defineSchema({
     trialUsed: v.boolean(),
     /** When the no-card free days end. Set once, so they're given once. */
     passEnd: v.optional(v.union(v.number(), v.null())),
+    /** When the first paid invoice arrived, so the `paid` event fires once. */
+    paidAt: v.optional(v.number()),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])

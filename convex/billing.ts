@@ -22,6 +22,7 @@ import {
   type StripePromotionCode,
   TRIAL_DAYS,
 } from "../packages/core/src/billing";
+import { track } from "./analytics";
 import { getSettings, requireUser, stableUserId } from "./lib";
 import { stripeClient, subscriptionFields, type StripeCall, type StripeObject, type SubscriptionFields } from "./stripe";
 
@@ -183,6 +184,32 @@ export const saveSubscription = internalMutation({
     if (row.subscriptionId && row.subscriptionId !== sub.subscriptionId && grantsAccess(row.status) && !grantsAccess(sub.status)) return "kept";
     await ctx.db.patch(row._id, fields);
     return "saved";
+  },
+});
+
+/**
+ * A paid invoice from the Stripe webhook. The first one with a charge sends
+ * `paid`, once per account (`paidAt`), so renewals don't. The amount is in
+ * major units (6 for $6). The account is found by the user the subscription
+ * names, or by its customer.
+ */
+export const recordPayment = internalMutation({
+  args: { userId: v.union(v.string(), v.null()), customerId: v.string(), plan: v.union(v.string(), v.null()), amount: v.number(), currency: v.string() },
+  handler: async (ctx, { userId: named, customerId, plan, amount, currency }) => {
+    const userId = named ? stableUserId(named) : null;
+    const row =
+      (userId ? await rowFor(ctx, userId) : null) ??
+      (customerId
+        ? await ctx.db
+            .query("billing")
+            .withIndex("by_customer", (q) => q.eq("customerId", customerId))
+            .first()
+        : null);
+    if (!row) return "unknown";
+    if (row.paidAt) return "already paid";
+    await ctx.db.patch(row._id, { paidAt: Date.now() });
+    await track(ctx, "paid", row.userId, { plan, amount: amount / 100, currency });
+    return "paid";
   },
 });
 

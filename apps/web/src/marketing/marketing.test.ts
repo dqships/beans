@@ -54,7 +54,7 @@ describe("content security policy", () => {
     expect(policy).toContain("frame-ancestors 'self'");
   });
 
-  it("lets the planner reach Clerk and Convex", () => {
+  it("lets the planner reach Clerk, Convex and PostHog", () => {
     const policy = appPolicy({
       dev: false,
       clerkPublishableKey: key("clerk.example.com", "live"),
@@ -63,6 +63,7 @@ describe("content security policy", () => {
     expect(policy).toMatch(/script-src [^;]*https:\/\/clerk\.example\.com/);
     expect(policy).toMatch(/connect-src [^;]*https:\/\/clerk\.example\.com/);
     expect(policy).toMatch(/connect-src [^;]*wss:\/\/happy-bean-123\.convex\.cloud/);
+    expect(policy).toMatch(/connect-src [^;]*https:\/\/us\.i\.posthog\.com/);
     expect(policy).toMatch(/frame-src [^;]*https:\/\/challenges\.cloudflare\.com/);
     expect(policy).not.toContain("unsafe-eval");
   });
