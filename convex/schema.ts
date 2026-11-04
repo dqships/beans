@@ -44,6 +44,8 @@ export default defineSchema({
     ...settingsFields,
     /** When the user first planned a day, for the `activated` event. Server only: `toSettings` leaves it out. */
     activatedAt: v.optional(v.number()),
+    /** The user's local day (`YYYY-MM-DD`) of the last `day_planned` event, so it fires once a day. Server only too. */
+    lastDayPlannedOn: v.optional(v.string()),
   })
     .index("by_user", ["userId"])
     .index("by_last_rollover", ["lastRollover"]),
@@ -66,6 +68,8 @@ export default defineSchema({
     passEnd: v.optional(v.union(v.number(), v.null())),
     /** When the first paid invoice arrived, so the `paid` event fires once. */
     paidAt: v.optional(v.number()),
+    /** Subscriptions whose end was reported, so `subscription_cancelled` fires once each. */
+    cancelledSubscriptions: v.optional(v.array(v.string())),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])

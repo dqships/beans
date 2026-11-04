@@ -3,6 +3,8 @@ import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server
 import { markdownFor, notFoundMarkdown, prefersMarkdown } from "@/marketing/markdown";
 import { isMcpHost, isMcpPath, MCP_PATH } from "@/mcp/config";
 import { siteUrl } from "@/lib/site";
+import { isBot, isPrefetch, pageviewFor, sendPageview } from "@/lib/pageview";
+import { carriedSource, carryLinks, MARKETING_PATHS } from "@/lib/source";
 
 /**
  * Clerk's request handling, when Clerk is set up, on the routes that use it.
@@ -21,7 +23,55 @@ const notFound = () => new NextResponse("Not found", { status: 404, headers: { "
 
 const markdownHeaders = { "Content-Type": "text/markdown; charset=utf-8", Vary: "Accept" };
 
-export default function proxy(request: NextRequest, event: NextFetchEvent) {
+/** PostHog page views go out from the production site only, and only with the project key set. */
+const postHogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+
+/** Marks the proxy's own request for a page whose links it rewrites, so that request isn't counted or rewritten again. */
+const CARRY_HEADER = "x-beans-carry";
+
+/**
+ * The marketing page with its links carrying the visitor's source (see
+ * `@/lib/source`). It reads the page as normally served and rewrites the
+ * links, so the page still ships no JavaScript and sets no cookies. Not
+ * cached, because the links are this visitor's. Falls back to the plain page
+ * on any failure.
+ */
+async function withCarriedLinks(request: NextRequest, carried: URLSearchParams): Promise<Response> {
+  try {
+    const res = await fetch(new URL(request.nextUrl.pathname, request.url), {
+      headers: { [CARRY_HEADER]: "1", accept: "text/html", "user-agent": request.headers.get("user-agent") ?? "" },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok || !res.headers.get("content-type")?.includes("text/html")) return NextResponse.next();
+    const headers = new Headers(res.headers);
+    for (const name of ["content-encoding", "content-length", "transfer-encoding", "etag", "age", "x-vercel-cache", "set-cookie"]) headers.delete(name);
+    headers.set("cache-control", "private, no-store");
+    return new NextResponse(carryLinks(await res.text(), carried), { status: 200, headers });
+  } catch (err) {
+    console.error("carrying the source failed", err);
+    return NextResponse.next();
+  }
+}
+
+/**
+ * A marketing page: the anonymous PostHog page view, sent after the response,
+ * and, for a visit from another site or with `utm_*` tags, links that carry
+ * where the visitor came from.
+ */
+async function marketingPage(request: NextRequest, event: NextFetchEvent, host: string): Promise<Response> {
+  if (request.headers.has(CARRY_HEADER)) return NextResponse.next();
+  if (postHogKey && host === appHost) {
+    const key = postHogKey;
+    event.waitUntil(
+      pageviewFor({ method: request.method, url: request.nextUrl, headers: request.headers, host }, Date.now()).then((view) => (view ? sendPageview(key, view) : undefined)),
+    );
+  }
+  if (request.method !== "GET" || isBot(request.headers.get("user-agent")) || isPrefetch(request.headers)) return NextResponse.next();
+  const carried = carriedSource(request.nextUrl, request.headers.get("referer"), host);
+  return carried ? await withCarriedLinks(request, carried) : NextResponse.next();
+}
+
+export default async function proxy(request: NextRequest, event: NextFetchEvent) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
 
@@ -47,6 +97,7 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
     return new NextResponse(body ?? notFoundMarkdown, { status: body ? 200 : 404, headers: markdownHeaders });
   }
 
+  if (MARKETING_PATHS.has(pathname)) return marketingPage(request, event, host);
   return NextResponse.next();
 }
 

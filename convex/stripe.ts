@@ -4,6 +4,8 @@
  * this needs. Follows the Vidzilla reference (dqships/vidzilla api/_stripe.js).
  */
 
+import { planForPrice } from "../packages/core/src/billing";
+
 /** Pinned so the fields read below don't move under us. The webhook endpoints use the same version. */
 export const STRIPE_VERSION = "2024-06-20";
 
@@ -114,5 +116,31 @@ export function paidInvoice(invoice: StripeObject) {
     priceId: (line?.price?.id ?? line?.pricing?.price_details?.price ?? null) as string | null,
     amount: invoice.amount_paid as number,
     currency: String(invoice.currency ?? "").toLowerCase(),
+  };
+}
+
+/**
+ * A subscription that has ended, reduced to what `subscription_cancelled`
+ * needs, or null while it's still running. `reason` is Stripe's
+ * `cancellation_details.reason` (cancellation_requested, payment_failed,
+ * payment_disputed) and `feedback` the reason picked in the portal
+ * (too_expensive, missing_features...). The free-text comment is left out.
+ * `daysSubscribed` counts from the start, trial included, to the end.
+ */
+export function endedSubscription(sub: StripeObject) {
+  if (sub.status !== "canceled") return null;
+  const seconds = (value: unknown) => (typeof value === "number" ? value : null);
+  const start = seconds(sub.start_date) ?? seconds(sub.created);
+  const end = seconds(sub.ended_at) ?? seconds(sub.canceled_at) ?? Math.floor(Date.now() / 1000);
+  const trialEnd = seconds(sub.trial_end);
+  const details = sub.cancellation_details ?? {};
+  return {
+    subscriptionId: String(sub.id),
+    customerId: typeof sub.customer === "string" ? sub.customer : String(sub.customer?.id ?? ""),
+    plan: planForPrice(sub.items?.data?.[0]?.price?.id) ?? sub.metadata?.plan ?? null,
+    reason: typeof details.reason === "string" ? details.reason : null,
+    feedback: typeof details.feedback === "string" ? details.feedback : null,
+    daysSubscribed: start === null ? null : Math.max(0, Math.round((end - start) / 86_400)),
+    endedInTrial: trialEnd !== null && end <= trialEnd,
   };
 }

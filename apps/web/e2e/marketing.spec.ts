@@ -49,6 +49,19 @@ test.describe("what public pages load", () => {
     }
   });
 
+  test("a visit from another site carries its source to sign-up, with no JavaScript or cookies", async ({ page, context }) => {
+    const urls = watchRequests(page);
+    await page.goto("/pricing?utm_source=newsletter&utm_campaign=launch", { referer: "https://www.example.com/", waitUntil: "networkidle" });
+    const source = "ft_ref=https%3A%2F%2Fwww.example.com%2F&ft_lp=%2Fpricing&utm_source=newsletter&utm_campaign=launch";
+    await expect(page.locator('header a[href^="/sign-up"]')).toHaveAttribute("href", `/sign-up?${source}`);
+    await expect(page.locator('header a[href^="/about"]')).toHaveAttribute("href", `/about?${source}`);
+    // The next page keeps it.
+    await page.locator('header a[href^="/about"]').click();
+    await expect(page.locator('header a[href^="/sign-up"]')).toHaveAttribute("href", `/sign-up?${source}`);
+    if (production) expect(urls.filter((url) => /\.js(\?|$)/.test(url) && !url.endsWith("/landing.js"))).toEqual([]);
+    expect(await context.cookies()).toEqual([]);
+  });
+
   test("the landing page is complete with JavaScript off", async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();

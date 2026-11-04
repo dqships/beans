@@ -18,7 +18,8 @@ const SUBSCRIPTION_EVENTS = new Set([
 /**
  * Stripe's webhook. The signature is checked against STRIPE_WEBHOOK_SECRET,
  * then the subscription is read fresh from Stripe and stored. A paid
- * invoice records the account's first payment, for the `paid` event. Events
+ * invoice records the account's first payment, for the `paid` event, and a
+ * deleted subscription its end, for `subscription_cancelled`. Events
  * for other products on the same Stripe account (Vidzilla) are acknowledged
  * and ignored.
  */
@@ -59,7 +60,7 @@ http.route({
     if (!subscriptionId) return new Response("Ignored", { status: 200 });
 
     try {
-      const result = await syncSubscription(ctx, stripeClient(key), subscriptionId, userId);
+      const result = await syncSubscription(ctx, stripeClient(key), subscriptionId, userId, { ended: event.type === "customer.subscription.deleted" });
       return new Response(result, { status: 200 });
     } catch (err) {
       // Stripe retries a failed delivery, so a passing error heals itself.

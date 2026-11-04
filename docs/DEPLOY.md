@@ -111,14 +111,22 @@ Product analytics go to the Beans PostHog project (id 708990, US cloud). The pro
 
 | Event | Sent from | When |
 |---|---|---|
-| `signed_up` | `planner.init` (Convex) | The account's settings are created on first sign-in. Sets the person's `email`. |
-| `activated` | `noteActivation` in `convex/analytics.ts`, called by `planner.apply` and the MCP tools | The first time a task lands on a day: added there, or moved from the Brain Dump or a list. `source` is `app` or `mcp`. Once per account (`userSettings.activatedAt`). |
+| `signed_up` | `planner.init` (Convex) | The account's settings are created on first sign-in. Sets the person's `email`, and the `first_touch_*` properties below when the browser knows them. |
+| `activated` | `notePlanning` in `convex/analytics.ts`, called by `planner.apply` and the MCP tools | The first time a task lands on a day: added there, or moved from the Brain Dump or a list. `source` is `app` or `mcp`. Once per account (`userSettings.activatedAt`). |
+| `day_planned` | `notePlanning`, same writes as `activated` | A task put on a day, at most once per user per calendar day in their time zone (`userSettings.lastDayPlannedOn`), the activation day included. `planned_for` (the task's day), `source`, `days_ahead` (that day minus today). Rollover and repeat instances are made on the server and don't count. |
+| `checkout_started` | `billing.checkout` (Convex action) | Stripe has made the Checkout Session. `plan`, `promo_code` (the launch code applied, or null), `price` in dollars, `currency`, `trial`. |
 | `paid` | `billing.recordPayment`, from `invoice.paid` on the Stripe webhook | The first invoice with a charge, once per account (`billing.paidAt`). `plan`, `amount` in dollars (6, not 600), `currency`. |
+| `subscription_cancelled` | `billing.recordCancellation`, from `customer.subscription.deleted` on the Stripe webhook | A Beans subscription has ended (Stripe reports it `canceled`), once per subscription (`billing.cancelledSubscriptions`). `plan`, `cancellation_reason` (the portal feedback, else Stripe's reason), `stripe_cancellation_reason`, `days_subscribed` (start to end, trial included), `ended_in_trial`. |
+| `$pageview` (anonymous) | `proxy.ts`, with `@/lib/pageview` | A GET of a marketing page (`/`, `/pricing`, `/about`, `/connect-ai`, `/contact`, `/privacy`, `/terms`) on the production host, sent after the response with `waitUntil`. Not for bots, prefetches, RSC or data requests, HEAD, assets, or the app, sign-in, API and MCP routes. |
 
 Every event has `product: "beans"` and the Clerk user id as `distinct_id`; the planner calls `posthog.identify` with the same id and the email. Server events go out from hosted Convex deployments only, so local backends and tests send nothing. `POSTHOG_KEY` on a deployment overrides the built-in key.
 
-1. Vercel: `NEXT_PUBLIC_POSTHOG_KEY` (the `phc_…` key) for Production and Preview. Without it the planner loads no PostHog.
-2. Stripe: add `invoice.paid` to the events of the "Beans production" webhook endpoint (and the test one). Without it `paid` never fires.
+**Marketing page views.** The marketing pages ship no React and set no cookies, so their page views are sent by the server. Each has `$process_person_profile: false` (no person profile), `$lib: "server-pageview"`, `$current_url` with only its `utm_*` tags kept, `$pathname`, `$referrer`/`$referring_domain` (`$direct` without one), the `utm_*` tags, `$raw_user_agent` (PostHog reads browser, OS and device from it) and `$geoip_country_code` from Vercel's `x-vercel-ip-country` header, with `$geoip_disable` because PostHog would only see Vercel's address. The `distinct_id` is a SHA-256 of a fixed salt, the UTC date, the IP address and the user agent, so it changes daily; the IP address is never a property. They're sent only when `NEXT_PUBLIC_POSTHOG_KEY` is set and the request's host is the production site (`NEXT_PUBLIC_SITE_URL`), so previews and local builds send nothing. Vercel Web Analytics keeps running alongside.
+
+**Where sign-ups come from.** A marketing page reached from another site, or with `utm_*` tags, is served with its links to the other marketing pages, `/sign-up` and `/sign-in` carrying `ft_ref` (the referrer), `ft_lp` (the landing path) and the `utm_*` tags (`@/lib/source`). `proxy.ts` reads the page as normally served and rewrites the links, uncached, and falls back to the plain page on any error, so the pages still run no JavaScript and set no cookies. The sign-in and sign-up pages keep that source in session storage for the tab (`apps/web/src/data/first-touch.ts`), pass it to `posthog.identify` as `$set_once` `first_touch_referrer`, `first_touch_referring_domain`, `first_touch_landing_path` and `first_touch_utm_*`, and to `planner.init`, which adds the same to `signed_up`. A direct visit with no tags carries nothing, so the person has no `first_touch_*` properties.
+
+1. Vercel: `NEXT_PUBLIC_POSTHOG_KEY` (the `phc_…` key) for Production and Preview. Without it the planner loads no PostHog and the marketing pages send no page views.
+2. Stripe: the "Beans production" webhook endpoint sends `invoice.paid` (added by DQ) and `customer.subscription.deleted` (in its list from the start). Without them `paid` and `subscription_cancelled` never fire.
 
 ### 7. Before a public launch
 
