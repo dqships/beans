@@ -6,7 +6,7 @@ import { ensureInstances as coreEnsureInstances } from "../packages/core/src/rep
 import type { Op } from "../packages/core/src/ops";
 import { defaultSettings } from "../packages/core/src/settings";
 import type { RecordOf, TableName } from "../packages/core/src/model";
-import { noteActivation, track } from "./analytics";
+import { notePlanning, track } from "./analytics";
 import { requireAccess } from "./billing";
 import { findByClientId, getSettings, requireUser, stateWith, toRecord, toSettings } from "./lib";
 import { moveUser } from "./migrations";
@@ -58,15 +58,35 @@ export const load = query({
   },
 });
 
+/** Where a new account came from, carried from the marketing page it landed on (see `apps/web/src/data/first-touch.ts`). */
+const firstTouchValidator = v.object({
+  first_touch_referrer: v.optional(v.string()),
+  first_touch_referring_domain: v.optional(v.string()),
+  first_touch_landing_path: v.optional(v.string()),
+  first_touch_utm_source: v.optional(v.string()),
+  first_touch_utm_medium: v.optional(v.string()),
+  first_touch_utm_campaign: v.optional(v.string()),
+  first_touch_utm_content: v.optional(v.string()),
+  first_touch_utm_term: v.optional(v.string()),
+});
+
+/** The first-touch fields, each cut to a sane length, with empty ones left out. */
+function cleanFirstTouch(source: Record<string, string | undefined> | undefined): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(source ?? {})) if (value) out[key] = value.slice(0, 300);
+  return out;
+}
+
 /**
  * Creates the user's settings on first sign-in, in their time zone. An
  * account whose rows are still under the old token-identifier id is moved to
  * the stable id instead, so it keeps its data before the migration reaches it.
- * A new account sends `signed_up`, once, with its email for PostHog.
+ * A new account sends `signed_up`, once, with its email for PostHog and, when
+ * the browser knows it, where the visitor first came from (`firstTouch`).
  */
 export const init = mutation({
-  args: { timeZone: v.string() },
-  handler: async (ctx, { timeZone }) => {
+  args: { timeZone: v.string(), firstTouch: v.optional(firstTouchValidator) },
+  handler: async (ctx, { timeZone, firstTouch }) => {
     const userId = await requireUser(ctx);
     if (await getSettings(ctx, userId)) return;
     const identity = (await ctx.auth.getUserIdentity())!;
@@ -75,7 +95,11 @@ export const init = mutation({
     const { id, ...fields } = defaultSettings(timeZone, Date.now());
     void id;
     await ctx.db.insert("userSettings", { userId, ...fields });
-    await track(ctx, "signed_up", userId, {}, identity.email ? { email: identity.email } : undefined);
+    const source = cleanFirstTouch(firstTouch);
+    await track(ctx, "signed_up", userId, source, {
+      ...(identity.email ? { set: { email: identity.email } } : {}),
+      ...(Object.keys(source).length ? { setOnce: source } : {}),
+    });
   },
 });
 
@@ -114,7 +138,7 @@ export const apply = mutation({
     if (ops.length > 500) throw new Error("Too many changes at once");
     await requireAccess(ctx, userId);
     const now = Date.now();
-    await noteActivation(ctx, userId, ops, "app", now);
+    await notePlanning(ctx, userId, ops, "app", now);
     for (const op of ops) await applyOne(ctx, userId, op, now);
   },
 });

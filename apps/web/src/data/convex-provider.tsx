@@ -15,6 +15,7 @@ import {
   type Op,
   type Settings,
 } from "@beans/core";
+import { firstTouch } from "./first-touch";
 import { useClock } from "./hooks";
 import { DataStoreContext, type DataStore } from "./store";
 
@@ -74,7 +75,7 @@ export function ConvexDataProvider({ children }: { children: ReactNode }) {
 
   const needsInit = current !== undefined && current.settings === null;
   useEffect(() => {
-    if (needsInit) init({ timeZone: localTimeZone() }).catch((e) => setError(String(e)));
+    if (needsInit) init({ timeZone: localTimeZone(), firstTouch: firstTouch() }).catch((e) => setError(String(e)));
   }, [needsInit, init]);
 
   // Run today's rollover when the planner opens and when the local day changes while it's open.

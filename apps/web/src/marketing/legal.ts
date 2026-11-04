@@ -44,13 +44,15 @@ export const privacyBody = `Beans is a daily planner run by ${operator} ("we"). 
 - **Your planner.** Tasks, notes, subtasks, lists, labels, estimates, timer history, repeats, templates and settings, including your time zone, so unfinished tasks can move to the next day at your midnight.
 - **Billing.** When you start a trial, Stripe collects your name, email address, card and billing details. We never see your full card number. We send Stripe your Beans account ID so it can link payments to your account, and we store your Stripe customer ID, plan, subscription status and the date your current period ends. In Stripe we can also see your payment history, invoices, billing country, and your card's brand and last four digits.
 - **How the site is used.** Vercel Web Analytics counts page views, with the referring site, country, browser, operating system and device type. It uses no cookies and doesn't identify you across days. Our hosting also logs requests, including IP addresses, to keep the service running and secure.
-- **How you use the planner.** On the planner and its sign-in pages, PostHog records the pages you view, what you click, and a few account events: signing up, planning your first day and your first payment (its plan and amount). With them come your browser, operating system, device type, IP address and the rough location it gives. Once you sign in, this is linked to your Beans account and its email address. Session replay is off.
+- **Page views on the public pages.** When you open the home page, pricing, about, contact, connect, privacy or terms page, our server tells PostHog: the page, the site that sent you, any campaign (utm) tags in the link, your country, and your browser's user agent (which gives your browser, operating system and device type). Nothing runs in your browser for this and no cookie is set. Each view is labelled with a code made from your IP address, browser and the date, which changes every day, so visits can't be followed from one day to the next. Your IP address itself isn't sent to PostHog, and these views make no PostHog profile. Search engines, link previews and other bots aren't counted.
+- **Where you came from, when you sign up.** If you arrive from another site or a link with campaign (utm) tags, the links on the public pages carry that site's address, the tags and the page you landed on in their web address, to the sign-up page. Nothing is stored on your device for this on the public pages. The sign-up page keeps them in your browser's session storage until you close the tab, and when you create an account they're saved with it in PostHog, so we can see which sites and campaigns bring people to Beans.
+- **How you use the planner.** On the planner and its sign-in pages, PostHog records the pages you view, what you click, and a few account events: signing up, planning your first day, planning a day (at most once a day, with how far ahead), starting a checkout (the plan, price and any launch code), your first payment (its plan and amount), and a subscription ending (its plan, how long it lasted and the reason you picked, if any). With them come your browser, operating system, device type, IP address and the rough location it gives. Once you sign in, this is linked to your Beans account and its email address. Session replay is off.
 - **Connected AI apps.** If you connect an AI app to Beans, we record which app it is and when it last used Beans.
 - **Messages to us.** If you email us, we keep the message and anything you attach.
 
 ## Cookies and local storage
 
-Clerk sets the cookies that keep you signed in. PostHog sets a cookie and saves an ID in local storage on the planner and sign-in pages, so it can tell your visits apart from other people's. Stripe sets its own cookies on its checkout and billing pages, to prevent fraud. Beans saves your theme and a few display choices in your browser's local storage. We don't use advertising cookies.
+The public pages (home, pricing, about, contact, connect, privacy and terms) set no cookies and store nothing on your device. Clerk sets the cookies that keep you signed in. PostHog sets a cookie and saves an ID in local storage on the planner and sign-in pages, so it can tell your visits apart from other people's. Stripe sets its own cookies on its checkout and billing pages, to prevent fraud. Beans saves your theme and a few display choices in your browser's local storage, and on the sign-in pages, where you came from in session storage until you close the tab. We don't use advertising cookies.
 
 ## How we use it
 
@@ -58,7 +60,7 @@ Clerk sets the cookies that keep you signed in. PostHog sets a cookie and saves 
 - To take payments and manage your trial and subscription.
 - To answer your emails and fix problems you report.
 - To keep Beans secure and prevent fraud and abuse.
-- To see which pages are visited, so we can improve the site.
+- To see which pages are visited and which sites and campaigns bring people to Beans, so we can improve the site.
 - To see how the planner is used, so we can improve it, and to email you about your account.
 - To send emails the service needs, such as sign-in codes from Clerk and receipts from Stripe. We don't send marketing emails unless you've agreed to them.
 
@@ -72,7 +74,7 @@ These companies process information for us, only to provide their part of Beans:
 - **Convex** stores your planner and runs the server code that syncs it.
 - **Stripe** processes payments and manages subscriptions and invoices.
 - **Vercel** hosts the website and provides Web Analytics.
-- **PostHog** provides product analytics for the planner.
+- **PostHog** provides product analytics for the planner and counts page views on the public pages.
 
 We may also share information if the law requires it, to protect people's safety, or as part of a sale or merger of the business, in which case this policy would still apply to it.
 

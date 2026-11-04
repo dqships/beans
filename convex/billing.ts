@@ -10,6 +10,7 @@ import {
   PASS_DAYS,
   pickPromos,
   planForPrice,
+  PLANS,
   promoCodes,
   PROMO_PLAN,
   readPromo,
@@ -24,7 +25,7 @@ import {
 } from "../packages/core/src/billing";
 import { track } from "./analytics";
 import { getSettings, requireUser, stableUserId } from "./lib";
-import { stripeClient, subscriptionFields, type StripeCall, type StripeObject, type SubscriptionFields } from "./stripe";
+import { endedSubscription, stripeClient, subscriptionFields, type StripeCall, type StripeObject, type SubscriptionFields } from "./stripe";
 
 /**
  * Subscriptions. Stripe Checkout starts one (with a 7-day trial, card up
@@ -213,18 +214,66 @@ export const recordPayment = internalMutation({
   },
 });
 
+/**
+ * A Beans subscription that ended, from `customer.subscription.deleted`. Sends
+ * `subscription_cancelled` once per subscription (`cancelledSubscriptions`),
+ * however often Stripe delivers the event. The account is found like
+ * recordPayment's.
+ */
+export const recordCancellation = internalMutation({
+  args: {
+    userId: v.union(v.string(), v.null()),
+    customerId: v.string(),
+    subscriptionId: v.string(),
+    plan: v.union(v.string(), v.null()),
+    reason: v.union(v.string(), v.null()),
+    feedback: v.union(v.string(), v.null()),
+    daysSubscribed: v.union(v.number(), v.null()),
+    endedInTrial: v.boolean(),
+  },
+  handler: async (ctx, { userId: named, customerId, subscriptionId, plan, reason, feedback, daysSubscribed, endedInTrial }) => {
+    const userId = named ? stableUserId(named) : null;
+    const row =
+      (userId ? await rowFor(ctx, userId) : null) ??
+      (await ctx.db
+        .query("billing")
+        .withIndex("by_customer", (q) => q.eq("customerId", customerId))
+        .first());
+    if (!row) return "unknown";
+    const reported = row.cancelledSubscriptions ?? [];
+    if (reported.includes(subscriptionId)) return "already cancelled";
+    await ctx.db.patch(row._id, { cancelledSubscriptions: [...reported, subscriptionId] });
+    await track(ctx, "subscription_cancelled", row.userId, {
+      plan,
+      cancellation_reason: feedback ?? reason,
+      stripe_cancellation_reason: reason,
+      days_subscribed: daysSubscribed,
+      ended_in_trial: endedInTrial,
+    });
+    return "cancelled";
+  },
+});
+
 /** A subscription Beans sold: tagged at checkout, or on one of its prices. */
 export function isBeansSubscription(sub: StripeObject): boolean {
   if (sub.metadata?.app === "beans") return true;
   return Boolean(planForPrice(sub.items?.data?.[0]?.price?.id));
 }
 
-/** Reads the subscription fresh from Stripe and stores it. Event order then doesn't matter. */
-export async function syncSubscription(ctx: ActionCtx, call: StripeCall, subscriptionId: string, userId: string | null) {
+/**
+ * Reads the subscription fresh from Stripe and stores it. Event order then
+ * doesn't matter. With `ended` (Stripe said it was deleted) a subscription
+ * that has really ended is also recorded for `subscription_cancelled`.
+ */
+export async function syncSubscription(ctx: ActionCtx, call: StripeCall, subscriptionId: string, userId: string | null, { ended = false } = {}) {
   const sub = await call("GET", `/v1/subscriptions/${subscriptionId}`);
   if (!isBeansSubscription(sub)) return "ignored";
   const fields: SubscriptionFields = subscriptionFields(sub);
-  return await ctx.runMutation(internal.billing.saveSubscription, { userId: userId ?? sub.metadata?.user_id ?? null, sub: fields });
+  const named = userId ?? sub.metadata?.user_id ?? null;
+  const result = await ctx.runMutation(internal.billing.saveSubscription, { userId: named, sub: fields });
+  const end = ended ? endedSubscription(sub) : null;
+  if (end) await ctx.runMutation(internal.billing.recordCancellation, { userId: named, ...end });
+  return result;
 }
 
 /** Only our own pages may be the way back from Stripe. */
@@ -300,14 +349,19 @@ export const checkout = action({
     const first = !row?.trialUsed;
     const promo = first && plan === PROMO_PLAN ? (await loadPromos(call)).current : null;
     const params = checkoutParams({ plan, priceId: ids.prices[plan], customerId, userId, trial: first, origin: back });
+    // `checkout_started` once Stripe has made the session: the plan, the launch code applied (if any) and the list price.
+    const started = (code: string | null) =>
+      track(ctx, "checkout_started", userId, { plan, promo_code: code, price: PLANS[plan].amount / 100, currency: PLANS[plan].currency, trial: first });
     try {
       const session = await call("POST", "/v1/checkout/sessions", promo ? withPromo(params, promo.id) : first ? withCodeBox(params) : params);
+      await started(promo?.code ?? null);
       return { url: String(session.url) };
     } catch (err) {
       // The code ran out between the page loading and now: full price, with the code box.
       if (!promo) throw err;
       promoCache.clear();
       const session = await call("POST", "/v1/checkout/sessions", withCodeBox(params));
+      await started(null);
       return { url: String(session.url) };
     }
   },

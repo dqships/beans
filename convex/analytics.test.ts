@@ -3,7 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api, internal } from "./_generated/api";
 import schema from "./schema";
 import { STRIPE_IDS } from "../packages/core/src/billing";
-import { applyOps, createTask, emptyState, moveTask, type BeansState } from "../packages/core/src";
+import { addDays, applyOps, createTask, emptyState, makeRepeating, moveTask, todayIn, type BeansState } from "../packages/core/src";
+import { clearPromoCache } from "./billing";
 import { signWebhook } from "./stripe";
 
 // Vitest provides import.meta.glob.
@@ -35,14 +36,21 @@ async function captures(t: Awaited<ReturnType<typeof setup>>["t"]) {
   return jobs
     .filter((j) => j.name.startsWith("analytics"))
     .map((j) => {
-      const { event, distinctId, properties, set } = j.args[0] as { event: string; distinctId: string; properties: Record<string, unknown>; set?: Record<string, string> };
-      return [event, distinctId, set ? { ...properties, $set: set } : properties] as const;
+      const { event, distinctId, properties, set, setOnce } = j.args[0] as {
+        event: string;
+        distinctId: string;
+        properties: Record<string, unknown>;
+        set?: Record<string, string>;
+        setOnce?: Record<string, string>;
+      };
+      const props: Record<string, unknown> = { ...properties, ...(set ? { $set: set } : {}), ...(setOnce ? { $set_once: setOnce } : {}) };
+      return [event, distinctId, props] as const;
     });
 }
 
-async function signedUp() {
+async function signedUp(timeZone = "UTC") {
   const ctx = await setup();
-  await ctx.alice.mutation(api.planner.init, { timeZone: "UTC" });
+  await ctx.alice.mutation(api.planner.init, { timeZone });
   const load = await ctx.alice.query(api.planner.load, { from: "2026-01-01" });
   const state: BeansState = emptyState(load.settings!);
   return { ...ctx, state };
@@ -53,6 +61,102 @@ describe("signed_up", () => {
     const { t, alice } = await signedUp();
     await alice.mutation(api.planner.init, { timeZone: "UTC" });
     expect(await captures(t)).toEqual([["signed_up", "alice", { product: "beans", $set: { email: "alice@example.com" } }]]);
+  });
+
+  it("carries where the visitor came from, as event properties and $set_once", async () => {
+    const { t, alice } = await setup();
+    const firstTouch = {
+      first_touch_referrer: "https://www.google.com/",
+      first_touch_referring_domain: "www.google.com",
+      first_touch_landing_path: "/pricing",
+      first_touch_utm_source: "newsletter",
+      first_touch_utm_campaign: "x".repeat(400),
+      first_touch_utm_term: "",
+    };
+    await alice.mutation(api.planner.init, { timeZone: "UTC", firstTouch });
+    const expected = {
+      first_touch_referrer: "https://www.google.com/",
+      first_touch_referring_domain: "www.google.com",
+      first_touch_landing_path: "/pricing",
+      first_touch_utm_source: "newsletter",
+      first_touch_utm_campaign: "x".repeat(300),
+    };
+    expect(await captures(t)).toEqual([["signed_up", "alice", { product: "beans", ...expected, $set: { email: "alice@example.com" }, $set_once: expected }]]);
+  });
+});
+
+describe("day_planned", () => {
+  const dayPlanned = async (t: Awaited<ReturnType<typeof setup>>["t"]) => (await captures(t)).filter(([e]) => e === "day_planned");
+
+  it("fires once per local day, with the day planned and how far ahead it is", async () => {
+    const { t, alice, state } = await signedUp();
+    const today = todayIn("UTC");
+    await alice.mutation(api.planner.apply, { ops: createTask(state, { title: "Someday" }).ops as never });
+    expect(await dayPlanned(t)).toEqual([]);
+
+    await alice.mutation(api.planner.apply, { ops: createTask(state, { title: "Friday", date: addDays(today, 3) }).ops as never });
+    await alice.mutation(api.planner.apply, { ops: createTask(state, { title: "Today too", date: today }).ops as never });
+    // Fires on the activation day too.
+    expect((await captures(t)).map(([e]) => e)).toEqual(["signed_up", "activated", "day_planned"]);
+    expect(await dayPlanned(t)).toEqual([["day_planned", "alice", { product: "beans", planned_for: addDays(today, 3), source: "app", days_ahead: 3 }]]);
+
+    // The next day it fires again, once.
+    await t.run(async (ctx) => {
+      const settings = await ctx.db.query("userSettings").first();
+      await ctx.db.patch(settings!._id, { lastDayPlannedOn: addDays(today, -1) });
+    });
+    await alice.mutation(api.planner.apply, { ops: createTask(state, { title: "Tomorrow", date: addDays(today, 1) }).ops as never });
+    await alice.mutation(api.planner.apply, { ops: createTask(state, { title: "And one more", date: today }).ops as never });
+    expect((await dayPlanned(t)).map(([, , p]) => p.days_ahead)).toEqual([3, 1]);
+    expect((await captures(t)).filter(([e]) => e === "activated")).toHaveLength(1);
+    // The guard stays on the server.
+    const load = await alice.query(api.planner.load, { from: "2026-01-01" });
+    expect(load.settings).not.toHaveProperty("lastDayPlannedOn");
+  });
+
+  it("counts the day in the user's time zone", async () => {
+    const zone = "Pacific/Kiritimati";
+    const { t, alice, state } = await signedUp(zone);
+    const today = todayIn(zone);
+    await alice.mutation(api.planner.apply, { ops: createTask(state, { title: "Here", date: today }).ops as never });
+    const settings = await t.run(async (ctx) => await ctx.db.query("userSettings").first());
+    expect(settings!.lastDayPlannedOn).toBe(today);
+    expect((await dayPlanned(t))[0]![2]).toMatchObject({ planned_for: today, days_ahead: 0 });
+  });
+
+  it("counts moving a task onto a day, and plans from a connected AI app", async () => {
+    const { t, alice, state } = await signedUp();
+    const made = createTask(state, { title: "Undated" });
+    await alice.mutation(api.planner.apply, { ops: made.ops as never });
+    const moved = moveTask(applyOps(state, made.ops, Date.now()), made.id, { date: todayIn("UTC"), listId: null });
+    await alice.mutation(api.planner.apply, { ops: moved as never });
+    expect(await dayPlanned(t)).toHaveLength(1);
+
+    await t.run(async (ctx) => {
+      const settings = await ctx.db.query("userSettings").first();
+      await ctx.db.patch(settings!._id, { lastDayPlannedOn: "2026-01-01" });
+    });
+    const as = { secret: MCP_SECRET, userId: "alice", client: { id: "https://ai.example/client.json", name: "Example AI" } };
+    await t.mutation(api.mcp.createTasks, { ...as, tasks: [{ title: "From the AI app", date: todayIn("UTC") }] });
+    await t.mutation(api.mcp.createTasks, { ...as, tasks: [{ title: "Second from the AI app", date: todayIn("UTC") }] });
+    expect((await dayPlanned(t)).map(([, , p]) => p.source)).toEqual(["app", "mcp"]);
+  });
+
+  it("leaves out repeat instances the server makes", async () => {
+    const { t, alice, state } = await signedUp();
+    const today = todayIn("UTC");
+    const made = createTask(state, { title: "Stretch", date: today });
+    const ops = [...made.ops, ...makeRepeating(applyOps(state, made.ops), made.id, "FREQ=DAILY", today)];
+    await alice.mutation(api.planner.apply, { ops: ops as never });
+    expect(await dayPlanned(t)).toHaveLength(1);
+    await t.run(async (ctx) => {
+      const settings = await ctx.db.query("userSettings").first();
+      await ctx.db.patch(settings!._id, { lastDayPlannedOn: addDays(today, -1) });
+    });
+    await alice.mutation(api.planner.ensureInstances, { from: today, to: addDays(today, 6) });
+    const instances = await t.run(async (ctx) => await ctx.db.query("tasks").collect());
+    expect(instances.length).toBeGreaterThan(1);
+    expect(await dayPlanned(t)).toHaveLength(1);
   });
 });
 
@@ -162,8 +266,127 @@ describe("paid", () => {
   });
 });
 
+/** A fake Stripe for checkouts and subscription reads. */
+function fakeStripe(subscriptions: Map<string, Record<string, unknown>>, promos: Record<string, unknown>[] = []) {
+  return vi.fn(async (input: string, init: RequestInit) => {
+    const url = new URL(input);
+    const ok = (json: unknown) => new Response(JSON.stringify(json), { status: 200 });
+    const [, , kind, id] = url.pathname.split("/");
+    if (kind === "subscriptions" && subscriptions.has(id!)) return ok(subscriptions.get(id!));
+    if (kind === "customers") return ok({ id: "cus_alice" });
+    if (kind === "promotion_codes") return ok({ data: promos.filter((p) => p.code === url.searchParams.get("code")) });
+    if (url.pathname === "/v1/checkout/sessions" && init.method === "POST") return ok({ id: "cs_test_new", url: "https://checkout.stripe.com/c/pay/cs_test_new" });
+    return new Response("{}", { status: 404 });
+  });
+}
+
+async function deliverEvent(t: Awaited<ReturnType<typeof setup>>["t"], type: string, object: unknown) {
+  const body = JSON.stringify({ id: "evt_1", type, data: { object } });
+  const res = await t.fetch("/stripe/webhook", {
+    method: "POST",
+    body,
+    headers: { "Stripe-Signature": await signWebhook(body, SECRET, Math.floor(Date.now() / 1000)) },
+  });
+  return await res.text();
+}
+
+describe("checkout_started", () => {
+  const origin = "http://localhost:3100";
+  beforeEach(() => clearPromoCache());
+
+  it("fires once Stripe makes the session, with the plan, price and launch code", async () => {
+    vi.stubEnv("STRIPE_PROMO_CODES", "BEANS100");
+    const promo = { id: "promo_100", code: "BEANS100", active: true, times_redeemed: 3, max_redemptions: 100, coupon: { percent_off: 100, duration: "repeating", duration_in_months: 3, valid: true } };
+    vi.stubGlobal("fetch", fakeStripe(new Map(), [promo]));
+    const { t, alice } = await setup();
+    await alice.action(api.billing.checkout, { plan: "monthly", origin });
+    await alice.action(api.billing.checkout, { plan: "yearly", origin });
+    expect(await captures(t)).toEqual([
+      ["checkout_started", "alice", { product: "beans", plan: "monthly", promo_code: "BEANS100", price: 6, currency: "usd", trial: true }],
+      ["checkout_started", "alice", { product: "beans", plan: "yearly", promo_code: null, price: 48, currency: "usd", trial: true }],
+    ]);
+  });
+
+  it("sends nothing when the checkout fails", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ error: { message: "down" } }), { status: 500 })));
+    const { t, alice } = await setup();
+    await expect(alice.action(api.billing.checkout, { plan: "monthly", origin })).rejects.toThrow();
+    expect(await captures(t)).toEqual([]);
+  });
+});
+
+describe("subscription_cancelled", () => {
+  const DAY = 86_400;
+  const start = Math.floor(Date.now() / 1000) - 40 * DAY;
+  const sub = (id: string, fields: Record<string, unknown> = {}) => ({
+    id,
+    object: "subscription",
+    customer: "cus_alice",
+    status: "canceled",
+    start_date: start,
+    trial_end: start + 7 * DAY,
+    ended_at: start + 40 * DAY,
+    cancel_at_period_end: false,
+    cancellation_details: { reason: "cancellation_requested", feedback: "too_expensive", comment: "Private words" },
+    metadata: { app: "beans", user_id: "alice", plan: "monthly" },
+    items: { data: [{ price: { id: STRIPE_IDS.test.prices.monthly } }] },
+    ...fields,
+  });
+
+  async function withSubscriptions(...subs: Record<string, unknown>[]) {
+    const map = new Map(subs.map((s) => [String(s.id), s]));
+    vi.stubGlobal("fetch", fakeStripe(map));
+    const ctx = await setup();
+    await ctx.t.mutation(internal.billing.setCustomer, { userId: "alice", customerId: "cus_alice" });
+    return { ...ctx, map };
+  }
+
+  it("fires once per subscription when Stripe deletes it, with the plan, reason and length", async () => {
+    const { t } = await withSubscriptions(sub("sub_1"));
+    await deliverEvent(t, "customer.subscription.deleted", { id: "sub_1" });
+    await deliverEvent(t, "customer.subscription.deleted", { id: "sub_1" });
+    expect(await captures(t)).toEqual([
+      [
+        "subscription_cancelled",
+        "alice",
+        { product: "beans", plan: "monthly", cancellation_reason: "too_expensive", stripe_cancellation_reason: "cancellation_requested", days_subscribed: 40, ended_in_trial: false },
+      ],
+    ]);
+  });
+
+  it("counts a later subscription's end separately, and a trial that ended", async () => {
+    const trial = sub("sub_2", { start_date: start, ended_at: start + 5 * DAY, cancellation_details: { reason: "cancellation_requested", feedback: null } });
+    const { t } = await withSubscriptions(sub("sub_1"), trial);
+    await deliverEvent(t, "customer.subscription.deleted", { id: "sub_1" });
+    await deliverEvent(t, "customer.subscription.deleted", { id: "sub_2" });
+    const ended = (await captures(t)).map(([, , p]) => [p.cancellation_reason, p.days_subscribed, p.ended_in_trial]);
+    expect(ended).toEqual([
+      ["too_expensive", 40, false],
+      ["cancellation_requested", 5, true],
+    ]);
+  });
+
+  it("waits for the end: cancelling at period end or an update sends nothing", async () => {
+    const { t, map } = await withSubscriptions(sub("sub_1", { status: "active", ended_at: null, cancel_at_period_end: true }));
+    await deliverEvent(t, "customer.subscription.updated", { id: "sub_1" });
+    // A deleted event for a subscription Stripe still reports as running is not an end either.
+    await deliverEvent(t, "customer.subscription.deleted", { id: "sub_1" });
+    expect(await captures(t)).toEqual([]);
+    map.set("sub_1", sub("sub_1"));
+    await deliverEvent(t, "customer.subscription.updated", { id: "sub_1" });
+    expect(await captures(t)).toEqual([]);
+  });
+
+  it("ignores other products' subscriptions", async () => {
+    const other = sub("sub_9", { metadata: { app: "vidzilla" }, items: { data: [{ price: { id: "price_other" } }] } });
+    const { t } = await withSubscriptions(other);
+    expect(await deliverEvent(t, "customer.subscription.deleted", { id: "sub_9" })).toBe("ignored");
+    expect(await captures(t)).toEqual([]);
+  });
+});
+
 describe("capture", () => {
-  const args = { event: "signed_up", distinctId: "alice", properties: { product: "beans" }, set: { email: "alice@example.com" } };
+  const args = { event: "signed_up", distinctId: "alice", properties: { product: "beans" }, set: { email: "alice@example.com" }, setOnce: { first_touch_referrer: "https://www.google.com/" } };
 
   it("posts to PostHog from a hosted deployment", async () => {
     const fetchMock = vi.fn(async () => new Response("{}", { status: 200 }));
@@ -173,7 +396,7 @@ describe("capture", () => {
     await t.action(internal.analytics.capture, args);
     const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe("https://us.i.posthog.com/i/v0/e/");
-    expect(JSON.parse(String(init.body))).toMatchObject({ api_key: expect.stringMatching(/^phc_/), event: "signed_up", distinct_id: "alice", properties: { product: "beans", $set: { email: "alice@example.com" } } });
+    expect(JSON.parse(String(init.body))).toMatchObject({ api_key: expect.stringMatching(/^phc_/), event: "signed_up", distinct_id: "alice", properties: { product: "beans", $set: { email: "alice@example.com" }, $set_once: { first_touch_referrer: "https://www.google.com/" } } });
   });
 
   it("sends nothing from a local backend", async () => {
