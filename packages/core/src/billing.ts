@@ -179,6 +179,24 @@ function discounted(promo: Promo, plan: Plan): number {
   return plan.amount;
 }
 
+/**
+ * The first real charge on a plan, after the trial, in the smallest currency
+ * unit: the list price, less the code applied at checkout. Stripe discounts
+ * the first paid invoice under any coupon duration (`once`, `repeating` from
+ * the trial's start, `forever`). Null when it can't be known: a coupon with
+ * no percent or amount off, an unknown duration, or an amount off in another
+ * currency.
+ */
+export function firstCharge(plan: Plan, promo: Promo | null): number | null {
+  if (!promo) return plan.amount;
+  if (!["once", "repeating", "forever"].includes(promo.duration)) return null;
+  if (typeof promo.percentOff === "number" && promo.percentOff >= 0 && promo.percentOff <= 100) {
+    return Math.round((plan.amount * (100 - promo.percentOff)) / 100);
+  }
+  if (typeof promo.amountOff === "number" && promo.currency?.toLowerCase() === plan.currency) return Math.max(0, plan.amount - promo.amountOff);
+  return null;
+}
+
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 

@@ -5,6 +5,7 @@ import type { Doc } from "./_generated/dataModel";
 import {
   BASE_OFFER,
   describeOffer,
+  firstCharge,
   grantsAccess,
   openAt,
   PASS_DAYS,
@@ -350,26 +351,29 @@ export const checkout = action({
     const promo = first && plan === PROMO_PLAN ? (await loadPromos(call)).current : null;
     const params = checkoutParams({ plan, priceId: ids.prices[plan], customerId, userId, trial: first, origin: back });
     // `checkout_started` once Stripe has made the session: the plan, the launch code applied (if any), the list
-    // price, and `amount`, the session's `amount_total` in dollars (left out when Stripe doesn't give it).
-    const started = (session: StripeObject, code: string | null) =>
-      track(ctx, "checkout_started", userId, {
+    // price, and `amount`, the first real charge after the trial and the code, in dollars (left out when it
+    // can't be known).
+    const started = (applied: Promo | null) => {
+      const charge = firstCharge(PLANS[plan], applied);
+      return track(ctx, "checkout_started", userId, {
         plan,
-        promo_code: code,
+        promo_code: applied?.code ?? null,
         price: PLANS[plan].amount / 100,
-        ...(typeof session.amount_total === "number" ? { amount: session.amount_total / 100 } : {}),
+        ...(charge === null ? {} : { amount: charge / 100 }),
         currency: PLANS[plan].currency,
         trial: first,
       });
+    };
     try {
       const session = await call("POST", "/v1/checkout/sessions", promo ? withPromo(params, promo.id) : first ? withCodeBox(params) : params);
-      await started(session, promo?.code ?? null);
+      await started(promo);
       return { url: String(session.url) };
     } catch (err) {
       // The code ran out between the page loading and now: full price, with the code box.
       if (!promo) throw err;
       promoCache.clear();
       const session = await call("POST", "/v1/checkout/sessions", withCodeBox(params));
-      await started(session, null);
+      await started(null);
       return { url: String(session.url) };
     }
   },
