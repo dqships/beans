@@ -266,8 +266,12 @@ describe("paid", () => {
   });
 });
 
-/** A fake Stripe for checkouts and subscription reads. */
-function fakeStripe(subscriptions: Map<string, Record<string, unknown>>, promos: Record<string, unknown>[] = []) {
+/** A fake Stripe for checkouts and subscription reads. `amountTotal` picks the session's `amount_total` from its params (undefined leaves it out). */
+function fakeStripe(
+  subscriptions: Map<string, Record<string, unknown>>,
+  promos: Record<string, unknown>[] = [],
+  amountTotal: (body: URLSearchParams) => number | undefined = () => undefined,
+) {
   return vi.fn(async (input: string, init: RequestInit) => {
     const url = new URL(input);
     const ok = (json: unknown) => new Response(JSON.stringify(json), { status: 200 });
@@ -275,7 +279,10 @@ function fakeStripe(subscriptions: Map<string, Record<string, unknown>>, promos:
     if (kind === "subscriptions" && subscriptions.has(id!)) return ok(subscriptions.get(id!));
     if (kind === "customers") return ok({ id: "cus_alice" });
     if (kind === "promotion_codes") return ok({ data: promos.filter((p) => p.code === url.searchParams.get("code")) });
-    if (url.pathname === "/v1/checkout/sessions" && init.method === "POST") return ok({ id: "cs_test_new", url: "https://checkout.stripe.com/c/pay/cs_test_new" });
+    if (url.pathname === "/v1/checkout/sessions" && init.method === "POST") {
+      const amount = amountTotal(new URLSearchParams(String(init.body ?? "")));
+      return ok({ id: "cs_test_new", url: "https://checkout.stripe.com/c/pay/cs_test_new", ...(amount === undefined ? {} : { amount_total: amount }) });
+    }
     return new Response("{}", { status: 404 });
   });
 }
@@ -303,6 +310,28 @@ describe("checkout_started", () => {
     await alice.action(api.billing.checkout, { plan: "yearly", origin });
     expect(await captures(t)).toEqual([
       ["checkout_started", "alice", { product: "beans", plan: "monthly", promo_code: "BEANS100", price: 6, currency: "usd", trial: true }],
+      ["checkout_started", "alice", { product: "beans", plan: "yearly", promo_code: null, price: 48, currency: "usd", trial: true }],
+    ]);
+  });
+
+  it("sends the session's amount_total in dollars, discounted, and leaves it out when Stripe doesn't give it", async () => {
+    vi.stubEnv("STRIPE_PROMO_CODES", "BEANS50");
+    const promo = { id: "promo_50", code: "BEANS50", active: true, times_redeemed: 3, max_redemptions: 250, coupon: { percent_off: 50, duration: "repeating", duration_in_months: 3, valid: true } };
+    // What Stripe would total: the list price, halved by the launch code. The second yearly checkout gets no amount.
+    let yearly = 0;
+    const amountTotal = (body: URLSearchParams) => {
+      const price = body.get("line_items[0][price]") === STRIPE_IDS.test.prices.monthly ? 600 : 4800;
+      if (price === 4800 && ++yearly > 1) return undefined;
+      return body.has("discounts[0][promotion_code]") ? price / 2 : price;
+    };
+    vi.stubGlobal("fetch", fakeStripe(new Map(), [promo], amountTotal));
+    const { t, alice } = await setup();
+    await alice.action(api.billing.checkout, { plan: "yearly", origin });
+    await alice.action(api.billing.checkout, { plan: "monthly", origin });
+    await alice.action(api.billing.checkout, { plan: "yearly", origin });
+    expect(await captures(t)).toEqual([
+      ["checkout_started", "alice", { product: "beans", plan: "yearly", promo_code: null, price: 48, amount: 48, currency: "usd", trial: true }],
+      ["checkout_started", "alice", { product: "beans", plan: "monthly", promo_code: "BEANS50", price: 6, amount: 3, currency: "usd", trial: true }],
       ["checkout_started", "alice", { product: "beans", plan: "yearly", promo_code: null, price: 48, currency: "usd", trial: true }],
     ]);
   });
