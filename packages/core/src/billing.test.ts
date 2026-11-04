@@ -5,16 +5,19 @@ import {
   describeOffer,
   describePastPromo,
   describePromo,
+  firstCharge,
   grantsAccess,
   openAt,
   promoCodes,
   pickPromos,
   planForPrice,
+  PLANS,
   readPromo,
   STRIPE_IDS,
   statusLine,
   stripeMode,
   type BillingStatus,
+  type Promo,
   type StripePromotionCode,
 } from "./billing";
 
@@ -187,5 +190,38 @@ describe("promo codes setting", () => {
     expect(promoCodes("BEANS100, BEANS50,,BEANS25 ")).toEqual(["BEANS100", "BEANS50", "BEANS25"]);
     expect(promoCodes("")).toEqual([]);
     expect(promoCodes(undefined)).toEqual([]);
+  });
+});
+
+describe("firstCharge", () => {
+  const promo = (fields: Partial<Promo>): Promo => ({
+    id: "promo_x",
+    code: "BEANSX",
+    name: null,
+    percentOff: null,
+    amountOff: null,
+    currency: null,
+    duration: "repeating",
+    months: 3,
+    redeemed: 0,
+    max: null,
+    endsAt: null,
+    running: true,
+    ...fields,
+  });
+
+  it("is the list price without a code, less the code's discount with one", () => {
+    expect(firstCharge(PLANS.monthly, null)).toBe(600);
+    expect(firstCharge(PLANS.yearly, null)).toBe(4800);
+    expect(firstCharge(PLANS.monthly, promo({ percentOff: 50 }))).toBe(300);
+    expect(firstCharge(PLANS.monthly, promo({ percentOff: 100, duration: "once" }))).toBe(0);
+    expect(firstCharge(PLANS.monthly, promo({ amountOff: 200, currency: "usd", duration: "forever" }))).toBe(400);
+    expect(firstCharge(PLANS.monthly, promo({ amountOff: 900, currency: "USD" }))).toBe(0);
+  });
+
+  it("is null when it can't be known", () => {
+    expect(firstCharge(PLANS.monthly, promo({}))).toBeNull();
+    expect(firstCharge(PLANS.monthly, promo({ amountOff: 200, currency: "eur" }))).toBeNull();
+    expect(firstCharge(PLANS.monthly, promo({ percentOff: 50, duration: "sometimes" as Promo["duration"] }))).toBeNull();
   });
 });

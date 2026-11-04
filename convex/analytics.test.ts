@@ -30,6 +30,11 @@ async function setup() {
   return { t, alice };
 }
 
+async function setupWithBob() {
+  const ctx = await setup();
+  return { ...ctx, bob: ctx.t.withIdentity({ subject: "bob", tokenIdentifier: "test|bob", email: "bob@example.com" }) };
+}
+
 /** Every PostHog capture scheduled so far, as [event, distinct id, properties]. */
 async function captures(t: Awaited<ReturnType<typeof setup>>["t"]) {
   const jobs = await t.run(async (ctx) => await ctx.db.system.query("_scheduled_functions").collect());
@@ -302,9 +307,66 @@ describe("checkout_started", () => {
     await alice.action(api.billing.checkout, { plan: "monthly", origin });
     await alice.action(api.billing.checkout, { plan: "yearly", origin });
     expect(await captures(t)).toEqual([
-      ["checkout_started", "alice", { product: "beans", plan: "monthly", promo_code: "BEANS100", price: 6, currency: "usd", trial: true }],
-      ["checkout_started", "alice", { product: "beans", plan: "yearly", promo_code: null, price: 48, currency: "usd", trial: true }],
+      ["checkout_started", "alice", { product: "beans", plan: "monthly", promo_code: "BEANS100", price: 6, amount: 0, currency: "usd", trial: true }],
+      ["checkout_started", "alice", { product: "beans", plan: "yearly", promo_code: null, price: 48, amount: 48, currency: "usd", trial: true }],
     ]);
+  });
+
+  /** One monthly checkout with a launch code on `coupon` running, and its `checkout_started` properties. */
+  async function monthlyWith(coupon: Record<string, unknown>) {
+    clearPromoCache();
+    vi.stubEnv("STRIPE_PROMO_CODES", "BEANSX");
+    const promo = { id: "promo_x", code: "BEANSX", active: true, times_redeemed: 3, max_redemptions: 250, coupon: { duration: "repeating", duration_in_months: 3, valid: true, ...coupon } };
+    vi.stubGlobal("fetch", fakeStripe(new Map(), [promo]));
+    const { t, alice } = await setup();
+    await alice.action(api.billing.checkout, { plan: "monthly", origin });
+    return (await captures(t))[0]![2];
+  }
+
+  it("sends amount as the first charge after the trial: the full price without a code", async () => {
+    vi.stubGlobal("fetch", fakeStripe(new Map()));
+    const { t, alice, bob } = await setupWithBob();
+    await alice.action(api.billing.checkout, { plan: "monthly", origin });
+    await bob.action(api.billing.checkout, { plan: "yearly", origin });
+    expect((await captures(t)).map(([, , p]) => [p.plan, p.price, p.amount, p.promo_code])).toEqual([
+      ["monthly", 6, 6, null],
+      ["yearly", 48, 48, null],
+    ]);
+  });
+
+  it("takes a launch code's discount off the first charge", async () => {
+    expect(await monthlyWith({ percent_off: 50 })).toEqual({ product: "beans", plan: "monthly", promo_code: "BEANSX", price: 6, amount: 3, currency: "usd", trial: true });
+    expect(await monthlyWith({ amount_off: 200, currency: "usd", duration: "once" })).toMatchObject({ price: 6, amount: 4 });
+    expect(await monthlyWith({ amount_off: 1000, currency: "usd", duration: "forever" })).toMatchObject({ amount: 0 });
+    expect(await monthlyWith({ percent_off: 100 })).toMatchObject({ price: 6, amount: 0 });
+  });
+
+  it("leaves amount out when the first charge can't be known", async () => {
+    // A coupon with no percent or amount off, and an amount off in another currency.
+    const unknown = await monthlyWith({});
+    expect(unknown).toMatchObject({ promo_code: "BEANSX", price: 6 });
+    expect(unknown).not.toHaveProperty("amount");
+    const otherCurrency = await monthlyWith({ amount_off: 200, currency: "eur" });
+    expect(otherCurrency).not.toHaveProperty("amount");
+    // Never Stripe's amount due today, which is 0 during the trial.
+    expect(otherCurrency).not.toHaveProperty("amount_total");
+  });
+
+  it("charges the full price when the code can't be looked up", async () => {
+    vi.stubEnv("STRIPE_PROMO_CODES", "BEANSX");
+    const failing = fakeStripe(new Map());
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string, init: RequestInit) =>
+        new URL(input).pathname === "/v1/promotion_codes" ? new Response("{}", { status: 500 }) : failing(input, init),
+      ),
+    );
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { t, alice } = await setup();
+    await alice.action(api.billing.checkout, { plan: "monthly", origin });
+    error.mockRestore();
+    // No code is applied (the buyer gets Stripe's code box), so the first charge is the list price.
+    expect((await captures(t))[0]![2]).toMatchObject({ promo_code: null, price: 6, amount: 6 });
   });
 
   it("sends nothing when the checkout fails", async () => {
