@@ -166,3 +166,9 @@ pnpm video:render
 That renders the film in all three shapes from code, then writes the web copies, poster and captions to `apps/web/public/video/`. Masters land in `apps/video/out/`, which is git-ignored. It needs `ffmpeg` with `libx264`, `libvpx-vp9` and `libsvtav1`, and takes a few minutes. `pnpm --filter @beans/video studio` opens the film in Remotion Studio on port 3104.
 
 How the film is built, and its script, are in [docs/launch/video.md](docs/launch/video.md).
+
+## License
+
+The code is under the [MIT License](LICENSE). The Beans name, logo, mascot, illustrations, demo film and audio are not: they stay all rights reserved, so a fork needs its own name and artwork. [TRADEMARKS.md](TRADEMARKS.md) lists what that covers.
+
+Third-party code and fonts keep their own licences. Note that `apps/video` uses Remotion, which has its own license for companies. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

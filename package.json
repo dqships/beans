@@ -1,6 +1,7 @@
 {
   "name": "beans",
   "private": true,
+  "license": "MIT",
   "packageManager": "pnpm@10.28.0",
   "engines": {
     "node": ">=22"
