@@ -1,7 +1,9 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { syncSubscription } from "./billing";
-import { stripeClient, verifyWebhook } from "./stripe";
+import { planForPrice } from "../packages/core/src/billing";
+import { paidInvoice, stripeClient, verifyWebhook } from "./stripe";
 
 const http = httpRouter();
 
@@ -15,9 +17,10 @@ const SUBSCRIPTION_EVENTS = new Set([
 
 /**
  * Stripe's webhook. The signature is checked against STRIPE_WEBHOOK_SECRET,
- * then the subscription is read fresh from Stripe and stored. Events for
- * other products on the same Stripe account (Vidzilla) are acknowledged and
- * ignored.
+ * then the subscription is read fresh from Stripe and stored. A paid
+ * invoice records the account's first payment, for the `paid` event. Events
+ * for other products on the same Stripe account (Vidzilla) are acknowledged
+ * and ignored.
  */
 http.route({
   path: "/stripe/webhook",
@@ -31,6 +34,19 @@ http.route({
 
     const event = JSON.parse(payload) as { type: string; data: { object: Record<string, unknown> & { metadata?: Record<string, string> } } };
     const object = event.data.object;
+    if (event.type === "invoice.paid") {
+      const paid = paidInvoice(object);
+      const plan = planForPrice(paid?.priceId);
+      if (!paid || (paid.metadata.app !== "beans" && !plan)) return new Response("Ignored", { status: 200 });
+      const result = await ctx.runMutation(internal.billing.recordPayment, {
+        userId: paid.metadata.user_id ?? null,
+        customerId: paid.customerId,
+        plan: plan ?? paid.metadata.plan ?? null,
+        amount: paid.amount,
+        currency: paid.currency,
+      });
+      return new Response(result, { status: 200 });
+    }
     let subscriptionId: string | null = null;
     let userId: string | null = null;
     if (event.type === "checkout.session.completed") {

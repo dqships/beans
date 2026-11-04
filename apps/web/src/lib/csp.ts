@@ -17,6 +17,9 @@ const CLERK_TELEMETRY = "https://clerk-telemetry.com";
 const CLERK_PROTECT = "https://*.protect.clerk.com";
 /** Protect also probes those subdomains on non-default ports, such as 8443 and 2082. */
 const CLERK_PROTECT_PROBES = `${CLERK_PROTECT}:*`;
+/** PostHog's US ingestion host, and its assets host for the scripts posthog-js loads on demand. */
+const POSTHOG = "https://us.i.posthog.com";
+const POSTHOG_ASSETS = "https://us-assets.i.posthog.com";
 
 function serialize(directives: Directives): string {
   return Object.entries(directives)
@@ -82,7 +85,7 @@ export function appPolicy({
   return serialize({
     ...shared,
     // Next's streamed bootstrap, the theme script and Clerk's loader run inline.
-    "script-src": ["'self'", "'unsafe-inline'", ...clerk, CLERK_PROTECT, TURNSTILE, ...(dev ? ["'unsafe-eval'"] : [])],
+    "script-src": ["'self'", "'unsafe-inline'", ...clerk, CLERK_PROTECT, TURNSTILE, POSTHOG_ASSETS, ...(dev ? ["'unsafe-eval'"] : [])],
     "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:", CLERK_IMAGES],
     "font-src": ["'self'", "data:"],
@@ -93,6 +96,8 @@ export function appPolicy({
       CLERK_PROTECT,
       CLERK_PROTECT_PROBES,
       CLERK_TELEMETRY,
+      POSTHOG,
+      POSTHOG_ASSETS,
       ...CONVEX_CLOUD,
       ...convexOrigins(convexUrl),
       ...(dev ? ["ws://localhost:*", "ws://127.0.0.1:*", "http://127.0.0.1:*"] : []),

@@ -29,6 +29,7 @@ import {
   updateTask as coreUpdateTask,
 } from "../packages/core/src/tasks";
 import { labelColors } from "../packages/tokens/src/tokens";
+import { noteActivation } from "./analytics";
 import { requireAccess } from "./billing";
 import { getSettings, requireUser, stateWith, toRecord, toSettings } from "./lib";
 import { applyOne, ensureForUser } from "./planner";
@@ -261,6 +262,7 @@ class Planner {
       );
     }
     await this.ctx.db.patch(usage._id, { changes: usage.changes + changes });
+    await noteActivation(this.ctx, this.userId, ops as OpInput[], "mcp", this.now);
     for (const op of ops) await applyOne(this.ctx, this.userId, op as OpInput, this.now);
     this.state = applyOps(this.state, ops, this.now);
   }

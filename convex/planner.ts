@@ -6,6 +6,7 @@ import { ensureInstances as coreEnsureInstances } from "../packages/core/src/rep
 import type { Op } from "../packages/core/src/ops";
 import { defaultSettings } from "../packages/core/src/settings";
 import type { RecordOf, TableName } from "../packages/core/src/model";
+import { noteActivation, track } from "./analytics";
 import { requireAccess } from "./billing";
 import { findByClientId, getSettings, requireUser, stateWith, toRecord, toSettings } from "./lib";
 import { moveUser } from "./migrations";
@@ -61,6 +62,7 @@ export const load = query({
  * Creates the user's settings on first sign-in, in their time zone. An
  * account whose rows are still under the old token-identifier id is moved to
  * the stable id instead, so it keeps its data before the migration reaches it.
+ * A new account sends `signed_up`, once, with its email for PostHog.
  */
 export const init = mutation({
   args: { timeZone: v.string() },
@@ -73,6 +75,7 @@ export const init = mutation({
     const { id, ...fields } = defaultSettings(timeZone, Date.now());
     void id;
     await ctx.db.insert("userSettings", { userId, ...fields });
+    await track(ctx, "signed_up", userId, {}, identity.email ? { email: identity.email } : undefined);
   },
 });
 
@@ -111,6 +114,7 @@ export const apply = mutation({
     if (ops.length > 500) throw new Error("Too many changes at once");
     await requireAccess(ctx, userId);
     const now = Date.now();
+    await noteActivation(ctx, userId, ops, "app", now);
     for (const op of ops) await applyOne(ctx, userId, op, now);
   },
 });

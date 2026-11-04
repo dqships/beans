@@ -14,7 +14,7 @@ Billing and legal phase: integration branch `claude/billing-and-legal` takes the
 - [x] Stripe products, checkout, customer portal, pricing page and launch codes (PR #13)
 - [ ] DQ reviews the `claude/billing-and-legal` PR into `main`
 - [x] Match the terms to the final Stripe setup: card required for the one 7-day trial, Settings > Subscription > Manage subscription, plan switching, failed payments, and the planner locking (data kept) when a subscription ends
-- [ ] Add PostHog to the privacy policy the day it goes live (the paragraph is ready in `apps/web/src/marketing/legal.ts`)
+- [x] Add PostHog to the privacy policy the day it goes live (with the PostHog events: `signed_up`, `activated`, `paid`)
 - [x] Link `/pricing` from the terms and About (the page itself arrives with the Stripe PR)
 - [ ] In-app account deletion and data export. Today both are by email to support
 
@@ -205,6 +205,7 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 - 2026-11-02: Michigan law, courts in Genesee County, small claims allowed, no arbitration clause (DQ).
 - 2026-11-02: Refunds: cancel any time and keep access to the end of the period; a full refund on request within 14 days of a charge (DQ).
 - 2026-11-02: The privacy policy names only services that are running. PostHog goes in the day it ships; Vercel Analytics is named now (DQ).
+- 2026-11-04: PostHog product analytics on the planner and sign-in pages, plus server events from Convex: `signed_up` (account created), `activated` (first task planned on a day, in the app or an AI app) and `paid` (first charged invoice). Session replay off. Privacy policy updated the same day.
 - 2026-11-02: Minimum age 13. Account deletion and data copies are by email until the app has buttons for them.
 - 2026-11-02: Contact, Privacy and Terms copy lives once in `apps/web/src/marketing/legal.ts`, and both the HTML pages and their markdown versions read it.
 

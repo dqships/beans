@@ -1,5 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { authMode } from "@/data/auth-mode";
+import { ProductAnalytics } from "@/data/posthog";
 import { BackendProviders } from "@/data/providers";
 import styles from "./app-shell.module.css";
 
@@ -7,6 +8,7 @@ import styles from "./app-shell.module.css";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles.shell}>
+      <ProductAnalytics />
       {authMode === "clerk" ? (
         <ClerkProvider
           appearance={{
