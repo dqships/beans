@@ -1,4 +1,6 @@
+import type { Implementation } from "@modelcontextprotocol/server";
 import { createMcpHandler, withMcpAuth } from "mcp-handler";
+import { absoluteUrl, siteUrl } from "@/lib/site";
 import { verifyBeansToken } from "@/mcp/auth";
 import { MCP_CORS, publicOrigin, RESOURCE_METADATA_PATH } from "@/mcp/config";
 import { INSTRUCTIONS, registerBeans } from "@/mcp/server";
@@ -8,8 +10,23 @@ import { INSTRUCTIONS, registerBeans } from "@/mcp/server";
  * needs a Clerk OAuth access token; without one the answer is a 401 whose
  * `WWW-Authenticate` points at the protected resource metadata.
  */
+/**
+ * Icons and the site let AI apps show Beans' own icon instead of guessing it
+ * from the domain. `mcp-handler` types `serverInfo` as name and version only,
+ * but hands the whole object to the SDK's `McpServer`, which sends these too.
+ */
+const serverInfo: Implementation = {
+  name: "Beans",
+  version: "1.0.0",
+  websiteUrl: siteUrl,
+  icons: [
+    { src: absoluteUrl("/icon.svg"), mimeType: "image/svg+xml", sizes: ["any"] },
+    { src: absoluteUrl("/icon.png"), mimeType: "image/png", sizes: ["512x512"] },
+  ],
+};
+
 const handler = createMcpHandler(registerBeans, {
-  serverInfo: { name: "Beans", version: "1.0.0" },
+  serverInfo,
   instructions: INSTRUCTIONS,
 });
 
