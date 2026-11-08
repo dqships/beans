@@ -12,6 +12,9 @@ function resolveSiteUrl(): string {
 
 export const siteUrl = resolveSiteUrl();
 
+/** Beans' source code. Beans is open source under the MIT license. */
+export const SOURCE_URL = "https://github.com/dqships/beans";
+
 /** An absolute URL on this site. */
 export function absoluteUrl(path: string): string {
   return path === "/" ? siteUrl : `${siteUrl}${path}`;

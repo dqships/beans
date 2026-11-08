@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { SOURCE_URL } from "@/lib/site";
 import { MCP_SCOPES, MCP_URL, RESOURCE_METADATA_PATH, RESOURCE_METADATA_URL } from "@/mcp/config";
 import { resourceProperties } from "@/mcp/metadata";
 import { TOOLS } from "@/mcp/tools";
@@ -36,6 +37,14 @@ describe("llms.txt", () => {
     expect(llmsTxt).toContain(`](${MCP_URL})`);
     expect(llmsTxt).toContain(`](${RESOURCE_METADATA_URL})`);
     expect(llmsTxt).toMatch(/\]\([^)]*\/connect-ai\)/);
+  });
+});
+
+describe("source code link", () => {
+  it("points at the public repo from llms.txt and the home page's markdown", () => {
+    expect(SOURCE_URL).toBe("https://github.com/dqships/beans");
+    expect(llmsTxt).toContain(`## Source code\n\n- [Beans on GitHub](${SOURCE_URL})`);
+    expect(markdownFor("/")).toContain(`](${SOURCE_URL})`);
   });
 });
 

@@ -1,4 +1,4 @@
-import { absoluteUrl } from "../lib/site";
+import { absoluteUrl, SOURCE_URL } from "../lib/site";
 import { connectBody } from "./connect";
 import { contactBody, legalUpdated, operator, privacyBody, supportEmail, termsBody } from "./legal";
 
@@ -57,6 +57,7 @@ At midnight, anything you didn't finish moves to the new day on its own, marked 
 - [Contact](${absoluteUrl("/contact")})
 - [Privacy](${absoluteUrl("/privacy")})
 - [Terms](${absoluteUrl("/terms")})
+- [Source code on GitHub](${SOURCE_URL})
 `;
 
 const about = `# About Beans

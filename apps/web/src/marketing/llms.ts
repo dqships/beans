@@ -1,4 +1,4 @@
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, SOURCE_URL } from "@/lib/site";
 import { MCP_SCOPES, MCP_URL, RESOURCE_METADATA_URL } from "@/mcp/config";
 import { TOOLS } from "@/mcp/tools";
 import { PASS_DAYS, TRIAL_DAYS } from "@beans/core";
@@ -51,6 +51,10 @@ Beans holds one person's own planner. It isn't for shared team projects, and its
 - [Connect your AI app](${absoluteUrl(publicPages.connectAi.path)}): Setup for Claude, Claude Code, ChatGPT, Cursor and other MCP apps, what the tools can do, permissions and disconnecting
 - [MCP server](${MCP_URL}): Streamable HTTP endpoint; every request needs an OAuth access token
 - [OAuth protected resource metadata](${RESOURCE_METADATA_URL}): RFC 9728 metadata with the authorization server and scopes
+
+## Source code
+
+- [Beans on GitHub](${SOURCE_URL}): The app, the MCP server and the Convex backend, MIT licensed
 
 ## Pages
 
