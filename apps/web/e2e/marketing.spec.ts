@@ -113,8 +113,8 @@ test.describe("head tags", () => {
       expect(app["@type"]).toBe("WebApplication");
       expect(app.offers.map((o: { price: string }) => o.price)).toEqual(["6", "48"]);
       expect(organization).toMatchObject({ "@type": "Organization", name: "FollowUs AI LLC", contactPoint: { email: "support@followusai.com" } });
-      // No address until DQ supplies a real one.
-      expect(organization).not.toHaveProperty("address");
+      // The region only: DQ chose not to publish a street or mailing address.
+      expect(organization.address).toEqual({ "@type": "PostalAddress", addressRegion: "MI", addressCountry: "US" });
 
       await expect(page.locator("h1")).toHaveCount(1);
       await expect(page.locator("main")).toHaveCount(1);
@@ -199,7 +199,12 @@ test.describe("HTTP behavior", () => {
 
   test("llms.txt links resolve", async ({ request }) => {
     const text = await (await request.get("/llms.txt")).text();
-    const paths = [...text.matchAll(/\]\((?:https?:\/\/[^/)]+)?(\/[^)]*)?\)/g)].map((match) => match[1] ?? "/");
+    // Links to the MCP host and to GitHub live elsewhere; the unit tests pin their addresses.
+    const offSite = /^https?:\/\/(mcp\.[^/)]+|github\.com)\//;
+    const paths = [...text.matchAll(/\]\(([^)]+)\)/g)]
+      .map((match) => match[1]!)
+      .filter((href) => !offSite.test(href))
+      .map((href) => href.match(/^(?:https?:\/\/[^/)]+)?(\/[^)]*)?$/)?.[1] ?? "/");
     expect(paths.length).toBeGreaterThanOrEqual(5);
     for (const path of paths) expect((await request.get(path)).status()).toBeLessThan(400);
   });
