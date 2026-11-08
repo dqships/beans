@@ -6,6 +6,15 @@
 export const MCP_PATH = "/mcp";
 export const MCP_URL = "https://mcp.beans.followusai.com/mcp";
 export const RESOURCE_METADATA_PATH = "/.well-known/oauth-protected-resource/mcp";
+/** The protected resource metadata (RFC 9728) for `MCP_URL`, on the MCP host. */
+export const RESOURCE_METADATA_URL = `${new URL(MCP_URL).origin}${RESOURCE_METADATA_PATH}`;
+
+/**
+ * The OAuth scopes the MCP server declares (RFC 9728 `scopes_supported`).
+ * Clerk, the authorization server, issues only identity scopes, so these don't
+ * narrow planner access: a token reaches its person's whole planner.
+ */
+export const MCP_SCOPES = ["profile", "email"] as const;
 
 /** True for the MCP server's own host. */
 export function isMcpHost(host: string): boolean {
