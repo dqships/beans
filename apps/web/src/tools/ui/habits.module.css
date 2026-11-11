@@ -1,0 +1,215 @@
+/* The habit tracker: a garden row per habit and a bean for each day of the month. */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Wide enough for "September 2026", so the arrows stay put from month to month. */
+.month {
+  min-width: calc(var(--space-6) * 6);
+  min-height: var(--text-lg-line);
+  font-size: var(--text-lg-size);
+  line-height: var(--text-lg-line);
+  font-weight: var(--text-lg-weight);
+  text-align: center;
+}
+
+/* The month scrolls sideways in here on a narrow screen; the page never does. */
+.scroll {
+  min-width: 0;
+  /* Room for the days and five habits, before the month is known and while there are few. */
+  min-height: calc(var(--control-height) * 7);
+  overflow-x: auto;
+}
+
+.empty {
+  min-height: calc(var(--control-height) * 7);
+  align-content: center;
+}
+
+.table {
+  /* Narrow enough that 31 days, the names and the totals fit the page without scrolling on a desktop. */
+  --day-width: calc(var(--control-height-sm) - var(--space-1));
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.table th,
+.table td {
+  padding: 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+  font-weight: var(--text-sm-weight);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table thead th {
+  padding: var(--space-1) 0;
+  border-bottom-width: var(--focus-ring);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+  vertical-align: bottom;
+}
+
+/* Habit names stay in view while the days scroll under them. */
+.table .nameCol {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: calc(var(--space-6) * 7);
+  background: var(--color-surface);
+  text-align: left;
+}
+
+.table thead .nameCol {
+  padding-left: var(--space-1);
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  width: calc(var(--space-6) * 7);
+  padding: 0 var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.dayHead {
+  min-width: var(--day-width);
+}
+
+.weekday {
+  display: block;
+  font-weight: var(--text-xs-weight);
+}
+
+/* Today's column. */
+.table .today {
+  background: var(--color-surface-2);
+}
+
+.table thead .today {
+  color: var(--color-text);
+  font-weight: var(--text-lg-weight);
+  box-shadow: inset 0 var(--focus-ring) 0 var(--color-primary);
+}
+
+.cell {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: var(--day-width);
+  height: var(--control-height);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+}
+
+.cell:focus-visible {
+  outline-offset: calc(var(--focus-ring) * -1);
+}
+
+/* A day not done: a faint bean outline, waiting. */
+.faint {
+  opacity: var(--opacity-ghost);
+  transition: opacity var(--duration-fade) linear;
+}
+
+.cell:hover .faint,
+.cell:focus-visible .faint {
+  opacity: 1;
+}
+
+.table .total {
+  min-width: calc(var(--space-6) * 1.75);
+  padding: 0 var(--space-2);
+}
+
+.table tbody .total {
+  color: var(--color-text);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+}
+
+.add {
+  max-width: var(--layout-modal);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .table .nameCol {
+    min-width: calc(var(--space-6) * 4);
+  }
+
+  .name {
+    width: calc(var(--space-6) * 4);
+  }
+}
+
+/* The whole month across one landscape page. */
+@media print {
+  @page {
+    size: landscape;
+  }
+
+  .scroll {
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .month {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .table .nameCol {
+    position: static;
+    min-width: calc(var(--space-6) * 6);
+  }
+
+  .name {
+    width: calc(var(--space-6) * 6);
+    padding: 0;
+  }
+
+  .dayHead {
+    min-width: 0;
+  }
+
+  .cell {
+    min-width: var(--icon-md);
+    height: var(--control-height-sm);
+  }
+
+  .faint {
+    opacity: 1;
+  }
+
+  .table .today {
+    background: none;
+  }
+
+  .table thead .today {
+    font-weight: var(--text-md-weight);
+    box-shadow: none;
+  }
+
+  .table .total {
+    min-width: 0;
+  }
+}

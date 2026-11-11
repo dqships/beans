@@ -58,8 +58,9 @@ function convexOrigins(convexUrl: string | undefined): string[] {
   }
 }
 
-export function marketingPolicy({ dev }: { dev: boolean }): string {
-  return serialize({
+/** The directives every public page starts from. */
+function publicDirectives(dev: boolean): Directives {
+  return {
     ...shared,
     // Turbopack's dev client needs eval, inline bootstrap and its own socket.
     "script-src": dev ? ["'self'", "'unsafe-inline'", "'unsafe-eval'"] : ["'self'"],
@@ -68,7 +69,41 @@ export function marketingPolicy({ dev }: { dev: boolean }): string {
     "font-src": ["'self'"],
     "media-src": ["'self'"],
     "connect-src": dev ? ["'self'", "ws://localhost:*", "ws://127.0.0.1:*"] : ["'self'"],
+  };
+}
+
+export function marketingPolicy({ dev }: { dev: boolean }): string {
+  return serialize(publicDirectives(dev));
+}
+
+/**
+ * The free tools at `/tools/<name>`. They hydrate, so React can run them, and
+ * that changes two things from the marketing policy.
+ *
+ * Scripts: Next's production build writes one small inline script into every
+ * page that hydrates (the list of files the page needs). A header can't name
+ * it, because its hash is only known once the page is built. So this header
+ * allows inline scripts, and the page's own `<meta>` policy, written by
+ * `pages/_document.tsx`, narrows scripts back down to this site's files plus
+ * that one script by its hash. A browser enforces both, so the result is as
+ * strict as the marketing pages: no other inline script runs.
+ *
+ * Styles: `style` attributes are allowed, which React writes for a value
+ * worked out at run time, such as where a block sits on a schedule. Inline
+ * `<style>` stays blocked.
+ */
+export function toolsPolicy({ dev }: { dev: boolean }): string {
+  const directives = publicDirectives(dev);
+  return serialize({
+    ...directives,
+    "script-src": dev ? directives["script-src"]! : ["'self'", "'unsafe-inline'"],
+    "style-src-attr": ["'unsafe-inline'"],
   });
+}
+
+/** The `<meta>` policy for a page whose inline scripts have these sources: this site's files, and those scripts only. */
+export function hashedScriptPolicy(hashes: string[]): string {
+  return `script-src 'self' ${hashes.map((hash) => `'sha256-${hash}'`).join(" ")}`;
 }
 
 export function appPolicy({

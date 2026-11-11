@@ -1,0 +1,348 @@
+/* The time blocking planner: a task list beside a small Timebox, with the hours on a vine as in the planner. */
+
+.planner {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
+}
+
+.head > :first-child {
+  flex: 1 1 calc(var(--layout-column) * 0.75);
+}
+
+.hoursPick {
+  display: flex;
+  align-items: end;
+  gap: var(--space-2);
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-6);
+}
+
+.tasks {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  min-width: 0;
+}
+
+.columnTitle {
+  color: var(--color-text);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+.add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: var(--space-2);
+}
+
+.rows {
+  display: grid;
+  align-content: start;
+  /* Room for four tasks before the list starts to grow. */
+  min-height: calc((var(--control-height) + var(--control-height-sm) + var(--space-2) * 3 + var(--border-width)) * 4);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.rowMeta {
+  grid-column: 2 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Compact pickers for a task's length and start time. */
+.small {
+  width: auto;
+  height: var(--control-height-sm);
+  padding: 0 var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.handle {
+  display: inline-grid;
+  place-items: center;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.emptyRows {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.summary {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-variant-numeric: tabular-nums;
+  /* Two lines, so the sentence can grow without moving what's below. */
+  min-height: calc(var(--text-sm-line) * 2);
+}
+
+.timebox {
+  --hour-h: calc(var(--space-4) * 4);
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2);
+  padding-top: calc(var(--text-xs-line) / 2);
+}
+
+.hours {
+  display: grid;
+  grid-auto-rows: var(--hour-h);
+}
+
+.hour {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+  text-align: right;
+  white-space: nowrap;
+  translate: 0 calc(var(--text-xs-line) / -2);
+}
+
+/* The vine runs down the left, with a soil-colored line at each hour. */
+.lane {
+  position: relative;
+  height: calc(var(--hours) * var(--hour-h));
+  border-left: var(--focus-ring) solid var(--mascot-leaf-2);
+  background: repeating-linear-gradient(to bottom, var(--color-border) 0 var(--border-width), transparent var(--border-width) var(--hour-h));
+}
+
+.block {
+  position: absolute;
+  top: calc(var(--at) * var(--hour-h) / 60);
+  left: calc(var(--col) / var(--cols) * 100% + var(--space-1));
+  width: calc(100% / var(--cols) - var(--space-1) * 2);
+  height: calc(var(--len) * var(--hour-h) / 60 - var(--border-width));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--block, var(--label-soil));
+  color: var(--color-on-label);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.block:focus-visible {
+  outline-offset: 0;
+  z-index: 1;
+}
+
+.dragging {
+  z-index: 1;
+  box-shadow: var(--shadow-md);
+  cursor: grabbing;
+}
+
+.blockDone .blockTitle {
+  text-decoration: line-through;
+}
+
+.blockTitle {
+  overflow: hidden;
+  font-weight: var(--text-md-weight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.blockTime {
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Half an hour or less: the name and the time share one line. */
+.short {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  line-height: 1;
+}
+
+.short .blockTime {
+  flex: none;
+}
+
+.grip {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: var(--space-2);
+  cursor: ns-resize;
+}
+
+.c0 { --block: var(--label-rain); }
+.c1 { --block: var(--label-sprout); }
+.c2 { --block: var(--label-corn); }
+.c3 { --block: var(--label-pumpkin); }
+.c4 { --block: var(--label-plum); }
+.c5 { --block: var(--label-beet); }
+.c6 { --block: var(--label-tomato); }
+.c7 { --block: var(--label-soil); }
+
+/* Where a dragged task would land. */
+.preview {
+  background: none;
+  border: var(--focus-ring) dashed var(--color-primary);
+  pointer-events: none;
+}
+
+/* The now marker: a checked-off bean on the vine. */
+.now {
+  position: absolute;
+  top: calc(var(--at) * var(--hour-h) / 60);
+  right: 0;
+  left: 0;
+  height: 0;
+  border-top: var(--border-width) solid var(--color-accent);
+  pointer-events: none;
+}
+
+.nowBean {
+  position: absolute;
+  top: 0;
+  left: calc(var(--focus-ring) / -2);
+  width: var(--bean-size);
+  height: var(--bean-size);
+  translate: -50% -50%;
+}
+
+.ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-drag);
+  max-width: var(--layout-column);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  rotate: -1deg;
+  pointer-events: none;
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* Fingers scroll the page, so tasks go on with Schedule or the time field instead of a drag. */
+@media (pointer: coarse) {
+  .handle,
+  .dragHint {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+
+  .add {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .add > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media print {
+  .body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .rows {
+    min-height: 0;
+  }
+
+  .small {
+    border: 0;
+    padding: 0;
+  }
+
+  .block {
+    border: var(--border-width) solid var(--color-text);
+    print-color-adjust: exact;
+  }
+}

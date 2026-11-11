@@ -1,0 +1,181 @@
+/* The daily planner page: a sheet of seed-packet paper with a soil line under everything you write. */
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.date {
+  width: calc(var(--space-6) * 6);
+}
+
+.hourPick {
+  width: calc(var(--space-6) * 3.5);
+}
+
+.dateLine {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-height: var(--text-lg-line);
+  font-size: var(--text-lg-size);
+  line-height: var(--text-lg-line);
+  font-weight: var(--text-lg-weight);
+}
+
+/* No date yet: keep the line's room so the page doesn't jump when one is picked. */
+.dateEmpty {
+  visibility: hidden;
+}
+
+.dateRule {
+  flex: 1;
+  max-width: var(--layout-column);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+/* The schedule down one side; priorities, to-dos and notes down the other. */
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "schedule top"
+    "schedule todo"
+    "schedule notes";
+  gap: var(--space-5) var(--space-6);
+  align-items: start;
+}
+
+.top {
+  grid-area: top;
+}
+
+.schedule {
+  grid-area: schedule;
+}
+
+.todo {
+  grid-area: todo;
+}
+
+.notes {
+  grid-area: notes;
+  align-self: stretch;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.part {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.heading {
+  padding-bottom: var(--space-1);
+  border-bottom: var(--focus-ring) solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: calc(var(--control-height) + var(--space-1));
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.hour,
+.number {
+  flex: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+  font-variant-numeric: tabular-nums;
+}
+
+.hour {
+  width: calc(var(--space-6) * 1.5);
+}
+
+.number {
+  width: var(--bean-size);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  text-align: center;
+}
+
+.notesField {
+  min-height: calc(var(--control-height) * 4);
+  height: 100%;
+  margin-top: var(--space-2);
+}
+
+.notesText {
+  padding-top: var(--space-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      "top"
+      "schedule"
+      "todo"
+      "notes";
+  }
+
+  .date {
+    width: calc(var(--space-6) * 5);
+  }
+}
+
+/* One page: the same two columns, with lines a little closer together. */
+@media print {
+  .page {
+    gap: var(--space-3);
+  }
+
+  .columns {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      "schedule top"
+      "schedule todo"
+      "schedule notes";
+    gap: var(--space-4) var(--space-5);
+  }
+
+  .dateEmpty {
+    visibility: visible;
+  }
+
+  .line {
+    min-height: var(--control-height-sm);
+  }
+
+  .line input {
+    height: calc(var(--control-height-sm) - var(--border-width));
+  }
+
+  .part {
+    break-inside: avoid;
+  }
+}

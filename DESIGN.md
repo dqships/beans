@@ -18,6 +18,7 @@ Beans is a small garden you tend each day. Its materials come from one place: se
 | Landing page | The hero Timebox's now bean rides the page's vine as you scroll, passing behind anything on the vine while an outline draws round it |
 | Analytics bars | Rounded stalks |
 | First-run setup | Seed packets become labels, real tasks land on soil lines, and a vine grows a leaf per step |
+| Free tools (`/tools`) | Each tool grows in a seed tray: paper sides, a soil line along the foot, a checked-off bean perched on the rim. Its steps climb a vine, one leaf each. Timers use the leaf ring, lists use bean checkboxes, schedules put the hours on a vine, and answers stand on a soil line. The index is four garden rows |
 
 Names stay plain: Brain Dump, Timebox, Lists, Labels. The world shows in visuals and in small lines of copy, such as "Spill the beans" as the empty Brain Dump prompt.
 

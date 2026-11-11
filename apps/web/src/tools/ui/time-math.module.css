@@ -1,0 +1,177 @@
+/* The time calculators: fields in a row, sums as rows on soil lines, and each answer standing on its own soil line. */
+
+/* The switcher sits at the start of the row, not stretched across it. */
+.modes {
+  justify-self: start;
+}
+
+/* One half of the two-way converter. */
+.panel {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.panelTitle {
+  color: var(--color-text);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+/* Hours, minutes and seconds side by side. */
+.fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+/* Time and date pickers keep one width, so a row of them doesn't shift with the browser's own sizing. */
+input.time {
+  width: calc(var(--space-6) * 4 + var(--space-2));
+}
+
+input.date {
+  width: calc(var(--space-6) * 5 + var(--space-2));
+}
+
+/* The main answer. Room for a second line of notes, so the box holds still as the answer changes. */
+.answer {
+  align-content: start;
+  min-height: calc(var(--text-xs-line) + var(--text-title-line) + var(--text-sm-line) * 2 + var(--space-1) * 2 + var(--space-3) + var(--focus-ring));
+}
+
+/* A smaller answer, with the same room for its notes. */
+.answerSmall {
+  align-content: start;
+  min-height: calc(var(--text-xs-line) + var(--text-xl-line) + var(--text-sm-line) * 2 + var(--space-1) * 2 + var(--space-3) + var(--focus-ring));
+}
+
+/* The same answer in two other units, side by side. A number too long to share the row takes a row of its own. */
+.pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-5);
+}
+
+.pair > * {
+  flex: 1 1 0;
+  min-width: max-content;
+  max-width: 100%;
+}
+
+/* "next day", after a clock time. */
+.dayTag {
+  margin-left: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-lg-size);
+  line-height: var(--text-lg-line);
+  font-weight: var(--text-lg-weight);
+  white-space: nowrap;
+}
+
+/* The sum: a narrow sheet of rows. */
+.sheet {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--layout-modal);
+  min-width: 0;
+}
+
+.rowHead,
+.row {
+  display: grid;
+  grid-template-columns: calc(var(--space-6) * 2 + var(--space-2)) repeat(3, minmax(0, 1fr)) var(--control-height-sm);
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.rowHead {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+}
+
+.rows {
+  display: grid;
+  align-content: start;
+  /* Room for three rows, so adding one doesn't push the answer around. */
+  min-height: calc((var(--control-height) + var(--space-2) * 2 + var(--border-width)) * 3);
+}
+
+.row {
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+/* Tighter fields, so three of them and a sign fit across a phone. */
+.row .cell {
+  padding: 0 var(--space-2);
+}
+
+/* The reference table: rows on soil lines. It scrolls inside itself if it ever runs out of room. */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.table caption {
+  padding-bottom: var(--space-2);
+  color: var(--color-text);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+  font-weight: var(--text-sm-weight);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table thead th {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+}
+
+.table tbody td:nth-child(even) {
+  color: var(--color-text-muted);
+}
+
+/* A gap between the two halves of the table. */
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  padding-left: var(--space-5);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .answer {
+    min-height: calc(var(--text-xs-line) + var(--text-xl-line) * 2 + var(--text-sm-line) * 2 + var(--space-1) * 2 + var(--space-3) + var(--focus-ring));
+  }
+
+  .rowHead,
+  .row {
+    gap: var(--space-1);
+  }
+
+  .table th:nth-child(3),
+  .table td:nth-child(3) {
+    padding-left: var(--space-3);
+  }
+}

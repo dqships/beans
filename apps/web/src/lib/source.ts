@@ -1,4 +1,5 @@
 import { publicPages } from "@/marketing/pages";
+import { TOOL_PATHS } from "@/tools/slugs";
 
 /**
  * Where a visitor came from, carried from the marketing page they landed on
@@ -20,8 +21,8 @@ export const LANDING_PARAM = "ft_lp";
 const MAX_REF = 300;
 const MAX_VALUE = 200;
 
-/** Paths of the marketing pages. */
-export const MARKETING_PATHS: ReadonlySet<string> = new Set(Object.values(publicPages).map((p) => p.path));
+/** Paths of the marketing pages, each free tool's page included. */
+export const MARKETING_PATHS: ReadonlySet<string> = new Set([...Object.values(publicPages).map((p) => p.path), ...TOOL_PATHS]);
 
 /** True for a URL on this site or one of its subdomains (sign-in, the MCP host). */
 function isOwnHost(hostname: string, ownHost: string): boolean {

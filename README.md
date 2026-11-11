@@ -44,12 +44,13 @@ A desktop app is planned for later.
 |---|---|---|
 | `/` | Landing page | Pages (`apps/web/src/pages/`) |
 | `/about`, `/contact`, `/privacy`, `/terms` | Plain marketing pages | Pages |
+| `/tools`, `/tools/<name>` | Free tools: timers, planners and time calculators (`apps/web/src/tools/`) | Pages |
 | `/app` | Planner behind sign-in | App, `(app)` route group |
 | `/sign-in`, `/sign-up` | Clerk | App, `(app)` route group |
 | `/robots.txt`, `/sitemap.xml`, `/llms.txt` | Crawler files | App |
 | Anything else | 404 | App, `not-found.tsx` |
 
-Marketing pages use the Pages Router with `unstable_runtimeJS: false`, so they ship no framework JavaScript. Their only script is `apps/web/public/landing.js`, which loads in production builds. Clerk runs only on `/app`, `/sign-in`, `/sign-up`, `/api` and `/__clerk`. `proxy.ts` also answers `Accept: text/markdown` on public pages, and sends their anonymous page views to PostHog from the server (`docs/DEPLOY.md`, "PostHog").
+Marketing pages use the Pages Router with `unstable_runtimeJS: false`, so they ship no framework JavaScript. Their only script is `apps/web/public/landing.js`, which loads in production builds. The free tools are the exception: each tool's page hydrates so the tool can run, under a policy that still allows scripts from this site only (`toolsPolicy` in `apps/web/src/lib/csp.ts`). They load no Clerk or Convex, and what you type stays in the browser. Clerk runs only on `/app`, `/sign-in`, `/sign-up`, `/api` and `/__clerk`. `proxy.ts` also answers `Accept: text/markdown` on public pages, and sends their anonymous page views to PostHog from the server (`docs/DEPLOY.md`, "PostHog").
 
 ## Repo layout
 

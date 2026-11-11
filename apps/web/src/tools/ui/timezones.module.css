@@ -1,0 +1,236 @@
+/* The meeting planner: each place on a soil line with its time, then one strip of 24 hours per place, lined up so a column is one moment. */
+
+.planner {
+  --name: calc(var(--space-6) * 5);
+  --hour: calc(var(--space-6) + var(--space-1));
+  --hour-gap: calc(var(--space-1) / 2);
+  display: grid;
+  align-content: start;
+  gap: var(--space-5);
+  min-width: 0;
+  /* The room two places take, held from the first paint so nothing moves when the visitor's zone arrives. */
+  min-height: calc(var(--space-6) * 15);
+}
+
+/* Before the visitor's zone is known. */
+.waiting {
+  align-content: center;
+  justify-items: center;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-3) var(--space-4);
+  min-width: 0;
+}
+
+.dateField {
+  flex: 0 0 calc(var(--space-6) * 6);
+}
+
+.timeField {
+  flex: 0 0 calc(var(--space-6) * 5);
+}
+
+.format {
+  margin-left: auto;
+}
+
+.places {
+  display: grid;
+  min-width: 0;
+}
+
+.place {
+  display: grid;
+  grid-template-columns: minmax(0, calc(var(--space-6) * 8)) calc(var(--space-6) * 5) minmax(0, 1fr) auto;
+  grid-template-areas: "pick time meta remove";
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  min-height: calc(var(--control-height) + var(--space-5));
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.pick {
+  grid-area: pick;
+}
+
+.time {
+  grid-area: time;
+  font-size: var(--text-xl-size);
+  line-height: var(--text-xl-line);
+  font-weight: var(--text-xl-weight);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.meta {
+  grid-area: meta;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-3);
+  min-width: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.shift {
+  color: var(--color-text);
+  font-weight: var(--text-md-weight);
+}
+
+.remove {
+  grid-area: remove;
+  color: var(--color-text-muted);
+}
+
+.sentence {
+  min-height: var(--text-md-line);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+/* The strips are wider than a phone, so they scroll in here and the page stays put. */
+.scroll {
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.strips {
+  display: grid;
+  gap: var(--space-2);
+  min-width: calc(var(--name) + (var(--hour) + var(--hour-gap)) * 24);
+}
+
+.strip {
+  display: grid;
+  grid-template-columns: var(--name) repeat(24, minmax(var(--hour), 1fr));
+  gap: var(--hour-gap);
+}
+
+/* The place's name stays in view while its hours scroll. */
+.stripName {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-right: var(--space-2);
+  background: var(--color-surface);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+}
+
+.stripName > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-width: 0;
+  height: calc(var(--text-xs-line) * 2 + var(--space-2));
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--radius-sm) / 2);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tag:empty {
+  display: none;
+}
+
+/* A legend square. The classes below color it the way they color a cell. */
+.swatch {
+  flex: none;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  border-radius: calc(var(--radius-sm) / 2);
+  background: var(--color-surface-2);
+}
+
+/* Working hours are the sunlit ones. */
+.work {
+  background: var(--label-corn);
+  color: var(--color-on-label);
+}
+
+/* Where every place is at work, the strip turns green. */
+.both {
+  background: var(--label-sprout);
+  color: var(--color-on-label);
+  font-weight: var(--text-lg-weight);
+}
+
+.picked {
+  outline: var(--focus-ring) solid var(--color-text);
+  outline-offset: calc(var(--focus-ring) * -1);
+}
+
+.cell:focus-visible {
+  outline: var(--focus-ring) solid var(--color-primary);
+  outline-offset: var(--focus-ring);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .planner {
+    --name: calc(var(--space-6) * 3);
+    min-height: calc(var(--space-6) * 22 + var(--space-4));
+  }
+
+  .dateField,
+  .timeField {
+    flex: 1 1 calc(var(--space-6) * 4);
+  }
+
+  .format {
+    margin-left: 0;
+  }
+
+  .place {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "pick pick remove"
+      "time meta meta";
+    padding: var(--space-3) 0;
+  }
+
+  /* Room for the answer to wrap, so it doesn't push the strips down. */
+  .sentence {
+    min-height: calc(var(--text-md-line) * 3);
+  }
+}

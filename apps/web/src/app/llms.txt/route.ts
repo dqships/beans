@@ -1,11 +1,14 @@
 import { absoluteUrl } from "@/lib/site";
 import { publicPages } from "@/marketing/pages";
+import { toolList } from "@/tools/registry";
+import { toolPath } from "@/tools/slugs";
 
 export const dynamic = "force-static";
 
 const links = [
   ["Pricing", publicPages.pricing.path, "Plans, the free trial and how to cancel"],
   ["About", publicPages.about.path, "What Beans is and how it works"],
+  ["Free tools", publicPages.tools.path, "Timers, planners and time calculators that work in a browser with no account"],
   ["Connect your AI app", publicPages.connectAi.path, "How to connect Claude, ChatGPT, Cursor or another MCP app to a Beans planner"],
   ["Contact", publicPages.contact.path, "Support email for help, billing, refunds and account requests"],
   ["Privacy", publicPages.privacy.path, "What Beans collects, why, and who handles it"],
@@ -22,6 +25,12 @@ Every public page answers \`Accept: text/markdown\` with a markdown version at t
 
 - [Home](${absoluteUrl("/")}): The main workflow and how a day goes
 ${links.map(([name, path, about]) => `- [${name}](${absoluteUrl(path)}): ${about}`).join("\n")}
+
+## Free tools
+
+Each one works in a browser with no account.
+
+${toolList.map((tool) => `- [${tool.name}](${absoluteUrl(toolPath(tool.slug))}): ${tool.blurb}`).join("\n")}
 
 ## Sign-in
 

@@ -1,0 +1,193 @@
+/* The weekly budget: rows on soil lines, then the whole week as one stalk, split by where the hours go. */
+
+.heading {
+  font-weight: var(--text-md-weight);
+}
+
+.rows {
+  display: grid;
+  align-content: start;
+  /* Room for the six rows it starts with, so removing one doesn't pull the page up. */
+  min-height: calc((var(--control-height) + var(--space-2) * 2 + var(--border-width)) * 6);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) calc(var(--space-6) * 3) calc(var(--space-6) * 4) calc(var(--space-6) * 4) auto;
+  grid-template-areas: "dot name hours per week remove";
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  min-height: calc(var(--control-height) + var(--space-2) * 2);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.row > .dot {
+  grid-area: dot;
+}
+
+.dot {
+  flex: none;
+  width: var(--space-3);
+  height: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--row-color, var(--label-soil));
+}
+
+.name {
+  grid-area: name;
+}
+
+.hours {
+  grid-area: hours;
+  width: 100%;
+}
+
+.per {
+  grid-area: per;
+}
+
+.week {
+  grid-area: week;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.remove {
+  grid-area: remove;
+  color: var(--color-text-muted);
+}
+
+.empty {
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.mascot {
+  width: calc(var(--space-6) * 3);
+  height: auto;
+}
+
+.over {
+  color: var(--color-danger);
+}
+
+/* The week: a rounded stalk, one length of it per row. */
+.stalk {
+  display: flex;
+  gap: calc(var(--space-1) / 2);
+  height: var(--space-5);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  overflow: hidden;
+}
+
+.part,
+.free {
+  flex: var(--share) 1 0;
+  min-width: 0;
+}
+
+.part {
+  background: var(--row-color, var(--label-soil));
+}
+
+.color-rain {
+  --row-color: var(--label-rain);
+}
+
+.color-sprout {
+  --row-color: var(--label-sprout);
+}
+
+.color-pumpkin {
+  --row-color: var(--label-pumpkin);
+}
+
+.color-corn {
+  --row-color: var(--label-corn);
+}
+
+.color-plum {
+  --row-color: var(--label-plum);
+}
+
+.color-tomato {
+  --row-color: var(--label-tomato);
+}
+
+.color-beet {
+  --row-color: var(--label-beet);
+}
+
+.color-soil {
+  --row-color: var(--label-soil);
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--space-6);
+  align-content: start;
+  /* Seven lines in two columns: the six starting rows and what's left. */
+  min-height: calc((var(--text-sm-line) + var(--space-2) * 2 + var(--border-width)) * 4);
+}
+
+.key {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto calc(var(--space-6) * 2);
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.keyName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.keyHours {
+  color: var(--color-text-muted);
+}
+
+.keyShare {
+  font-weight: var(--text-md-weight);
+  text-align: right;
+}
+
+.freeDot {
+  background: var(--color-surface-2);
+  outline: var(--border-width) solid var(--color-border);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .rows {
+    min-height: calc((var(--control-height) * 2 + var(--space-2) + var(--space-3) * 2 + var(--border-width)) * 6);
+  }
+
+  /* The name on one line, the numbers under it. */
+  .row {
+    grid-template-columns: auto calc(var(--space-6) * 2 + var(--space-4)) calc(var(--space-6) * 3 + var(--space-2)) minmax(0, 1fr) auto;
+    grid-template-areas:
+      "dot name name name remove"
+      ". hours per week week";
+    padding: var(--space-3) 0;
+  }
+
+  .legend {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: calc((var(--text-sm-line) + var(--space-2) * 2 + var(--border-width)) * 7);
+  }
+}

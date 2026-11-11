@@ -1,0 +1,141 @@
+/* Lists of things you type: the to-do list, and the tools that sort a list. Rows sit on soil lines, as task cards do in the planner. */
+
+.sheet {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+/* A heading you can type into. */
+.title {
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-1) 0;
+  border: 0;
+  border-bottom: var(--border-width) solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-xl-size);
+  line-height: var(--text-xl-line);
+  font-weight: var(--text-xl-weight);
+}
+
+.title::placeholder {
+  color: var(--color-text-muted);
+}
+
+.title:hover,
+.title:focus-visible {
+  border-bottom-color: var(--color-border);
+}
+
+.add {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.add > :first-child {
+  flex: 1;
+}
+
+.rows {
+  display: grid;
+  /* Room for five rows, so the first few tasks don't push the page around. */
+  min-height: calc((var(--control-height) + var(--space-2) * 2 + var(--border-width)) * 5);
+  align-content: start;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: calc(var(--control-height) + var(--space-2) * 2);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+/* A task's text: an input that looks like text until you edit it. */
+.text {
+  flex: 1;
+  min-width: 0;
+  height: var(--control-height);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-sm-weight);
+  text-overflow: ellipsis;
+}
+
+.text:hover,
+.text:focus-visible {
+  background: var(--color-surface-2);
+}
+
+/* Muted and struck through, not faded: faded text falls under the contrast the page has to keep. */
+.done .text {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.rowActions {
+  display: flex;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.emptyMascot {
+  width: calc(var(--space-6) * 3);
+  height: auto;
+}
+
+.emptyTitle {
+  color: var(--color-text);
+  font-weight: var(--text-md-weight);
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .row {
+    gap: var(--space-1);
+  }
+}
+
+@media print {
+  .rows {
+    min-height: 0;
+  }
+
+  .title {
+    border: 0;
+  }
+}

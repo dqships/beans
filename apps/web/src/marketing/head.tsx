@@ -1,8 +1,8 @@
 import Head from "next/head";
-import { PLANS, type Plan } from "@beans/core";
+import { PLANS, type Plan } from "@beans/core/billing";
 import { absoluteUrl, themeColors } from "@/lib/site";
 import { operator, supportEmail } from "./legal";
-import type { PublicPage } from "./pages";
+import { publicPages, type PublicPage } from "./pages";
 
 const OG_IMAGE = "/social/og-image.png";
 const TWITTER_IMAGE = "/social/twitter-image.png";
@@ -16,9 +16,10 @@ const price = (plan: Plan) => String(plan.amount / 100);
 /**
  * The app and the company that runs it. The Organization has the operator's
  * name and support email from the legal pages; its address and `sameAs`
- * profiles stay out until DQ supplies them.
+ * profiles stay out until DQ supplies them. A free tool's page adds its own
+ * nodes after these two, and Beans keeps the home page's description there.
  */
-const jsonLd = (page: PublicPage) =>
+const jsonLd = (page: PublicPage, graph?: Record<string, unknown>[]) =>
   JSON.stringify({
     "@context": "https://schema.org",
     "@graph": [
@@ -26,7 +27,7 @@ const jsonLd = (page: PublicPage) =>
         "@type": "WebApplication",
         name: "Beans",
         url: absoluteUrl("/"),
-        description: page.description,
+        description: graph ? publicPages.home.description : page.description,
         applicationCategory: "ProductivityApplication",
         operatingSystem: "Web browser",
         image: absoluteUrl(OG_IMAGE),
@@ -46,11 +47,12 @@ const jsonLd = (page: PublicPage) =>
         url: "https://followusai.com",
         contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: supportEmail, url: absoluteUrl("/contact") },
       },
+      ...(graph ?? []),
     ],
   }).replace(/</g, "\\u003c");
 
 /** Every head tag a public page needs. Pages Router pages get none of the App Router's metadata. */
-export function PageHead({ page, children }: { page: PublicPage; children?: React.ReactNode }) {
+export function PageHead({ page, graph, children }: { page: PublicPage; graph?: Record<string, unknown>[]; children?: React.ReactNode }) {
   const url = absoluteUrl(page.path);
   return (
     <Head>
@@ -79,7 +81,7 @@ export function PageHead({ page, children }: { page: PublicPage; children?: Reac
       <meta name="twitter:description" content={page.description} />
       <meta name="twitter:image" content={absoluteUrl(TWITTER_IMAGE)} />
       <meta name="twitter:image:alt" content={IMAGE_ALT} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(page) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(page, graph) }} />
       {children}
     </Head>
   );

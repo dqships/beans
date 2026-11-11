@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { appPolicy, clerkFrontendApi, marketingPolicy } from "../lib/csp";
+import { appPolicy, clerkFrontendApi, hashedScriptPolicy, marketingPolicy, toolsPolicy } from "../lib/csp";
 import { markdownFor, notFoundMarkdown, prefersMarkdown } from "./markdown";
-import { publicPageList } from "./pages";
+import { allPublicPages } from "./all-pages";
 
 describe("public page metadata", () => {
-  it.each(publicPageList.map((page) => [page.path, page] as const))("%s fits the length limits", (_, page) => {
+  it.each(allPublicPages.map((page) => [page.path, page] as const))("%s fits the length limits", (_, page) => {
     expect(page.title.length).toBeGreaterThanOrEqual(30);
     expect(page.title.length).toBeLessThanOrEqual(60);
     expect(page.description.length).toBeGreaterThanOrEqual(120);
@@ -12,7 +12,7 @@ describe("public page metadata", () => {
   });
 
   it("gives every page a markdown version with one H1", () => {
-    for (const page of publicPageList) {
+    for (const page of allPublicPages) {
       const body = markdownFor(page.path);
       expect(body).toBeTruthy();
       expect(body!.match(/^# /gm)).toHaveLength(1);
@@ -52,6 +52,17 @@ describe("content security policy", () => {
     expect(policy).toContain("script-src 'self';");
     expect(policy).not.toContain("unsafe");
     expect(policy).toContain("frame-ancestors 'self'");
+  });
+
+  it("gives the free tools style attributes, and inline scripts only for the page's own policy to narrow", () => {
+    const policy = toolsPolicy({ dev: false });
+    expect(policy).toContain("script-src 'self' 'unsafe-inline';");
+    expect(policy).toContain("style-src 'self';");
+    expect(policy).toContain("style-src-attr 'unsafe-inline'");
+    expect(policy).toContain("frame-ancestors 'self'");
+    expect(policy).not.toContain("unsafe-eval");
+    // What `_document` writes into the page, which the browser enforces on top of the header.
+    expect(hashedScriptPolicy(["abc=", "def="])).toBe("script-src 'self' 'sha256-abc=' 'sha256-def='");
   });
 
   it("lets the planner reach Clerk, Convex and PostHog", () => {

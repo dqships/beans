@@ -1,0 +1,209 @@
+/* The Eisenhower matrix: four garden beds in a square, urgent across the top and important down the side. */
+
+.board {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    ". urgent noturgent"
+    "important do schedule"
+    "notimportant delegate drop";
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.axis {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+  text-align: center;
+}
+
+.urgent {
+  grid-area: urgent;
+}
+
+.notUrgent {
+  grid-area: noturgent;
+}
+
+.important {
+  grid-area: important;
+}
+
+.notImportant {
+  grid-area: notimportant;
+}
+
+/* The side labels read bottom to top, like a chart's axis. */
+.side {
+  display: grid;
+  place-items: center;
+  width: var(--text-sm-line);
+}
+
+.side span {
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+  white-space: nowrap;
+}
+
+/* A bed: paper sides and a soil line along the foot, like the tray the tool sits in. */
+.bed {
+  display: grid;
+  /* A fixed track: a task's text field shrinks to fit instead of pushing the bed wider. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-bottom-width: calc(var(--focus-ring) * 2);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.do {
+  grid-area: do;
+  --marker: var(--label-tomato);
+}
+
+.schedule {
+  grid-area: schedule;
+  --marker: var(--label-sprout);
+}
+
+.delegate {
+  grid-area: delegate;
+  --marker: var(--label-corn);
+}
+
+.drop {
+  grid-area: drop;
+  --marker: var(--label-soil);
+}
+
+.bedHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+}
+
+/* A plant marker in the bed's own color. */
+.marker {
+  align-self: center;
+  width: var(--space-3);
+  height: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--marker);
+}
+
+.bedName {
+  color: var(--color-text);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+.bedAbout {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+.tasks {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  min-width: 0;
+  /* Room for four tasks, so the beds stay the same size while they fill. */
+  min-height: calc((var(--control-height) + var(--space-2) + var(--border-width)) * 4);
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: calc(var(--control-height) + var(--space-2));
+  border-bottom: var(--border-width) solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.task .movePick {
+  flex: none;
+  width: calc(var(--space-6) * 4);
+}
+
+.hint {
+  padding-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .board {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "do"
+      "schedule"
+      "delegate"
+      "drop";
+  }
+
+  .axis {
+    display: none;
+  }
+
+  /* The task's text gets the first line to itself; where it can move to sits under it. */
+  .task {
+    flex-wrap: wrap;
+    padding: var(--space-1) 0;
+  }
+
+  .task .taskText {
+    flex-basis: 60%;
+  }
+
+  .task .movePick {
+    margin-left: auto;
+  }
+}
+
+/* The square on one page, whatever the screen it was printed from. */
+@media print {
+  .board {
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      ". urgent noturgent"
+      "important do schedule"
+      "notimportant delegate drop";
+  }
+
+  .axis {
+    display: block;
+  }
+
+  .side {
+    display: grid;
+  }
+
+  .bed {
+    break-inside: avoid;
+  }
+
+  .marker {
+    display: none;
+  }
+
+  .tasks {
+    min-height: calc(var(--control-height-sm) * 8);
+  }
+
+  .task {
+    flex-wrap: nowrap;
+    min-height: var(--control-height-sm);
+    padding: 0;
+  }
+}

@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./billing": "./src/billing.ts",
+    "./dates": "./src/dates.ts",
+    "./duration": "./src/duration.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
