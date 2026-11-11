@@ -44,10 +44,10 @@ export const publicPages = {
   },
   connectAi: {
     path: "/connect-ai",
-    title: "Connect Claude, ChatGPT or Cursor to your Beans planner",
+    title: "Beans MCP server: connect Claude, ChatGPT or Cursor",
     description:
       "Paste one address into Claude, ChatGPT, Cursor or another MCP app, sign in to Beans, and your AI can plan your days, add tasks and read your analytics.",
-    lastModified: "2026-11-03",
+    lastModified: "2026-11-08",
   },
   privacy: {
     path: "/privacy",

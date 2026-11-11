@@ -14,12 +14,19 @@ const ORGANIZATION_ID = "https://followusai.com/#organization";
 const price = (plan: Plan) => String(plan.amount / 100);
 
 /**
- * The app and the company that runs it. The Organization has the operator's
- * name and support email from the legal pages; its address and `sameAs`
- * profiles stay out until DQ supplies them. A free tool's page adds its own
- * nodes after these two, and Beans keeps the home page's description there.
+ * What Beans is, for search and AI engines that read JSON-LD `keywords`. Each
+ * term appears in the home page's own copy; the main one goes first.
  */
-const jsonLd = (page: PublicPage, graph?: Record<string, unknown>[]) =>
+export const PRODUCT_KEYWORDS = ["daily planner", "to-do list", "timebox", "Brain Dump"];
+
+/**
+ * The app and the company that runs it. The Organization has the operator's
+ * name, support email and region (Michigan, as the contact page says) from the
+ * legal pages; its street address and `sameAs` profiles stay out until DQ
+ * supplies them. A free tool's page adds its own nodes after these two, and
+ * Beans keeps the home page's description there.
+ */
+export const jsonLd = (page: PublicPage, graph?: Record<string, unknown>[]) =>
   JSON.stringify({
     "@context": "https://schema.org",
     "@graph": [
@@ -28,6 +35,7 @@ const jsonLd = (page: PublicPage, graph?: Record<string, unknown>[]) =>
         name: "Beans",
         url: absoluteUrl("/"),
         description: graph ? publicPages.home.description : page.description,
+        keywords: PRODUCT_KEYWORDS.join(", "),
         applicationCategory: "ProductivityApplication",
         operatingSystem: "Web browser",
         image: absoluteUrl(OG_IMAGE),
@@ -46,6 +54,7 @@ const jsonLd = (page: PublicPage, graph?: Record<string, unknown>[]) =>
         name: operator,
         url: "https://followusai.com",
         contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: supportEmail, url: absoluteUrl("/contact") },
+        address: { "@type": "PostalAddress", addressRegion: "MI", addressCountry: "US" },
       },
       ...(graph ?? []),
     ],

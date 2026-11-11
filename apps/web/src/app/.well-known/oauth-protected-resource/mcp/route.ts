@@ -1,6 +1,7 @@
 import { generateClerkProtectedResourceMetadata } from "@clerk/mcp-tools/server";
 import { metadataCorsOptionsRequestHandler } from "@clerk/mcp-tools/next";
 import { publicOrigin, resourceUrl } from "@/mcp/config";
+import { resourceProperties } from "@/mcp/metadata";
 
 /**
  * OAuth protected resource metadata (RFC 9728) for the MCP address. Its
@@ -12,13 +13,7 @@ export function GET(req: Request) {
   const metadata = generateClerkProtectedResourceMetadata({
     publishableKey,
     resourceUrl: resourceUrl(req),
-    properties: {
-      resource_name: "Beans",
-      resource_documentation: `${publicOrigin(req).replace("//mcp.", "//")}/connect-ai`,
-      service_documentation: `${publicOrigin(req).replace("//mcp.", "//")}/connect-ai`,
-      scopes_supported: ["profile", "email"],
-      bearer_methods_supported: ["header"],
-    },
+    properties: resourceProperties(publicOrigin(req).replace("//mcp.", "//")),
   });
   return Response.json(metadata, {
     headers: { "Cache-Control": "max-age=3600", "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, OPTIONS", "Access-Control-Allow-Headers": "*" },

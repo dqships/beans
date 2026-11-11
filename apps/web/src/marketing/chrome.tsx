@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- no client runtime here, so links are plain anchors. */
+import { SOURCE_URL } from "@/lib/site";
 import { MascotMark } from "./art";
 import styles from "./chrome.module.css";
 
@@ -64,6 +65,9 @@ export function SiteFooter() {
           </li>
           <li>
             <a href="/terms">Terms</a>
+          </li>
+          <li>
+            <a href={SOURCE_URL}>GitHub</a>
           </li>
           <li>
             <a href="/sign-in">Sign in</a>

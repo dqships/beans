@@ -1,4 +1,4 @@
-import { MCP_URL } from "@/mcp/config";
+import { MCP_URL, RESOURCE_METADATA_URL } from "@/mcp/config";
 
 /**
  * Copy for `/connect-ai`, the setup steps for connecting an AI app to Beans'
@@ -61,6 +61,12 @@ Any app that connects to remote MCP servers over HTTP with OAuth sign-in works. 
 Most AI apps ask you before each change. Beans also gives them four ready-made prompts: Plan my day, Weekly review, Shutdown, and Clean up my Brain Dump.
 
 To keep a runaway AI from flooding your planner, each account allows 60 calls a minute and 1,000 changes a day from connected apps.
+
+## Permissions
+
+When you choose **Allow**, Beans gives the app an OAuth access token for your account. It asks for the \`profile\` and \`email\` scopes, so the token says which Beans account it belongs to. The token reaches your own planner and no one else's, and it can use every tool above: there's no read-only option yet. To take an app's access away, disconnect it.
+
+AI apps read these details from the server's [OAuth metadata](${RESOURCE_METADATA_URL}).
 
 ## Things to ask
 
