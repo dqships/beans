@@ -1,0 +1,69 @@
+/*
+ * What the planners, lists and trackers share: how a tool looks on paper,
+ * blank lines to write on, and a button that asks before it clears.
+ */
+
+/* Shown on paper only: blank lines, a written-out date. */
+@media not print {
+  .paper .printOnly {
+    display: none;
+  }
+}
+
+/* A line to write on, standing on its soil line. */
+.blank {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+/*
+ * A finished line: struck through, in the muted ink. No fading, so it still
+ * reads clearly on every surface in both themes.
+ */
+.paper .checked input {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+/* Both labels share one cell, so the button keeps its width when it asks "sure?". */
+.swap {
+  display: inline-grid;
+  justify-items: start;
+}
+
+.swap > * {
+  grid-area: 1 / 1;
+}
+
+.swapOff {
+  visibility: hidden;
+}
+
+@media print {
+  /* Paper is white whatever the theme: ink for text, grey for the lines you write on. */
+  .paper {
+    color-scheme: light;
+    --color-text: CanvasText;
+    --color-text-muted: CanvasText;
+    --color-border: GrayText;
+    --color-bg: Canvas;
+    --color-surface: Canvas;
+    --color-surface-2: Canvas;
+    --color-accent: CanvasText;
+    --color-primary: CanvasText;
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .blank {
+    min-height: var(--control-height-sm);
+  }
+
+  /* Controls stay off the paper. Two classes, so this wins over whatever layout the control's own class sets. */
+  .paper .noPrint {
+    display: none;
+  }
+}

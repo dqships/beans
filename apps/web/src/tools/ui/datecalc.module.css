@@ -1,0 +1,75 @@
+/* The date calculator: a few fields, the answer on its soil line, and the same span said other ways on thinner lines under it. */
+
+/* The switcher keeps to its own width instead of stretching across the tool. */
+.modes {
+  justify-self: start;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-3) var(--space-4);
+  min-width: 0;
+}
+
+.date {
+  flex: 0 0 calc(var(--space-6) * 6);
+}
+
+.result {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.waiting {
+  color: var(--color-text-muted);
+}
+
+/* Room for the four lines the longest mode shows, so switching modes doesn't move the page. */
+.lines {
+  display: grid;
+  align-content: start;
+  min-height: calc((var(--text-md-line) + var(--space-2) * 2 + var(--border-width)) * 4);
+  margin: 0;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.line dt {
+  color: var(--color-text-muted);
+}
+
+.line dd {
+  min-width: 0;
+  margin: 0;
+  font-weight: var(--text-md-weight);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .date {
+    flex: 1 1 calc(var(--space-6) * 4 + var(--space-4));
+  }
+
+  /* A long date wraps onto a second line here, so the room for it is always kept. */
+  .readout > span:first-child {
+    min-height: calc(var(--text-xs-line) * 2);
+  }
+
+  .readout output {
+    min-height: calc(var(--text-xl-line) * 2);
+  }
+
+  .lines {
+    min-height: calc((var(--text-md-line) * 2 + var(--space-2) * 2 + var(--border-width)) * 4);
+  }
+}

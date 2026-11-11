@@ -1,0 +1,238 @@
+/* Controls shared by the free tools. Sizes and colors are DESIGN.md's: inputs, the switcher, buttons. */
+
+.stack {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.stackTight {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.barEnd {
+  align-items: end;
+  gap: var(--space-3);
+}
+
+.barCenter {
+  justify-content: center;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.label {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+}
+
+/* 16px text, so phones don't zoom in when a field takes focus. */
+.input {
+  width: 100%;
+  min-width: 0;
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-sm-weight);
+  font-variant-numeric: tabular-nums;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input:focus-visible {
+  outline-offset: 0;
+}
+
+.narrow {
+  width: calc(var(--space-6) * 3);
+}
+
+.area {
+  height: auto;
+  min-height: calc(var(--control-height) * 4);
+  padding: var(--space-2) var(--space-3);
+  resize: vertical;
+}
+
+/* A number with its unit after it: "25 min". */
+.unit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+/* The switcher: a well with the chosen segment raised on it. */
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-1);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+}
+
+.segment {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--control-height-sm);
+  padding: 0 var(--space-3);
+  border-radius: calc(var(--radius-sm) / 2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+  cursor: pointer;
+  transition: color var(--duration-fade) linear;
+}
+
+.segment input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.segment:hover {
+  color: var(--color-text);
+}
+
+.segment:has(input:checked) {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.segment:has(input:focus-visible) {
+  outline: var(--focus-ring) solid var(--color-primary);
+  outline-offset: var(--focus-ring);
+}
+
+/* An answer, standing on a soil line. */
+.readout {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding-bottom: var(--space-3);
+  border-bottom: var(--focus-ring) solid var(--color-border);
+}
+
+.readoutValue {
+  font-size: var(--text-title-size);
+  line-height: var(--text-title-line);
+  font-weight: var(--text-title-weight);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.readoutSmall .readoutValue {
+  font-size: var(--text-xl-size);
+  line-height: var(--text-xl-line);
+  font-weight: var(--text-xl-weight);
+}
+
+.readoutNote {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+/* The big clock face on the timers. */
+.digits {
+  font-size: var(--text-display-size);
+  line-height: var(--text-display-line);
+  font-weight: var(--text-display-weight);
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-height-sm);
+  color: var(--color-text);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  cursor: pointer;
+}
+
+.check input {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  margin: 0;
+  accent-color: var(--color-primary);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .digits {
+    font-size: var(--text-title-size);
+    line-height: var(--text-title-line);
+  }
+
+  .readoutValue {
+    font-size: var(--text-xl-size);
+    line-height: var(--text-xl-line);
+  }
+}
+
+/* Important, so it wins over a module's own `display` on the same element whatever order the stylesheets load in. */
+@media print {
+  .noPrint {
+    display: none !important;
+  }
+}

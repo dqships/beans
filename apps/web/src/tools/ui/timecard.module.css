@@ -1,0 +1,271 @@
+/* The time card: seven days as rows on soil lines, the week's total standing beside them. */
+
+.card {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.who {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  max-width: var(--layout-modal);
+}
+
+/* The sheet and the summary sit side by side while there's room, then stack. */
+.body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-5) var(--space-6);
+  min-width: 0;
+}
+
+.sheet {
+  flex: 2 1 var(--layout-modal);
+  display: grid;
+  min-width: 0;
+}
+
+.summary {
+  flex: 1 1 var(--layout-column);
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.headRow,
+.row,
+.totalRow {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) repeat(2, minmax(0, 5fr)) minmax(0, 4fr) minmax(0, 5fr);
+  align-items: center;
+  gap: var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.headRow {
+  padding-bottom: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+}
+
+/* Tall enough for a day with its date, and hours with their note, so nothing moves as you type. */
+.row {
+  grid-template-areas: "day in out break hours";
+  min-height: calc(var(--control-height) + var(--space-5));
+}
+
+.day {
+  grid-area: day;
+  display: grid;
+  min-width: 0;
+  font-weight: var(--text-md-weight);
+}
+
+.small {
+  min-height: var(--text-xs-line);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+}
+
+.cell {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.clockIn {
+  grid-area: in;
+}
+
+.clockOut {
+  grid-area: out;
+}
+
+.breakCell {
+  grid-area: break;
+}
+
+/* Field captions, shown only when the days stack on a phone. */
+.cap {
+  display: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+}
+
+.hours {
+  grid-area: hours;
+  display: grid;
+  justify-items: end;
+  min-width: 0;
+  font-weight: var(--text-md-weight);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.end {
+  text-align: right;
+}
+
+.none {
+  color: var(--color-text-muted);
+  font-weight: var(--text-sm-weight);
+}
+
+.totalRow {
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: calc(var(--control-height) + var(--space-3));
+  border-bottom: var(--focus-ring) solid var(--color-border);
+  font-weight: var(--text-md-weight);
+}
+
+.totalRow .hours {
+  grid-area: auto;
+}
+
+.payControls {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.rate input {
+  width: calc(var(--space-6) * 4);
+}
+
+/* Room for the five lines overtime and pay can add. */
+.lines {
+  display: grid;
+  align-content: start;
+  min-height: calc((var(--text-md-line) + var(--space-2) * 2 + var(--border-width)) * 5);
+  margin: 0;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.line dt {
+  color: var(--color-text-muted);
+}
+
+.line dd {
+  margin: 0;
+  font-weight: var(--text-md-weight);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.gross dt {
+  color: var(--color-text);
+  font-weight: var(--text-md-weight);
+}
+
+/* Lines to sign on. Paper only. */
+.sign {
+  display: none;
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .who {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .headRow {
+    display: none;
+  }
+
+  /* Each day becomes its own small block: the name and hours, then the three fields. */
+  .row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) calc(var(--space-6) * 2 + var(--space-4));
+    grid-template-areas:
+      "day day hours"
+      "in out break";
+    gap: var(--space-2);
+    padding: var(--space-3) 0;
+  }
+
+  .cap {
+    display: block;
+  }
+
+  .cell input {
+    padding: 0 var(--space-2);
+  }
+}
+
+@media print {
+  .card {
+    gap: var(--space-4);
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .headRow {
+    display: grid;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 6fr) repeat(2, minmax(0, 5fr)) minmax(0, 4fr) minmax(0, 5fr);
+    grid-template-areas: "day in out break hours";
+    gap: var(--space-3);
+    min-height: 0;
+    padding: var(--space-1) 0;
+    break-inside: avoid;
+  }
+
+  .cap {
+    display: none;
+  }
+
+  /* Fields print as plain text. */
+  .card input {
+    height: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    appearance: none;
+  }
+
+  .card input::-webkit-calendar-picker-indicator,
+  .card input::-webkit-inner-spin-button {
+    display: none;
+  }
+
+  .lines {
+    min-height: 0;
+  }
+
+  /* The hint under the rate is for the screen. */
+  .rate > span:last-child {
+    display: none;
+  }
+
+  .sign {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+    font-size: var(--text-xs-size);
+    line-height: var(--text-xs-line);
+  }
+
+  .sign span {
+    padding-top: var(--space-1);
+    border-top: var(--border-width) solid currentColor;
+  }
+}

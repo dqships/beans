@@ -1,6 +1,7 @@
 import { absoluteUrl, SOURCE_URL } from "../lib/site";
+import { toolMarkdownBodies } from "../tools/markdown";
 import { connectBody } from "./connect";
-import { contactBody, legalUpdated, operator, privacyBody, supportEmail, termsBody } from "./legal";
+import { contactBody, legalUpdated, operator, privacyBody, privacyUpdated, supportEmail, termsBody } from "./legal";
 
 /**
  * Markdown versions of the public pages, served by `proxy.ts` at the same URLs
@@ -53,6 +54,7 @@ At midnight, anything you didn't finish moves to the new day on its own, marked 
 ## Pages
 
 - [About](${absoluteUrl("/about")})
+- [Free tools](${absoluteUrl("/tools")})
 - [Connect your AI app](${absoluteUrl("/connect-ai")})
 - [Contact](${absoluteUrl("/contact")})
 - [Privacy](${absoluteUrl("/privacy")})
@@ -84,7 +86,7 @@ const contact = `# Contact\n\n${absolute(contactBody)}\n`;
 
 const connectAi = `# Connect your AI app to Beans\n\n${absolute(connectBody)}\n`;
 
-const privacy = `# Privacy policy\n\nLast updated ${legalUpdated}\n\n${absolute(privacyBody)}\n`;
+const privacy = `# Privacy policy\n\nLast updated ${privacyUpdated}\n\n${absolute(privacyBody)}\n`;
 
 const terms = `# Terms of service\n\nLast updated ${legalUpdated}\n\n${absolute(termsBody)}\n`;
 
@@ -123,6 +125,7 @@ const bodies: Record<string, string> = {
   "/contact": contact,
   "/privacy": privacy,
   "/terms": terms,
+  ...toolMarkdownBodies,
 };
 
 export const notFoundMarkdown = `# Page not found
@@ -132,6 +135,7 @@ There's no page at this address. Try one of these instead:
 - [Home](${absoluteUrl("/")})
 - [Pricing](${absoluteUrl("/pricing")})
 - [About](${absoluteUrl("/about")})
+- [Free tools](${absoluteUrl("/tools")})
 - [Connect your AI app](${absoluteUrl("/connect-ai")})
 - [Contact](${absoluteUrl("/contact")})
 - [Privacy](${absoluteUrl("/privacy")})

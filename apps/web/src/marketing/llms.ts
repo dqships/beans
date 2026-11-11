@@ -1,12 +1,15 @@
 import { absoluteUrl, SOURCE_URL } from "@/lib/site";
 import { MCP_SCOPES, MCP_URL, RESOURCE_METADATA_URL } from "@/mcp/config";
 import { TOOLS } from "@/mcp/tools";
+import { toolList } from "@/tools/registry";
+import { toolPath } from "@/tools/slugs";
 import { PASS_DAYS, TRIAL_DAYS } from "@beans/core";
 import { publicPages } from "./pages";
 
 const links = [
   ["Pricing", publicPages.pricing.path, "Plans, the free trial and how to cancel"],
   ["About", publicPages.about.path, "What Beans is and how it works"],
+  ["Free tools", publicPages.tools.path, "Timers, planners and time calculators that work in a browser with no account"],
   ["Contact", publicPages.contact.path, "Support email for help, billing, refunds and account requests"],
   ["Privacy", publicPages.privacy.path, "What Beans collects, why, and who handles it"],
   ["Terms", publicPages.terms.path, "Accounts, the free trial, billing, cancelling and refunds"],
@@ -60,6 +63,10 @@ Beans holds one person's own planner. It isn't for shared team projects, and its
 
 - [Home](${absoluteUrl("/")}): The main workflow and how a day goes
 ${links.map(([name, path, about]) => `- [${name}](${absoluteUrl(path)}): ${about}`).join("\n")}
+
+## Free tools
+
+${toolList.map((tool) => `- [${tool.name}](${absoluteUrl(toolPath(tool.slug))}): ${tool.blurb}`).join("\n")}
 
 ## Sign-in
 

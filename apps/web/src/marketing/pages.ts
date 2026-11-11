@@ -35,6 +35,13 @@ export const publicPages = {
       "Email support@followusai.com for help with Beans: the planner, billing, refunds, cancelling, deleting your account or getting a copy of your data.",
     lastModified: "2026-11-02",
   },
+  tools: {
+    path: "/tools",
+    title: "Free tools: timers, planners and time calculators",
+    description:
+      "Free tools from Beans that work in your browser with no account: a Pomodoro timer, a time blocking planner, a to-do list, time calculators and more.",
+    lastModified: "2026-11-11",
+  },
   connectAi: {
     path: "/connect-ai",
     title: "Beans MCP server: connect Claude, ChatGPT or Cursor",
@@ -47,7 +54,7 @@ export const publicPages = {
     title: "Beans privacy policy: what the planner stores and why",
     description:
       "What Beans collects, why, and who handles it: Clerk for sign-in, Convex for your planner, Stripe for payments, Vercel for hosting and PostHog for analytics.",
-    lastModified: "2026-11-04",
+    lastModified: "2026-11-11",
   },
   terms: {
     path: "/terms",
@@ -58,4 +65,5 @@ export const publicPages = {
   },
 } satisfies Record<string, PublicPage>;
 
+/** These pages only. Each free tool is a public page too: `all-pages.ts` has the full list. */
 export const publicPageList: PublicPage[] = Object.values(publicPages);

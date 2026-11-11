@@ -1,7 +1,9 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
+import { TOOL_PATHS } from "../src/tools/slugs";
 
-const publicPaths = ["/", "/pricing", "/about", "/connect-ai", "/contact", "/privacy", "/terms"];
+/** The pages that ship no framework JavaScript. Each free tool's page hydrates, and `tools.spec.ts` covers those. */
+const publicPaths = ["/", "/pricing", "/about", "/tools", "/connect-ai", "/contact", "/privacy", "/terms"];
 
 /** `landing.js` and the zero-JS build only exist in production. Point E2E_URL at `next start` to run those. */
 const production = Boolean(process.env.E2E_URL);
@@ -192,8 +194,8 @@ test.describe("HTTP behavior", () => {
 
   test("sitemap.xml lists every public page with lastmod", async ({ request }) => {
     const text = await (await request.get("/sitemap.xml")).text();
-    expect(text.match(/<lastmod>/g)).toHaveLength(publicPaths.length);
-    for (const path of publicPaths.slice(1)) expect(text).toContain(`${path}</loc>`);
+    expect(text.match(/<lastmod>/g)).toHaveLength(publicPaths.length + TOOL_PATHS.length);
+    for (const path of [...publicPaths.slice(1), ...TOOL_PATHS]) expect(text).toContain(`${path}</loc>`);
     expect(text).not.toContain("/app");
   });
 

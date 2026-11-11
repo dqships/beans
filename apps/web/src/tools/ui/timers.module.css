@@ -1,0 +1,265 @@
+/* The four timers share one face: the leaf ring from the planner, grown large, with the time beside it. */
+
+.timer {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: center;
+  text-align: center;
+}
+
+.face {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  /* The face keeps its size while the digits change. */
+  min-height: calc(var(--space-6) * 6);
+}
+
+.ring {
+  color: var(--color-text-muted);
+}
+
+.ring svg {
+  display: block;
+  width: calc(var(--space-6) * 6);
+  height: calc(var(--space-6) * 6);
+}
+
+.reading {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  text-align: left;
+  min-width: calc(var(--space-6) * 7);
+}
+
+.phase {
+  color: var(--color-text-muted);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+/* Finished rounds: one sprouted bean each. */
+.rounds {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+.roundBean {
+  width: var(--bean-size);
+  height: var(--bean-size);
+}
+
+.task {
+  width: 100%;
+  max-width: var(--layout-modal);
+  text-align: left;
+}
+
+.settings {
+  width: 100%;
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+  text-align: left;
+}
+
+.settings summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-height-sm);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.settingsBody {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-4);
+  padding-top: var(--space-3);
+}
+
+/* Quick lengths on the countdown: a row of small buttons. */
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+/* A line under the digits that changes as the timer runs: the set length, the lap in progress. */
+.note {
+  display: flex;
+  align-items: center;
+  min-height: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The countdown has ended. Same size as every other state, so the face doesn't move. */
+.over {
+  color: var(--color-text);
+}
+
+/* Where a timer's length is set, under the buttons: the countdown's three fields and its chime. */
+.lengths {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+  text-align: left;
+}
+
+/* The break timer's pattern, said in a line, or its two custom fields. One height for both. */
+.plan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: center;
+  gap: var(--space-4);
+  min-height: calc(var(--control-height) + var(--text-xs-line) + var(--space-1));
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  text-align: left;
+}
+
+.planLine {
+  align-self: center;
+  text-align: center;
+}
+
+/* The stopwatch's reading is wider: hours, and hundredths after the seconds. */
+.readingWide {
+  min-width: calc(var(--space-6) * 10);
+}
+
+.fraction {
+  color: var(--color-text-muted);
+  font-size: var(--text-xl-size);
+  line-height: var(--text-xl-line);
+  font-weight: var(--text-xl-weight);
+}
+
+/* Laps: rows on soil lines in a box of one height that scrolls, so a new lap never moves the page. */
+.laps {
+  width: 100%;
+  max-width: var(--layout-modal);
+  height: calc((var(--text-sm-line) + var(--space-2) * 2 + var(--border-width)) * 6);
+  overflow-y: auto;
+  border-radius: var(--radius-sm);
+  text-align: left;
+}
+
+.lapsEmpty {
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  text-align: center;
+}
+
+.lapTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.lapTable th,
+.lapTable td {
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+  font-weight: var(--text-sm-weight);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.lapTable th:first-child,
+.lapTable td:first-child {
+  width: 100%;
+  text-align: left;
+  white-space: normal;
+}
+
+.lapTable th + th,
+.lapTable td + td {
+  padding-left: var(--space-5);
+}
+
+.lapTable thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  font-weight: var(--text-md-weight);
+}
+
+.lapTotal {
+  color: var(--color-text-muted);
+}
+
+/* "Fastest" and "Slowest", after the lap's number. */
+.lapMark {
+  margin-left: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  font-weight: var(--text-md-weight);
+}
+
+.lapFastest {
+  color: var(--color-text);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .face {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--space-4);
+  }
+
+  .ring svg {
+    width: calc(var(--space-6) * 4);
+    height: calc(var(--space-6) * 4);
+  }
+
+  .reading {
+    justify-items: center;
+    text-align: center;
+    min-width: 0;
+  }
+
+  .note {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .lapTable th + th,
+  .lapTable td + td {
+    padding-left: var(--space-3);
+  }
+}

@@ -1,0 +1,341 @@
+/* The weekly schedule: seven garden rows side by side, hours down the side, and a colored block wherever something is planted. */
+
+.maker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+/* The add form: fields in a row that wraps, then its buttons and one line of status. */
+.form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  min-width: 0;
+  padding-bottom: var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: var(--space-3) var(--space-4);
+}
+
+.name {
+  flex: 1 1 calc(var(--space-6) * 6);
+  max-width: var(--layout-rail);
+}
+
+.time {
+  width: calc(var(--space-6) * 4.5);
+}
+
+.hourPick {
+  width: calc(var(--space-6) * 3.5);
+}
+
+.group {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-md-weight);
+}
+
+.days {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  min-height: var(--control-height);
+}
+
+.colors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+}
+
+/* The eight label colors. A block and its swatch read the same custom property. */
+.soil {
+  --block-color: var(--label-soil);
+}
+
+.tomato {
+  --block-color: var(--label-tomato);
+}
+
+.pumpkin {
+  --block-color: var(--label-pumpkin);
+}
+
+.corn {
+  --block-color: var(--label-corn);
+}
+
+.sprout {
+  --block-color: var(--label-sprout);
+}
+
+.rain {
+  --block-color: var(--label-rain);
+}
+
+.plum {
+  --block-color: var(--label-plum);
+}
+
+.beet {
+  --block-color: var(--label-beet);
+}
+
+.swatch {
+  position: relative;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  border-radius: var(--radius-full);
+  background: var(--block-color);
+  cursor: pointer;
+}
+
+.swatch input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* The chosen color wears a ring. */
+.swatch:has(input:checked) {
+  box-shadow: 0 0 0 var(--focus-ring) var(--color-surface), 0 0 0 calc(var(--focus-ring) * 2) var(--color-text);
+}
+
+.swatch:has(input:focus-visible) {
+  outline: var(--focus-ring) solid var(--color-primary);
+  outline-offset: calc(var(--focus-ring) * 2);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.status {
+  flex: 1 1 var(--layout-column);
+  min-height: var(--text-sm-line);
+  margin-left: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* The grid scrolls sideways in here on a narrow screen; the page never does. */
+.scroll {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+}
+
+.grid {
+  --gutter: calc(var(--space-6) * 1.75);
+  --day-min: calc(var(--space-6) * 3);
+  --hour-height: calc(var(--control-height) + var(--space-3));
+  display: grid;
+  grid-template-columns: var(--gutter) repeat(7, minmax(var(--day-min), 1fr));
+  min-width: calc(var(--gutter) + var(--day-min) * 7);
+}
+
+.corner,
+.gutter {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-surface);
+}
+
+.dayName {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: var(--focus-ring) solid var(--color-border);
+  border-left: var(--border-width) solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-md-weight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.corner {
+  border-bottom: var(--focus-ring) solid var(--color-border);
+}
+
+.hourLabel {
+  height: var(--hour-height);
+  padding: var(--space-1) var(--space-2) 0 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.day {
+  position: relative;
+  height: calc(var(--hour-height) * var(--hours));
+  border-left: var(--border-width) solid var(--color-border);
+}
+
+.lines,
+.blocks {
+  position: absolute;
+  inset: 0;
+  display: grid;
+}
+
+.lines {
+  grid-template-rows: repeat(var(--hours), minmax(0, 1fr));
+}
+
+.hourCell {
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+/* One row per five minutes. A block's rows come from its start and end. */
+.blocks {
+  grid-template-rows: repeat(var(--slots), minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.slot {
+  grid-column: 1;
+  grid-row: var(--row-start) / var(--row-end);
+  width: calc(100% / var(--lanes));
+  margin-left: calc((var(--lane) - 1) * 100% / var(--lanes));
+  min-width: 0;
+  min-height: 0;
+  padding: var(--border-width);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: var(--border-width) var(--space-1) 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: calc(var(--radius-sm) / 2);
+  background: var(--block-color);
+  color: var(--color-on-label);
+  font-family: inherit;
+  font-size: var(--text-xs-size);
+  line-height: var(--text-xs-line);
+  font-weight: var(--text-xs-weight);
+  text-align: left;
+}
+
+.block:hover {
+  filter: brightness(1.08);
+}
+
+/* The block in the form wears a ring. */
+.editing {
+  box-shadow: inset 0 0 0 var(--focus-ring) var(--color-on-label);
+}
+
+/* Drawn inside the block, where the grid's edge can't cut it off, in the ink that shows on every label color. */
+.block:focus-visible {
+  outline-color: var(--color-on-label);
+  outline-offset: calc(var(--focus-ring) * -1);
+}
+
+/* Each line keeps its full height; a short block cuts off the time, not half of the name. */
+.blockName {
+  flex: none;
+  max-width: 100%;
+  font-weight: var(--text-lg-weight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.blockTime {
+  flex: none;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .name {
+    max-width: none;
+  }
+
+  .status {
+    flex-basis: 100%;
+    margin-left: 0;
+    min-height: calc(var(--text-sm-line) * 2);
+  }
+}
+
+/* On paper the whole week fits one landscape page, whatever hours it covers. */
+@media print {
+  @page {
+    size: landscape;
+  }
+
+  .scroll {
+    overflow: visible;
+  }
+
+  .grid {
+    --hour-height: calc(var(--layout-rail) * 1.5 / var(--hours));
+    grid-template-columns: var(--gutter) repeat(7, minmax(0, 1fr));
+    min-width: 0;
+  }
+
+  .corner,
+  .gutter {
+    position: static;
+  }
+
+  .hourLabel {
+    padding-top: 0;
+    overflow: hidden;
+  }
+
+  .block {
+    border: var(--border-width) solid var(--color-on-label);
+    print-color-adjust: exact;
+  }
+}

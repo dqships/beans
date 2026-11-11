@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { appPolicy, marketingPolicy } from "./src/lib/csp";
+import { appPolicy, marketingPolicy, toolsPolicy } from "./src/lib/csp";
 
 const dev = process.env.NODE_ENV !== "production";
 
@@ -25,6 +25,12 @@ const marketingHeaders = [
   { key: "Vary", value: "Accept" },
 ];
 
+/** Each free tool's page: the marketing policy plus `style` attributes (see `toolsPolicy`). */
+const toolHeaders = [
+  { key: "Content-Security-Policy", value: toolsPolicy({ dev }) },
+  { key: "Vary", value: "Accept" },
+];
+
 const nextConfig: NextConfig = {
   transpilePackages: ["@beans/core", "@beans/tokens"],
   reactStrictMode: true,
@@ -34,7 +40,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/(.*)", headers: securityHeaders },
       // Later entries win. Unknown URLs keep the app policy, because the App Router renders the 404.
-      { source: "/:path(pricing|about|connect-ai|contact|privacy|terms)?", headers: marketingHeaders },
+      { source: "/:path(pricing|about|connect-ai|contact|privacy|terms|tools)?", headers: marketingHeaders },
+      { source: "/tools/:tool", headers: toolHeaders },
     ];
   },
 };

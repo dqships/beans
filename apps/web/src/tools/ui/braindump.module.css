@@ -1,0 +1,167 @@
+/* The brain dump: a pile of spilled beans on top, and four rows to sort them into underneath. */
+
+.pile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.groupName {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--color-text);
+  font-size: var(--text-md-size);
+  line-height: var(--text-md-line);
+  font-weight: var(--text-md-weight);
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  font-weight: var(--text-sm-weight);
+  font-variant-numeric: tabular-nums;
+}
+
+.pileRows {
+  display: grid;
+  /* A fixed track: a row's text field shrinks to fit instead of pushing the row wider. */
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  /* Room for five thoughts, so the first few don't push the page around. */
+  min-height: calc((var(--control-height) + var(--space-2) * 2 + var(--border-width)) * 5);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.pileRows.pileEmpty {
+  align-content: center;
+}
+
+/* A thought: its text, then where it can go. The buttons drop to their own line when there's no room beside the text. */
+.thought {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  min-height: calc(var(--control-height) + var(--space-2) * 2);
+  padding: var(--space-1) 0;
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.thought .thoughtText {
+  flex: 1 1 calc(var(--layout-column) * 0.75);
+}
+
+.sorters {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+/* The four groups: a name on the left, what's in it on the right, a soil line between rows. */
+.groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.group {
+  display: grid;
+  grid-template-columns: calc(var(--space-6) * 4) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: var(--focus-ring) solid var(--color-border);
+}
+
+.group .groupName {
+  min-height: calc(var(--control-height) + var(--space-2));
+  align-items: center;
+}
+
+.groupRows {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  min-width: 0;
+  min-height: calc(var(--control-height) + var(--space-2));
+}
+
+.sorted {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: calc(var(--control-height) + var(--space-2));
+  border-bottom: var(--border-width) solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.sorted:last-child {
+  border-bottom-color: transparent;
+}
+
+.sorted .movePick {
+  flex: none;
+  width: calc(var(--space-6) * 5);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--control-height) + var(--space-2));
+  color: var(--color-text-muted);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+}
+
+@media (max-width: 720px) { /* --layout-phone */
+  .group {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .group .groupName {
+    min-height: 0;
+  }
+
+  /* As in the pile: the text gets the first line, the controls sit under it. */
+  .sorted {
+    flex-wrap: wrap;
+    padding: var(--space-1) 0;
+  }
+
+  .sorted .sortedText {
+    flex-basis: 100%;
+  }
+
+  .sorted .movePick {
+    margin-left: auto;
+  }
+}
+
+@media print {
+  .pileRows {
+    min-height: 0;
+  }
+
+  .group {
+    grid-template-columns: calc(var(--space-6) * 4) minmax(0, 1fr);
+    gap: var(--space-2) var(--space-4);
+    break-inside: avoid;
+  }
+
+  .thought,
+  .sorted {
+    flex-wrap: nowrap;
+    min-height: var(--control-height-sm);
+    padding: 0;
+  }
+
+  .sorted:last-child {
+    border-bottom-color: var(--color-border);
+  }
+}

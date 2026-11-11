@@ -18,6 +18,9 @@ export function SiteHeader() {
         <a href="/pricing" className={styles.navLink}>
           Pricing
         </a>
+        <a href="/tools" className={styles.navLink}>
+          Free tools
+        </a>
         <a href="/about" className={styles.navLink}>
           About
         </a>
@@ -47,6 +50,9 @@ export function SiteFooter() {
           </li>
           <li>
             <a href="/about">About</a>
+          </li>
+          <li>
+            <a href="/tools">Free tools</a>
           </li>
           <li>
             <a href="/connect-ai">Connect your AI</a>
