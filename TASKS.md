@@ -111,7 +111,7 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 
 ### Free tools
 
-19 free tools at `/tools`, built to bring search traffic to Beans. The keyword research behind the list is in `docs/seo/2026-11-10-free-tools-keyword-findings.md`. Built on `claude/free-tools`.
+19 free tools at `/tools`, built to bring search traffic to Beans. The keyword research behind the list is in `docs/seo/2026-11-10-free-tools-keyword-findings.md`. Merged into `main` on 2026-11-11 (PR 37).
 
 - [x] Keyword research in Bing Webmaster Tools, Google Keyword Planner and Google results (2026-11-10)
 - [x] Pick 19 tools in four groups: timers, planning a day or a week, sorting tasks, working out time
@@ -119,7 +119,7 @@ People connect Claude, ChatGPT and other AI apps to read and change their planne
 - [x] Build the 19 tools, each with unit-tested logic, its own page, head tags, schema and a markdown version
 - [x] Tools index at `/tools`, with links in the header and footer, the sitemap, `llms.txt` and the 404's markdown
 - [x] Privacy policy says what the tools keep in the browser (for DQ to read: "Cookies and local storage")
-- [ ] DQ reviews the `claude/free-tools` PR into `main`
+- [x] DQ reviewed and merged the `claude/free-tools` PR into `main` (2026-11-11)
 - [ ] After the deploy, check the pages in Search Console and Bing, and request indexing of `/tools` (DQ)
 - [ ] A few weeks after indexing, re-rank the tools by the queries Search Console shows
 - [ ] Later: a social image per tool, and "Pick one for me" in the to-do list
